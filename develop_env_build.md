@@ -1,0 +1,159 @@
+# 嵌入式Linux开发环境构建
+
+对于初步接触嵌入式Linux平台开发的使用者，建议还是使用开发板或者芯片厂商提供的编译脚本和环境.如果进一步深入，希望了解这个环境时如何构建的，这篇文章则从安装Ubuntu,到完成编译系统构建，以及开发中编译，安装库或者软件包的全过程，也会包含遇到的问题和解决办法，当然每个版本遇到的问题可能都不一样，这就需要根据实际情况去解决.<br/>
+
+## 安装Linux系统
+
+### 选择安装环境和系统版本，并安装
+
+安装环境可以选择虚拟机模式和直接系统安装，不过因为我习惯windows下开发，所以使用虚拟机安装，直接系统安装可用UltraISO制作系统盘安装，这里平台选择如下.<br/>
+
+1. VMvare 15.5.1 
+2. Ubuntu16.04 LTS 
+
+选择>新建虚拟机>典型, 选择安装文件*.iso，直接下一步安装，等待完成即可.<br/>
+
+### 修改镜像源，完善系统环境
+
+如果安装完成的ubuntu无法访问网络环境，通过修改支持国内的dns服务器.<br />
+```bash
+sudo vi /etc/resolv.conf
+
+#添加如下代码
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+```
+Ubuntu默认使用的镜像源在国外，直接下载访问比较慢，大部分都会直接失败，所以我一般会更新使用国内源，我目前切换的是国内清华镜像源: https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/ .按照网页说明选择对应版本，替换/etc/apt/sources.list下文件，然后执行如下命令即可.<br/>
+```bash
+sudo apt-get update
+sudo apt-get upgrade
+```
+如果出现Ign0:xxxxxxx的访问错误，这是表示访问失败，选择http版本即可。构建完成后，需要安装编译支持的脚本或者库，下面提供了一些在编译驱动，内核还有编译一些第三方时遇到后遇到的需要增加和更新的库，可酌情安装，后续遇到问题我也会同步更新在下面.<br/>
+
+```bash
+sudo apt-get install vim lib32z1
+sudo apt-get install bc lzop libffi-dev libssl-dev lzop git
+sudo apt-get install libncurses5-dev u-boot-tools openssh-server 
+sudo apt-get install dos2unix gzip libtool flex
+sudo apt-get install build-essential manpages-dev make bison
+sudo apt-get install software-properties-common binutils gcc-multilib 
+sudo apt-get install libc6-dev-i386
+sudo apt-get install lsb-core lib32stdc++6
+```
+如此，基本完成了Linux平台基础环境的构建.<br/>
+
+## 嵌入式Linux的编译平台
+
+### 交叉编译环境构建
+
+对于嵌入式linux，第一步就是下载交叉编译工具，例如我使用的imx6ull芯片，可以访问网站 **https://releases.linaro.org/components/toolchain/binaries/7.5-2019.12/arm-linux-gnueabihf/** 下载最新的编译工具，如我使用的是*gcc-linaro-7.5.0-2019.12-i686_arm-linux-gnueabihf.tar.xz*.<br/>
+1. 对于普通用户，可通过在/etc/profile中添加export PATH="$PATH:[diectory]"在全局环境添加.<br/>
+2. 对于root用户，可直接修改/etc/environment，添加到里面指定的PATH路径即可.<br/>
+
+不过这个版本最高支持到7.5.0版本，后面也放弃了更新，如果使用更高版本的编译工具，需要去arm官网下载，不过速度比较慢，这里推荐去清华源镜像去下载，地址为 **https://mirrors.tuna.tsinghua.edu.cn/armbian-releases/_toolchain/** .这里也说下arm编译工具命名的规则，便于选择用于编译的工具, 这里列出几个不同类型的arm编译工具。
+```bash
+'gcc-linaro-7.5.0-2019.12-i686_arm-linux-gnueabihf.tar.xz'
+'gcc-arm-11.2-2022.02-x86_64-aarch64-none-linux-gnu.tar.xz'
+'gcc-arm-11.2-2022.02-x86_64-arm-none-linux-gnueabihf'
+'gcc-arm-11.2-2022.02-x86_64-arm-none-eabi.tar.xz'
+```
+其格式如下:<br />
+**[gcc]-[提供编译工具的组织]-[gcc版本]-[生成时间]-[编译器运行平台(i686/x86_64)]-[编译目的平台(arm/aarch64)]-[none, 厂商信息]-[linux, 编译器支持环境]-[abi接口和浮点支持]**<br />
+这里有几个重要知识点讲解:
+1. 编译器运行平台，i686为32位linux系统，x86_64则为64位环境运行
+2. 编译目的平台，arm位32位arm，aarch64为64位arm，aarch64一般只有更高端的arm平台才支持如Cortex-A53等.
+3. none为可选厂商信息，可以省略，arm提供的一般为none
+4. linux表示编译器目的运行平台，带linux则表示为linux环境，不存在则表示用于裸机程序.
+5. abi接口表示支持应用开发的兼容的二进制接口，带hf则表示支持硬件浮点.
+
+## 常用工具安装和编译
+
+本小节主要列出常用的工具指导，如远程访问的ssh，用于程序开发的vscode，当然也提供用于支持嵌入式Linux平台的工具编译如sqlite，node, mtd-utils等的编译，部分可以直接安装.<br/>
+
+### 安装ssh服务器和客户端
+
+对于ubuntu平台，可直接执行如下安装和运行.<br/>
+
+```bash
+sudo apt-get install openssh-server
+sudo service ssh restart
+```
+
+远程可通过如下命令登录和传输文件 <br/>
+
+```bash
+ssh [用户名]@[ipAddress]
+scp -r [file] [用户名]@[ipAddress]:[directory]
+```
+
+如ssh freedom@192.168.0.99登录，不过默认不支持密码登录，需要在服务器/etc/ssh/sshd_config中，打开密码登录选：**PasswordAuthentication yes** <br/>
+此外，还要指定连接的加密算法, 在ssh_config的文件末尾添加如下即可.<br/>
+```bash
+Ciphers aes128-cbc
+MACs  hmac-md5
+KexAlgorithms diffie-hellman-group1-sha1
+```
+分别放在服务端的/etc/ssh/sshd_config和客户端的/etc/ssh/ssh_config中, 如果Linux访问远端显示MACs，Key不支持，也可以按照上述方法在文件里添加即可.<br/>
+当然对于windows系统，添加在C:\ProgramData\ssh\ssh_config中.<br/>
+如果远端的ssh服务器发生变化与本地保存不一致，可通过如下命令清除，一般重新烧录系统后，信息可能发生变化。<br/>
+```bash
+ssh-keygen -f "/root/.ssh/known_hosts" -R [ipaddress]
+```
+清除本地保存的密钥,此时可以重新进行连接.<br/>
+
+### 安装支持TFTP服务
+
+### 编译安装gcc
+
+对于linux系统来说，默认是支持gcc的，不过如果想使用最新的C++应用，就需要安装最新的gcc版本，这里采用目前最新的为12.2.0, 进入下载目录，使用wget即可下载.<br/>
+**注意:对于linux端，不要用新的gcc库直接替换系统的c-library，很多系统命令如ls，mv...都依赖libc-x.so, 替换后，会导致基本所有命令都没法使用，大概率需要重装(WSL还可以通过windows端替换回来)**
+```bash
+wget https://mirrors.tuna.tsinghua.edu.cn/gnu/gcc/gcc-12.2.0/gcc-12.2.0.tar.gz
+tar -xvf gcc-12.2.0.tar.gz
+cd gcc-12.2.0
+```
+理论上要执行./contrib/download_prerequisites直接安装编译环境，不过国内节点速度会很慢，建议先通过vim contrib/download_prerequisites，在起始处有需要的版本,如12.2.0需要如下.<br/>
+1. gmp='gmp-6.2.1.tar.bz2'<br/>
+2. mpfr='mpfr-4.1.0.tar.bz2'<br/>
+3. mpc='mpc-1.2.1.tar.gz'<br/>
+4. isl='isl-0.24.tar.bz2'<br/>
+
+&emsp;&emsp;然后就可以使用命令在目录下下载.<br/>
+```bash
+wget https://mirrors.tuna.tsinghua.edu.cn/gnu/gmp/gmp-6.2.1.tar.bz2
+wget https://mirrors.tuna.tsinghua.edu.cn/gnu/mpfr/mpfr-4.1.0.tar.bz2
+wget https://mirrors.tuna.tsinghua.edu.cn/gnu/mpc/mpc-1.2.1.tar.gz
+wget https://gcc.gnu.org/pub/gcc/infrastructure/isl-0.24.tar.bz2
+./contrib/download_prerequisites
+./configure --enable-checking=release --enable-languages=c,c++ --disable-multilib --prefix=/home/center/install/gcc12/
+make -j4
+make install
+```
+如果编译出现了'stage1-bubble' 清除make distclean, 重新执行make即可 <br/>
+编译完成后，需要将编译完成的gcc和g++文件链接到系统目录/usr/bin/下，执行如下 <br/>
+
+```bash
+GCC_INSTALL_PATH=/home/center/install/gcc12
+echo $GCC_INSTALL_PATH
+sudo ln -sf $GCC_INSTALL_PATH/bin/g++ /usr/bin/g++
+sudo ln -sf $GCC_INSTALL_PATH/bin/gcc /usr/bin/gcc
+sudo ln -sf $GCC_INSTALL_PATH/bin/gcc-ranlib /usr/bin/gcc-ranlib
+sudo ln -sf $GCC_INSTALL_PATH/bin//gcc-ar /usr/bin/gcc-ar
+sudo ln -sf $GCC_INSTALL_PATH/bin/gcc-nm /usr/bin/gcc-nm
+sudo ln -sf $GCC_INSTALL_PATH/bin/gcov /usr/bin/gcov
+```
+可通过gcc -v或者g++ -v查询版本是否替换成功.<br/>
+
+### 3.3 安装vscode作为linux上的开发工具
+
+vscode的官方下载地址为**https://code.visualstudio.com/#alt-downloads**。<br />
+选择Ubuntu版本，先在官网上点击下载，然后复制链接，将前面的路径替换成国内源vscode.cdn.azure.cn, 如果不清楚可以使用如下命令在linux上下载.<br/>
+```bash
+wget https://vscode.cdn.azure.cn/stable/1ad8d514439d5077d2b0b7ee64d2ce82a9308e5a/code_1.74.1-1671015296_amd64.deb
+sudo dpkg -i code_1.74.1-1671015296_amd64.deb
+```
+安装完成后，输入code即可在linux上打开code，不过我喜欢添加vscode作为打开的link.<br/>
+```bash
+sudo ln -sf code /usr/bin/vscode
+```
+之后调用**vscode命令**即可打开vscode应用.<br/>
