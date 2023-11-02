@@ -6,6 +6,9 @@ GLOBAL_PROGRAM_SUPPORT=$GLOBAL_PROGRAM_PATH/support
 GLOBAL_PROGRAM_DOWNLOAD=$GLOBAL_PROGRAM_PATH/download
 GLOBAL_PROGRAM_BUILD=$GLOBAL_PROGRAM_PATH/build
 
+GCC_TOOLCHAIN=gcc-arm-11.2-2022.02-x86_64-arm-none-linux-gnueabihf
+GCC_SOURCE_ADDR=/mnt/d/tools/$GCC_TOOLCHAIN.tar.xz
+
 #创建编译环境
 if [ ! -d "$GLOBAL_PROGRAM_PATH" ]; then
     
@@ -18,6 +21,7 @@ if [ ! -d "$GLOBAL_PROGRAM_PATH" ]; then
     mkdir $GLOBAL_PROGRAM_THIRDPARTS/install    
     mkdir $GLOBAL_PROGRAM_SUPPORT
     mkdir $GLOBAL_PROGRAM_SUPPORT/compiler
+    mkdir $GLOBAL_PROGRAM_SUPPORT/old_compiler
     mkdir $GLOBAL_PROGRAM_SUPPORT/uboot
     mkdir $GLOBAL_PROGRAM_SUPPORT/kernel
     mkdir $GLOBAL_PROGRAM_SUPPORT/rootfs_busybox
@@ -42,9 +46,6 @@ echo "  $GLOBAL_PROGRAM_SUPPORT/rootfs_debian:debian文件系统目录, 将解�
 echo "未复制则后续编译时会显示找不到文件或者直接编译失败"
 
 #下载编译脚本，解压并安装到系统中
-GCC_TOOLCHAIN=gcc-arm-11.2-2022.02-x86_64-arm-none-linux-gnueabihf
-GCC_SOURCE_ADDR=/mnt/d/tools/$GCC_TOOLCHAIN.tar.xz
-
 if [ ! -d $GLOBAL_PROGRAM_SUPPORT/compiler/bin ]; then
     cd $GLOBAL_PROGRAM_DOWNLOAD/tmp/
     if [ -f $GCC_SOURCE_ADDR ]; then
@@ -65,21 +66,3 @@ fi
 export PAHT="$PATH":$GLOBAL_PROGRAM_SUPPORT/compile/bin
 
 #下载uboot, 放置到系统中
-UBOOT_FILE=uboot-imx-2016.03-2.1.0-g4475ea1-v1.3
-UBOOT_SOURCE_ADDR=/mnt/d/tools/$UBOOT_FILE.tar.bz2
-
-if [ ! -d $GLOBAL_PROGRAM_SUPPORT/uboot/bin ]; then
-    cd $GLOBAL_PROGRAM_DOWNLOAD/tmp/
-    if [ -f $UBOOT_SOURCE_ADDR ]; then
-        echo "copy uboot from local address:$UBOOT_SOURCE_ADDR"
-        cp $UBOOT_SOURCE_ADDR ./
-    else
-        echo "wget from address:$UBOOT_SOURCE_ADDR"
-    fi
-    tar -xvf $UBOOT_FILE.tar.bz2
-    sudo mv $UBOOT_FILE.tar.bz2 ../
-    sudo cp -rvf * $GLOBAL_PROGRAM_SUPPORT/uboot/
-    rm -rf *
-else
-    echo "uboot already exist, not need update!"
-fi
