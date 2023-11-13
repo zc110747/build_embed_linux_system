@@ -3,7 +3,23 @@
 # library example(build out static library): AR-Out = static_lib.a
 # Executable example(build out Executable): Excutable = target
 #-------------------------------------------------------------------------------
-Excutable = target
+BUILD ?=e
+
+ifeq ($(BUILD),e) 
+Excutable=target
+Static-LIB=libtest
+Dynamic-LIB=dynamictest
+endif
+
+ifeq ($(BUILD),s)
+Static-LIB=libtest
+Static-LIB-SRC=static_test.o
+endif
+
+ifeq ($(BUILD),d)
+Dynamic-LIB=dynamictest
+Dynamic-LIB-SRC=dynamic_test.o
+endif
 
 #-------------------------------------------------------------------------------
 # define files to compile, c files follow Objects-C, 
@@ -11,9 +27,8 @@ Excutable = target
 # C file example: Objects-C = main.o 
 # CPP file example: Objects-CPP = application.o
 #-------------------------------------------------------------------------------
-Objects-C = main.o 
-
-Objects-CPP = application.o
+Objects-C=main.o 
+Objects-CPP=application.o
 
 #-------------------------------------------------------------------------------
 # include c/c++ header path

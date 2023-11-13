@@ -38,6 +38,7 @@ if [ ! -d "$GLOBAL_PROGRAM_PATH" ]; then
     mkdir $GLOBAL_PROGRAM_PATH/build/
     mkdir $GLOBAL_PROGRAM_PATH/build/nfs_root/
     mkdir $GLOBAL_PROGRAM_PATH/build/tftp_root/
+    mkdir $GLOBAL_PROGRAM_PATH/application/
 else
     echo "Directory ${greenText}$GLOBAL_PROGRAM_PATH${defText} exist, Check Ok!"
 fi
@@ -50,10 +51,11 @@ echo "  ${greenText}$GLOBAL_PROGRAM_SUPPORT/uboot/${defText}:uboot目录, 用于
 echo "  ${greenText}$GLOBAL_PROGRAM_SUPPORT/kernel/${defText}:kernel目录, 用于编译内核的源码"
 echo "  ${greenText}$GLOBAL_PROGRAM_SUPPORT/rootfs/${defText}:文件系统目录, 用于编译文件系统的源码(busybox), 如debain或android个人很难从源码编译,直接获取编译好的文件系统"
 echo "  ${greenText}$GLOBAL_PROGRAM_SUPPORT/build/${defText}:编译后系统文件存储目录"
+echo "  ${greenText}$GLOBAL_PROGRAM_SUPPORT/application/${defText}:存放应用源码的目录"
 echo "未复制则后续编译时会显示找不到文件或者直接编译失败"
 
 #按照系统编译支持的library库
-if [ x$1 != x ] && [ x == "all" ]; then
+if [ x$1 != x ] && [ $1 == "all" ]; then
     echo "install library or tools for the build environment."
     sudo apt-get install vim lib32z1 cmake 
     sudo apt-get install bc lzop libffi-dev libssl-dev lzop git
