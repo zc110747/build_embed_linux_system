@@ -1,3 +1,8 @@
+#for test makefile, run command need order.
+#make BUILD=s
+#make BUILD=d
+#make BUILD=e
+
 #-------------------------------------------------------------------------------
 # define the build output, only one below can choose.
 # library example(build out static library): AR-Out = static_lib.a

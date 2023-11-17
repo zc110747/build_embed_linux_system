@@ -89,11 +89,11 @@ OBJ += $(Objects-CPP)
 
 #build for output
 $(Excutable):$(OBJ)
-	$(shell if [ $(Objects-CPP) ] || [ $(Library) ]; then \
+	if [ $(Objects-CPP) ] || [ $(Library) ]; then \
 		$(CCPLUS) -o $(Excutable) $(Objects-C) $(Objects-CPP) $(Library) $(Static-LIB).a -L. -l$(Dynamic-LIB) $(CFlags); \
 	else \
 		$(CC) -o $(Excutable) $(Objects-C) $(Library) $(AR-Out) $(CFlags); \
-	fi)
+	fi
 
 clean:
 	rm -rf *.o
