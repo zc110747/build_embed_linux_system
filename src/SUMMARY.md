@@ -2,8 +2,10 @@
 [前言](./PRFEACE.md)
 
 - [构建Linux开发平台环境](./ch01-00.platform_env_struct.md)
-  - [Linux软件安装](ch01-01.linux_software_install.md)
-  - [Linux软件编译](ch01-02.linux_software_compiler.md)
+  - [shell命令](./ch01-01.linux_shell_cmd.md)
+  - [Linux软件安装](./ch01-02.linux_software_install.md)
+  - [Linux软件交叉编译](ch01-03.linux_cross_compiler.md)
+  - [shell脚本语法](./ch01-04.linux_shell_grammar.md)
 
 - [Linux系统启动实现](./ch02-00.system_bringup.md)
   - [shell脚本语法](./ch02-01.shell_grammar.md)

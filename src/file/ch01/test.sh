@@ -19,3 +19,21 @@ for i in /home/program/support/uboot/*; do
     fi
 done
 unset i
+
+# $()执行命令脚本
+now_time=$(date)
+now_dir=$(pwd)
+echo time:${now_time}, dir:${now_dir}
+
+# 数学运算
+var0=2
+var1=4
+
+#只支持整型
+var2=$[ $var0 + $var1 ]
+echo $var2
+var3=$(echo "scale=4; $var0/$var1" | bc )
+echo $var3
+
+#查询上一个脚本/命令退出的状态码，0表示ok
+echo $?
