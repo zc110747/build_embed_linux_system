@@ -37,3 +37,27 @@ echo $var3
 
 #查询上一个脚本/命令退出的状态码，0表示ok
 echo $?
+
+fruits=("苹果" "香蕉" "柚子")
+
+for fruit in "${fruits[@]}"; do
+    echo "i love ${fruit}"
+done
+
+count=1
+while [ ${count} -le 3 ]; do
+    echo ${count}
+    count=$((count+1))
+done
+
+folder=$(pwd) 
+  
+# # 遍历文件夹中的文件  
+# while IFS= read -rd '' file; do  
+#     echo "处理文件: $file"  
+#     # 在这里可以执行你需要的操作，对每个文件进行处理  
+# done < <(find "$folder" -type f -print0)
+
+for file in $(find "$folder" -type f -print); do
+    echo read:${file}
+done
