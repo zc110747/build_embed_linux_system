@@ -34,6 +34,8 @@ var2=$[ $var0 + $var1 ]
 echo $var2
 var3=$(echo "scale=4; $var0/$var1" | bc )
 echo $var3
+var4=$(echo " scale=4; 3.44/5" | bc)
+echo ${var4}
 
 #查询上一个脚本/命令退出的状态码，0表示ok
 echo $?
@@ -42,6 +44,9 @@ fruits=("苹果" "香蕉" "柚子")
 
 for fruit in "${fruits[@]}"; do
     echo "i love ${fruit}"
+    if [ ${fruit} == "香蕉" ]; then
+        break
+    fi 
 done
 
 count=1
@@ -61,3 +66,18 @@ folder=$(pwd)
 for file in $(find "$folder" -type f -print); do
     echo read:${file}
 done
+
+#遍历${PATH}的值，分隔符为:
+IFS=:
+for folder in ${PATH}; do
+    echo ${folder}
+done
+
+#exit
+if [[ $? -ne 0 ]]; then
+    read -p "shell faild, wheather exit?(y/n, default is y)" exit_val
+
+    if [ -z ${exit_val} ] || [ ${exit_val} == 'y' ]; then
+        exit 1
+    fi
+fi

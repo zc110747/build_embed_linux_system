@@ -1,0 +1,10 @@
+Wed Dec  6 09:57:46 CST 2023
+Wed Dec  6 09:59:56 CST 2023
+total 20
+drwxrwxrwx 1 freedom freedom 4096 Dec  6 09:57 ./
+drwxrwxrwx 1 freedom freedom 4096 Dec  1 14:36 ../
+-rwxrwxrwx 1 freedom freedom 5679 Dec  1 14:35 preBuildEnvironment.sh*
+-rwxrwxrwx 1 freedom freedom 3895 Nov 28 08:07 pull_build_linux_software.sh*
+-rwxrwxrwx 1 freedom freedom  885 Dec  4 16:50 runscript.sh*
+-rwxrwxrwx 1 freedom freedom 1364 Dec  6 09:54 test.sh*
+-rwxrwxrwx 1 freedom freedom   58 Dec  6 09:59 testfile*
