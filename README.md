@@ -2,7 +2,7 @@
 
 本系列整理一系列嵌入式Linux学习和开发中应用的技术，包括不限于Shell脚本，Makefile语法，uboot/kernal移植，驱动开发，应用开发等，详细目录如下。
 
-[前言](./src/ch00.PRFEACE.md)
+[ch00.前言](./src/ch00.PRFEACE.md)
 
 - [ch01.构建Linux开发平台环境](./src/ch01-00.platform_env_struct.md)
   - [ch01-01.shell命令](./src/ch01-01.linux_shell_cmd.md)
@@ -33,4 +33,4 @@
   - [ch04-03.Linux平台GUI显示设计](./src/ch04-03.embed_linux_gui_design.md)
   - [ch04-04.Linux平台应用设计](./src/ch04-04.embed_linux_app_design.md)
 
-[结语](./src/ch05.CONCLUSION.md)
+[ch05.结语](./src/ch05.CONCLUSION.md)

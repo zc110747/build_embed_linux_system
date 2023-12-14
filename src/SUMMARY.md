@@ -1,6 +1,6 @@
 # summary
 
-[前言](./ch00.PRFEACE.md)
+[ch00.前言](./ch00.PRFEACE.md)
 
 - [ch01.构建Linux开发平台环境](./ch01-00.platform_env_struct.md)
   - [ch01-01.shell命令](./ch01-01.linux_shell_cmd.md)
@@ -31,4 +31,4 @@
   - [ch04-03.Linux平台GUI显示设计](./ch04-03.embed_linux_gui_design.md)
   - [ch04-04.Linux平台应用设计](./ch04-04.embed_linux_app_design.md)
 
-[结语](./ch05.CONCLUSION.md)
+[ch05.结语](./ch05.CONCLUSION.md)
