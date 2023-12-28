@@ -1,6 +1,20 @@
 # Linux系统开发学习笔记
 
-本系列整理一系列嵌入式Linux学习和开发中应用的技术，包括不限于Shell脚本，Makefile语法，uboot/kernal移植，驱动开发，应用开发等，详细目录如下。
+本系列整理一系列嵌入式Linux学习和开发中应用的技术，包括不限于Linux平台应用，Shell/Makefile语法，uboot/kernel/rootfs移植构建，驱动开发，应用开发等。可以用于系统的学习和了解嵌入式Linux开发的各方面知识，对于本项目同步在如下地址更新。
+
+```shell
+#github地址
+git clone https://github.com/zc110747/build_embed_linux_system.git
+```
+
+另外本项目也配合产品应用项目用于验证相关技术知识，具体如下。
+
+```shell
+#用于远程管理的嵌入式Linux应用项目
+git clone http://github.com/zc110747/remote_manage.git
+```
+
+本系列的目录如下所示。
 
 [ch00.前言](./src/ch00.PRFEACE.md)
 
