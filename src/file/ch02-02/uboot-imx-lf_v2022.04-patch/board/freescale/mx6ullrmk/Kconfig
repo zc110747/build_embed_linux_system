@@ -1,0 +1,17 @@
+if TARGET_MX6ULL_14X14_RMK || TARGET_MX6ULL_9X9_EVK
+
+config SYS_BOARD
+	default "mx6ullrmk"
+
+config SYS_VENDOR
+	default "freescale"
+
+config SYS_CONFIG_NAME
+	default "mx6ullrmk"
+
+config IMX_CONFIG
+	default "board/freescale/mx6ullrmk/imximage.cfg"
+
+config SYS_TEXT_BASE
+	default 0x87800000
+endif

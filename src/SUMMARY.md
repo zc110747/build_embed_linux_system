@@ -11,8 +11,8 @@
 
 - [ch02.Linux系统启动实现](./ch02-00.system_bringup.md)
   - [ch02-01.Makefile脚本语法](./ch02-01.makefile.md)
-  - [ch02-02.kconfig语法](./ch02-02.kconfig.md)
-  - [ch02-03.uboot说明](./ch02-03.uboot.md)
+  - [ch02-02.U-Boot移植](./ch02-02.uboot.md)
+  - [ch02-03.U-Boot源码刨析](./ch02-03.uboot_analyse.md)
   - [ch02-04.kernel说明](./ch02-04.kernel.md)
   - [ch02-05.rootfs说明](./ch02-05.rootfs.md)
 
