@@ -58,13 +58,14 @@
 	"eth1addr=00:01:02:03:04:05\0" \
 	"eth2addr=00:01:02:03:04:06\0" \
 	"bootargs=console=ttymxc0,115200 root=/dev/nfs " \
-		"nfsroot=192.168.3.29:/home/freedom/Desktop/remote_manage/sdk/build/nfs_root/arm,proto=tcp rw ip=192.168.3.99:192.168.3.29:192.168.3.1:255.255.255.0::eth0:off\0" \
+		"nfsroot=192.168.3.29:/home/freedom/Desktop/sdk/build/nfs_root/arm,proto=tcp rw ip=192.168.3.99:192.168.3.29:192.168.3.1:255.255.255.0::eth0:off\0" \
 	"fdt_file=imx6ull-14x14-emmc-4.3-800x480-c.dtb\0" \
 	"serverip=192.168.3.29\0" \
 	"ipaddr=192.168.3.99\0" \
 	"netmask=255.255.255.0\0" \
 	"gateway=192.168.3.1\0" \
 	"netboot=tftp 80800000 zImage; tftp 83000000 imx6ull-14x14-emmc-4.3-800x480-c.dtb; bootz 80800000 - 83000000;\0" \
+	"localboot=run findfdt;run findtee;mmc dev 1;mmc dev 1; if mmc rescan; then if run loadbootscript; then run bootscript; else if run loadimage; then run mmcboot; else run netboot; fi; fi; else run netboot; fi\0" \
 	"bootcmd=run netboot\0"\
 
 #define CONFIG_MFG_ENV_SETTINGS \
