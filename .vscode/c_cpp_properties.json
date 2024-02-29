@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "D:/gcc-linaro/arm-linux-gnueabihf/libc/usr/include",
+                "D:/gcc-linaro/arm-linux-gnueabihf/libc/usr/include/linux",
+                "D:/gcc-linaro/lib/gcc/arm-linux-gnueabihf/4.9.4/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "__ARM_PCS_VFP"
+            ]
+        }
+    ],
+    "version": 4
+}

@@ -107,7 +107,7 @@ git clone http://github.com/zc110747/remote_manage.git
 - [menuconfig语法](./src/ch02-02.menuconfig.md)
 - [U-Boot环境变量和命令说明](./src/ch02-04.uboot_env.md)
 - [Linux驱动开发说明](./src/ch03-00.driver_design.md)
-- [Linux字符型设备开发](./src/ch03-05.char_device.md)
+- [Linux字符型设备开发](./src/ch03-07.char_device.md)
 
 ### step3：嵌入式Linux应用初步开发
 
