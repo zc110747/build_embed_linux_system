@@ -1,6 +1,31 @@
-# Linux系统开发学习笔记
+# 嵌入式Linux系统总结
 
-本系列整理一系列嵌入式Linux学习和开发中应用的技术，包括不限于Linux平台应用，Shell/Makefile语法，uboot/kernel/rootfs移植构建，驱动开发，应用开发等。可以用于系统的学习和了解嵌入式Linux开发的各方面知识，对于本项目同步在如下地址更新。
+本系列整理一系列嵌入式Linux学习和开发中应用的技术，按照功能划分为SDK平台构建、嵌入式Linux运行平台构建，驱动开发技术和应用开发技术，理论上涉及嵌入式Linux开发中的主要技术。
+
+- SDK平台构建
+  - Linux平台安装(Ubuntu、Arch、centos)
+  - 软件和支持库安装，交叉编译
+  - shell语法
+  - 快速部署SDK脚本工具集实现
+- 嵌入式Linux运行平台构建
+  - u-boot移植和框架
+  - kernel移植和框架
+  - rootfs文件系统构建方法
+  - qemu实用虚拟机启动Linux平台
+- 驱动开发技术
+  - Linux内核驱动接口
+  - 设备树语法和设备树接口
+  - 字符设备，块设备和网络设备
+  - 子系统功能实现(i2c, spi, input, iio)
+- 应用开发技术
+  - Linu应用层接口
+  - cpp语法小结
+  - Linux平台调试方法
+  - Linux框架设计和web应用开发
+  - Linux平台GUI开发技术
+
+本系列主要按照如何构建一个完整嵌入Linux产品应用的开发流程来说明，而不是以难易度进行先后顺序的整理。如果在学习和理解中遇到难题，可以跳过直接进行后续的学习，从简单的入手，熟悉基础知识后可能更高效。另外嵌入式Linux系统是用于设计产品的技术，只依靠文档学习是远远不够的，需要在实际硬件平台调试验证，理解源码，自己设计开发应用，才能够深入理解掌握。可以看到本系列文章涉及内容广泛，限于篇幅部分技术只能浅尝辄止，在讲解相应章节时也会列出我在整理以及开发时涉及的书籍，可以同步去学习。
+
 
 ```shell
 #github地址
@@ -13,6 +38,8 @@ git clone https://github.com/zc110747/build_embed_linux_system.git
 #用于远程管理的嵌入式Linux应用项目
 git clone http://github.com/zc110747/remote_manage.git
 ```
+
+## 系列目录
 
 本系列的目录如下所示。
 
@@ -60,7 +87,7 @@ git clone http://github.com/zc110747/remote_manage.git
 
 [ch05.结语](./src/ch05.CONCLUSION.md)
 
-## 嵌入式Linux学习路线
+## 学习路线
 
 ### step1: 安装和熟悉Linux平台
 
