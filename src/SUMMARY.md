@@ -20,7 +20,8 @@
   - [ch02-07.内核执行流程分析](./ch02-07.kernel_analyse.md)
   - [ch02-08.文件系统构建](./ch02-08.rootfs.md)
   - [ch02-09 qemu虚拟机环境构建](./ch02-09.qemu.md)
-
+  - [ch02-10.安卓SDK构建](./ch02-10.android_sdk.md)
+  
 - [ch03.Linux驱动开发](./ch03-00.driver_design.md)
   - [ch03-01.内核主要接口](./ch03-01.kernel_base_api.md)
   - [ch03-02.内核设备树相关接口](./ch03-02.kernel_tree_api.md)
@@ -30,9 +31,14 @@
   - [ch03-06.ARM内核分析](./ch03-06.arm_core_analyse.md)
   - [ch03-07.字符型设备](./ch03-07.char_device.md)
   - [ch03-08.嵌入式中断管理](./ch03-08.interrput_interaction.md)
-  - [ch03-09.子系统说明](./ch03-09.subsytem.md)
-  - [ch03-10.块设备说明](./ch03-10.block_device.md)
-  - [ch03-11.网络设备](./ch03-11.net_device.md)
+  - [ch03-09.input子系统](./ch03-09.input_subsystem.md)
+  - [ch03-10.i2c设备框架](./ch03-10.i2c_frame.md)
+  - [ch03-11.spi设备框架](./ch03-11.spi_frame.md)
+  - [ch03-12.iio子系统](./ch03-12.iio_subsystem.md)
+  - [ch03-13.块设备驱动](./ch03-13.block_device.md)
+  - [ch03-14.网络设备](./ch03-14.net_device.md)
+  - [ch03-15.rtc驱动框架](./ch03-15.rtc_subsystem.md)
+  - [ch03-16.drm驱动框架](./ch03-16.drm_frame.md)
 
 - [ch04.Linux应用开发设计](./ch04-00.application_design.md)
   - [ch04-01.Linux应用API接口](./ch04-01.linux_api_interface.md)
