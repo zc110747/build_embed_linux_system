@@ -43,11 +43,11 @@
   - [ch03-18.驱动并发接口](./ch03-18.kernel_concurrency_api.md)
 
 - [ch04.Linux应用开发设计](./ch04-00.application_design.md)
-  - [ch04-01.Linux应用API接口](./ch04-01.linux_api_interface.md)
-  - [ch04-02.常用cpp语法应用](./ch04-02.cpp_grammar.md)
-  - [ch04-03.Linux平台调试方法](./ch04-03.linux_debug.md)
-  - [ch04-04.Linux平台应用设计方法](./ch04-04.linux_app_frame.md)
-  - [ch04-05.web应用设计](./ch04-05.web_design.md)
-  - [ch04-06.嵌入式界面设计](./ch04-06.embed_gui_design.md)
+  - [ch04-01.C++语法说明](./ch04-01.cpp_grammar.md)
+  - [ch04-02.Linux环境下的调试方法](./ch04-02.linux_debug.md)
+  - [ch04-03.Linux环境下界面开发](./ch04-03.gui_design.md)
+  - [ch04-04.Linux平台web应用开发](./ch04-04.web_design.md)
+  - [ch04-05.基础API接口说明](./ch04-05.linux_base_api.md)
+  - [ch04-06.复杂API接口说明](./ch04-06.linux_complex_api.md)
 
 [ch05.结语](./ch05.CONCLUSION.md)

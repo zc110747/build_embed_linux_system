@@ -1,17 +1,38 @@
+////////////////////////////////////////////////////////////////////////////
+//  (c) copyright 2024-by Persional Inc.
+//  All Rights Reserved
+//
+//  Name:
+//      kernel_beep.c
+//
+//  Purpose:
+//      蜂鸣器控制输出(1-pin).
+//      LED硬件接口: 
+//          GPIO5-1
+//
+// Author:
+//     @听心跳的声音
+//
+//  Assumptions:
+//
+//  Revision History:
+//      12/19/2022   Create New Version
+/////////////////////////////////////////////////////////////////////////////
 /*
- * File      : kernel_beep.c
- * This file is the driver for beep i/o.
- * COPYRIGHT (C) 2023, zc
- *
- * Change Logs:
- * Date           Author       Notes
- * 2023-11-22     zc           the first version
- */
+设备树说明
+usr_beep {
+    compatible = "rmk,usr-beep";
+    pinctrl-0 = <&pinctrl_gpio_beep>;
+    beep-gpios = <&gpio5 1 GPIO_ACTIVE_LOW>;
+    status = "okay";
+};
 
-/**
- * @addtogroup IMX6ULL
- */
-/*@{*/
+pinctrl_gpio_beep: beep {
+    fsl,pins = <
+        MX6ULL_PAD_SNVS_TAMPER1__GPIO5_IO01		0x400010B0
+    >;
+};
+*/
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -20,35 +41,29 @@
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/gpio.h>
-#include <linux/cdev.h>
-#include <linux/device.h>
 #include <linux/of_gpio.h>
 #include <linux/semaphore.h>
 #include <linux/platform_device.h>
+#include <linux/miscdevice.h>
 
 struct beep_data
 {
-    /* device info */
-    dev_t dev_id; 
-    int major;          
-    int minor;            
-    struct cdev cdev;      
-    struct class *class;
-    struct device *device;
-    struct platform_device *pdev;
-
     /* gpio info */
-    int gpio;               
-    int status;   
+    int gpio;
+    int status;
+
+    /*device info*/
+    struct platform_device *pdev;
+    struct miscdevice misc_dev;
+    struct file_operations misc_fops;
 };
 
 #define BEEP_OFF                            0
 #define BEEP_ON                             1
 
 //自定义设备号
-#define DEFAULT_MAJOR                       0          /*默认主设备号*/
-#define DEFAULT_MINOR                       0          /*默认从设备号*/
-#define DEVICE_NAME                         "beep"     /* 设备名, 应用将以/dev/beep访问 */
+#define DEVICE_NAME                         "miscbeep"      /* 设备名, 应用将以/dev/beep访问 */
+#define MISCBEEP_MINOR		                156		        /* 子设备号 */
 
 static void beep_hardware_set(struct beep_data *chip, u8 status)
 {
@@ -71,7 +86,7 @@ int beep_open(struct inode *inode, struct file *filp)
 {
     struct beep_data *chip;
 
-    chip = container_of(inode->i_cdev, struct beep_data, cdev);
+    chip = container_of(filp->f_op, struct beep_data, misc_fops);
     filp->private_data = chip;
     return 0;
 }
@@ -112,7 +127,6 @@ ssize_t beep_write(struct file *filp, const char __user *buf, size_t count,  lof
         return -EFAULT;
     }
 
-    /*利用数据操作BEEP*/
     beep_hardware_set(chip, databuf[0]);
     return 0;
 }
@@ -135,69 +149,30 @@ long beep_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
     return 0;
 }
 
-static struct file_operations beep_fops = {
-    .owner = THIS_MODULE,
-    .open = beep_open,
-    .read = beep_read,
-    .write = beep_write,
-    .unlocked_ioctl = beep_ioctl,
-    .release = beep_release,
-};
-
 static int beep_device_create(struct beep_data *chip)
 {
     int result;
-    int major = DEFAULT_MAJOR;
-    int minor = DEFAULT_MINOR;
     struct platform_device *pdev = chip->pdev;
 
-    if (major){
-        chip->dev_id= MKDEV(major, minor);
-        result = register_chrdev_region(chip->dev_id, 1, DEVICE_NAME);
-    }
-    else{
-        result = alloc_chrdev_region(&chip->dev_id, 0, 1, DEVICE_NAME);
-        major = MAJOR(chip->dev_id);
-        minor = MINOR(chip->dev_id);
-    }
-    if (result < 0){
-        dev_err(&pdev->dev, "dev alloc id failed\n");
-        goto exit;
+    chip->misc_fops.owner = THIS_MODULE,
+    chip->misc_fops.open = beep_open,
+    chip->misc_fops.read = beep_read,
+    chip->misc_fops.write = beep_write,
+    chip->misc_fops.unlocked_ioctl = beep_ioctl,
+    chip->misc_fops.release = beep_release,
+
+    chip->misc_dev.minor = MISCBEEP_MINOR;
+    chip->misc_dev.name = DEVICE_NAME;
+    chip->misc_dev.fops = &(chip->misc_fops);
+
+    result = misc_register(&(chip->misc_dev));
+    if(result < 0){
+        dev_info(&pdev->dev, "misc device register failed!\n");
+        return -EFAULT;
     }
 
-    cdev_init(&chip->cdev, &beep_fops);
-    chip->cdev.owner = THIS_MODULE;
-    result = cdev_add(&chip->cdev, chip->dev_id, 1);
-    if (result != 0){
-        dev_err(&pdev->dev, "cdev add failed\n");
-        goto exit_cdev_add;
-    }
-
-    chip->class = class_create(THIS_MODULE, DEVICE_NAME);
-    if (IS_ERR(chip->class)){
-        dev_err(&pdev->dev, "class create failed!\r\n");
-        result = PTR_ERR(chip->class);
-        goto exit_class_create;
-    }
-
-    chip->device = device_create(chip->class, NULL, chip->dev_id, NULL, DEVICE_NAME);
-    if (IS_ERR(chip->device)){
-        dev_err(&pdev->dev, "device create failed!\r\n");
-        result = PTR_ERR(chip->device);
-        goto exit_device_create;
-    }
-
-    dev_info(&pdev->dev, "dev create ok, major:%d, minor:%d\r\n", major, minor);
+    dev_info(&pdev->dev, "misc device register ok, minor:%d!\n", chip->misc_dev.minor);
     return 0;
-
-exit_device_create:
-    class_destroy(chip->class);
-exit_class_create:
-    cdev_del(&chip->cdev);
-exit_cdev_add:
-    unregister_chrdev_region(chip->dev_id, 1);
-exit:
-    return result;
 }
 
 static int beep_hardware_init(struct beep_data *chip)
@@ -207,7 +182,7 @@ static int beep_hardware_init(struct beep_data *chip)
     int ret = 0;
 
     /* find the beep-gpio pin */
-    chip->gpio = of_get_named_gpio(beep_nd, "beep-gpio", 0);
+    chip->gpio = of_get_named_gpio(beep_nd, "beep-gpios", 0);
     if (chip->gpio < 0){
         dev_err(&pdev->dev, "beep-gpio, malloc error!\n");
         return -EINVAL;
@@ -260,17 +235,12 @@ static int beep_remove(struct platform_device *pdev)
 {
     struct beep_data *chip = platform_get_drvdata(pdev);
 
-    device_destroy(chip->class, chip->dev_id);
-    class_destroy(chip->class);
-
-    cdev_del(&chip->cdev);
-    unregister_chrdev_region(chip->dev_id, 1);
+    misc_deregister(&(chip->misc_dev));
 
     dev_info(&pdev->dev, "beep release!\n");
     return 0;
 }
 
-/* 查询设备树的匹配函数 */
 static const struct of_device_id of_match_beep[] = {
     { .compatible = "rmk,usr-beep"},
     { /* Sentinel */ }
@@ -279,7 +249,7 @@ MODULE_DEVICE_TABLE(of, of_match_beep);
 
 static struct platform_driver platform_driver = {
     .driver = {
-        .name = "kernel-beep",
+        .name = "kernel-miscbeep",
         .of_match_table = of_match_beep,
     },
     .probe = beep_probe,
@@ -299,7 +269,7 @@ static void __exit beep_module_exit(void)
 
 module_init(beep_module_init);
 module_exit(beep_module_exit);
-MODULE_AUTHOR("wzdxf");                         //模块作者
-MODULE_LICENSE("GPL v2");                       //模块许可协议
-MODULE_DESCRIPTION("platform driver for beep"); //模块许描述
-MODULE_ALIAS("beep_data");                    //模块别名
+MODULE_AUTHOR("wzdxf");
+MODULE_LICENSE("GPL v2");
+MODULE_DESCRIPTION("platform driver for beep");
+MODULE_ALIAS("beep_data");

@@ -85,12 +85,12 @@ git clone http://github.com/zc110747/remote_manage.git
   - [ch03-18.驱动并发接口](./src/ch03-18.kernel_concurrency_api.md)
 
 - [ch04.Linux应用开发设计](./src/ch04-00.application_design.md)
-  - [ch04-01.Linux应用API接口](./src/ch04-01.linux_api_interface.md)
-  - [ch04-02.常用cpp语法应用](./src/ch04-02.cpp_grammar.md)
-  - [ch04-03.Linux平台调试方法](./src/ch04-03.linux_debug.md)
-  - [ch04-04.Linux平台应用设计方法](./src/ch04-04.linux_app_frame.md)
-  - [ch04-05.web应用设计](./src/ch04-05.web_design.md)
-  - [ch04-06.嵌入式界面设计](./src/ch04-06.embed_gui_design.md)
+  - [ch04-01.C++语法说明](./src/ch04-01.cpp_grammar.md)
+  - [ch04-02.Linux环境下的调试方法](./src/ch04-02.linux_debug.md)
+  - [ch04-03.Linux环境下界面开发](./src/ch04-03.gui_design.md)
+  - [ch04-04.Linux平台web应用开发](./src/ch04-04.web_design.md)
+  - [ch04-05.基础API接口说明](./src/ch04-05.linux_base_api.md)
+  - [ch04-06.复杂API接口说明](./src/ch04-06.linux_complex_api.md)
 
 [ch05.结语](./src/ch05.CONCLUSION.md)
 
@@ -161,7 +161,6 @@ git clone http://github.com/zc110747/remote_manage.git
 2. Makefile语法和项目构建方法
 3. 基于gcc实现Linux平台应用
 4. Linux平台下库的交叉编译和应用(json, mqtt, asio, fmt...)
-5. 基于打印或gdb的调试方法学习
 
 目录文档:
 
@@ -169,9 +168,8 @@ git clone http://github.com/zc110747/remote_manage.git
 - [ch01-04.Linux交叉编译方法](./src/ch01-04.linux_cross_compiler.md)
 - [ch02-01.Makefile脚本语法](./src/ch02-01.makefile.md)
 - [ch04.Linux应用开发设计](./src/ch04-00.application_design.md)
-- [ch04-01.Linux应用API接口](./src/ch04-01.linux_api_interface.md)
-- [ch04-02.常用cpp语法应用](./src/ch04-02.cpp_grammar.md)
-- [ch04-03.Linux平台调试方法](./src/ch04-03.linux_debug.md)  
+- [ch04-01.常用cpp语法应用](./src/ch04-01.cpp_grammar.md)
+- [ch04-05.Linux基础应用层接口](./src/ch04-05.linux_base_api.md)
 
 ### step4：深入学习嵌入式驱动开发
 
@@ -224,14 +222,16 @@ git clone http://github.com/zc110747/remote_manage.git
 2. 基于Qt C++的方法实现
 3. 基于node和vue的前后端框架实现
 4. 熟练掌握shell语法，基础上构建快速部署方案
+5. 基于打印或gdb的调试方法学习
 
 目录文档:
 
 - [ch01-03.Linux shell脚本语法](./src/ch01-03.linux_shell_grammar.md)
 - [ch01-06.Linux快速部署](./src/ch01-06.linux_quick_deploy.md)
-- [ch04-04.Linux平台应用设计方法](./src/ch04-04.linux_app_frame.md)
-- [ch04-05.web应用设计](./src/ch04-05.web_design.md)
-- [ch04-06.嵌入式界面设计](./src/ch04-06.embed_gui_design.md)
+- [ch04-02.Linux平台调试方法](./src/ch04-02.linux_debug.md)  
+- [ch04-03.Linux平台界面设计](./src/ch04-03.gui_design.md)
+- [ch04-04.web应用设计](./src/ch04-04.web_design.md)
+- [ch04-06.Linux复杂应用层接口](./src/ch04-06.linux_complex_api.md)
 
 ### 扩展: 芯片bringup和Linux系统平台掌握
 
