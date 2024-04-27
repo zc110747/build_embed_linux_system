@@ -57,16 +57,18 @@
 #define USER_ENV_SETTINGS \
 	"eth1addr=00:01:02:03:04:05\0" \
 	"eth2addr=00:01:02:03:04:06\0" \
+	"nfspath=/home/freedom/Desktop/sdk/arm/build/nfs_root/\0" \
 	"bootargs=console=ttymxc0,115200 root=/dev/nfs " \
-		"nfsroot=192.168.3.29:/home/freedom/Desktop/sdk/build/nfs_root/arm,proto=tcp rw ip=192.168.3.99:192.168.3.29:192.168.3.1:255.255.255.0::eth0:off\0" \
+		"nfsroot=192.168.2.29:${nfspath},proto=tcp rw ip=192.168.2.99:192.168.2.29:192.168.2.1:255.255.255.0::eth0:off\0" \
 	"fdt_file=imx6ull-14x14-emmc-4.3-800x480-c.dtb\0" \
-	"serverip=192.168.3.29\0" \
-	"ipaddr=192.168.3.99\0" \
+	"serverip=192.168.2.29\0" \
+	"ipaddr=192.168.2.99\0" \
 	"netmask=255.255.255.0\0" \
-	"gateway=192.168.3.1\0" \
-	"netboot=tftp 80800000 zImage; tftp 83000000 imx6ull-14x14-emmc-4.3-800x480-c.dtb; bootz 80800000 - 83000000;\0" \
-	"localboot=run findfdt;run findtee;mmc dev 1;mmc dev 1; if mmc rescan; then if run loadbootscript; then run bootscript; else if run loadimage; then run mmcboot; else run netboot; fi; fi; else run netboot; fi\0" \
-	"bootcmd=run netboot\0"\
+	"gateway=192.168.2.1\0" \
+	"netboot_cmd=tftp 80800000 zImage; tftp 83000000 ${fdt_file}; bootz 80800000 - 83000000;\0" \
+	"mmcboot_cmd=mmc dev ${mmcdev}; run loadimage; run mmcboot\0" \
+	"srcboot_cmd=tftp 80800000 boot.scr; source\0" \
+	"bootcmd=run srcboot_cmd\0"\
 
 #define CONFIG_MFG_ENV_SETTINGS \
 	CONFIG_MFG_ENV_SETTINGS_DEFAULT \
@@ -99,7 +101,8 @@
 			"bootm ${tee_addr} - ${fdt_addr};" \
 		"else " \
 			"bootz ${loadaddr} - ${fdt_addr};" \
-		"fi\0"
+		"fi\0" \
+	USER_ENV_SETTINGS \
 
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -225,8 +228,11 @@
 	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
 
 /* environment organization */
-#define CONFIG_SYS_MMC_ENV_DEV		1	/* USDHC2 */
-#define CONFIG_MMCROOT			"/dev/mmcblk1p2"  /* USDHC2 */
+#if CONFIG_SYS_MMC_ENV_DEV == 0		/* USDHC1 */
+#define CONFIG_MMCROOT			"/dev/mmcblk0p2"  
+#else 								/* USDHC2 */
+#define CONFIG_MMCROOT			"/dev/mmcblk1p2"  
+#endif
 
 #define CONFIG_IOMUX_LPSR
 

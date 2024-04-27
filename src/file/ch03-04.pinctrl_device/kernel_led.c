@@ -20,11 +20,26 @@
 /////////////////////////////////////////////////////////////////////////////
 /*
 设备树
-usr_led {
-    compatible = "rmk,usr-led";
-    pinctrl-0 = <&pinctrl_gpio_led>;
-    led-gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
-    status = "okay";
+gpiosgrp {
+    compatible = "simple-bus";
+    #address-cells = <1>;
+    #size-cells = <1>;
+    ranges;
+
+    usr_led {
+        compatible = "rmk,usr-led";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_gpio_led>;
+        led-gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
+        reg = <0x020c406c 0x04>,
+            <0x020e0068 0x04>,
+            <0x020e02f4 0x04>,
+            <0x0209c000 0x04>,
+            <0x0209c004 0x04>;
+        status = "okay";
+    };
+
+    //......
 };
 
 pinctrl_gpio_led: gpio-leds {
@@ -46,6 +61,7 @@ pinctrl_gpio_led: gpio-leds {
 #include <linux/of_gpio.h>
 #include <linux/semaphore.h>
 #include <linux/platform_device.h>
+#include <linux/of_address.h>
 
 struct led_data
 {
@@ -55,9 +71,13 @@ struct led_data
     struct class *class;
     struct device *device;
     struct platform_device *pdev;
+    struct device_attribute led_attr;
 
     /* hardware info */
-    int gpio;
+    struct gpio_desc *led_desc;
+    struct pinctrl *led_pinctrl;
+    struct pinctrl_state *pinctrl_state[2];
+    void *__iomem io_reg; 
     int status;
 };
 
@@ -79,12 +99,12 @@ static void led_hardware_set(struct led_data *chip, u8 status)
     {
         case LED_OFF:
             dev_info(&pdev->dev, "off\n");
-            gpio_set_value(chip->gpio, 1);
+            gpiod_set_value(chip->led_desc, 0);
             chip->status = 0;
             break;
         case LED_ON:
             dev_info(&pdev->dev, "on\n");
-            gpio_set_value(chip->gpio, 0);
+            gpiod_set_value(chip->led_desc, 1);
             chip->status = 1;
             break;
     }
@@ -174,6 +194,46 @@ static struct file_operations led_fops = {
     .release = led_release,
 };
 
+static ssize_t led_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+    int size;
+    static struct led_data *chip;
+    
+    chip = container_of(attr, struct led_data, led_attr);
+    size = sprintf(buf, "status=%d\n", gpiod_get_value(chip->led_desc));
+
+    return size;
+}
+
+static ssize_t led_store(struct device *dev, struct device_attribute *attr,  const char *buf, size_t count)
+{
+    static struct led_data *chip;
+    struct platform_device *pdev;
+    u32 regval;
+
+    chip = container_of(attr, struct led_data, led_attr);
+    pdev = chip->pdev;
+
+    if(0 == memcmp(buf, "0", 1))
+    {
+        pinctrl_select_state(chip->led_pinctrl, chip->pinctrl_state[0]);
+        dev_info(&pdev->dev, "led pinctrl 0!\n");
+    }
+    else if(0 == memcmp(buf, "1", 1))
+    {
+        pinctrl_select_state(chip->led_pinctrl, chip->pinctrl_state[1]);
+        dev_info(&pdev->dev, "led pinctrl 1!\n");
+    }
+    else
+    {
+        dev_info(&pdev->dev, "led store issue!\n");
+    }
+
+    regval = readl(chip->io_reg);
+    dev_info(&pdev->dev, "regval:0x%x!\n", regval);
+    return count;
+}
+
 static int led_device_create(struct led_data *chip)
 {
     int ret;
@@ -212,12 +272,23 @@ static int led_device_create(struct led_data *chip)
 
     chip->device = device_create(chip->class, NULL, chip->dev_id, NULL, DEVICE_NAME);
     if (IS_ERR(chip->device)) {
-        dev_err(&pdev->dev, "device create failed!\r\n");
+        dev_err(&pdev->dev, "device create failed!\n");
         ret = PTR_ERR(chip->device);
         goto exit_device_create;
     }
 
-    dev_info(&pdev->dev, "device create success!\r\n");
+    chip->led_attr.attr.name = "pinctrl-led";
+    chip->led_attr.attr.mode = 0666;
+    chip->led_attr.show = led_show;
+    chip->led_attr.store = led_store;
+    ret = device_create_file(&pdev->dev, &chip->led_attr);
+    if(ret != 0)
+    {
+        dev_info(&pdev->dev, "device create file failed!\n");
+        goto exit_device_create;
+    }
+
+    dev_info(&pdev->dev, "device create success!\n");
     return 0;
 
 exit_device_create:
@@ -232,25 +303,54 @@ exit:
 
 static int led_hardware_init(struct led_data *chip)
 {
-    int ret;
     struct platform_device *pdev = chip->pdev;
     struct device_node *led_nd = pdev->dev.of_node;
 
-    chip->gpio = of_get_named_gpio(led_nd, "led-gpios", 0);
-    if (chip->gpio < 0){
-        dev_err(&pdev->dev, "find gpio in dts failed!\n");
-        return -EINVAL;
-    }
-    ret = devm_gpio_request(&pdev->dev, chip->gpio, "led");
-    if (ret < 0){
-        dev_err(&pdev->dev, "request gpio failed!\n");
-        return -EINVAL;   
+    chip->led_desc = devm_gpiod_get(&pdev->dev, "led", GPIOD_OUT_LOW);
+    if(chip->led_desc == NULL)
+    {
+        dev_info(&pdev->dev, "devm_gpiod_get error!\n");
+        return -EIO;
     }
 
-    gpio_direction_output(chip->gpio, 1);
-    led_hardware_set(chip, LED_OFF);
+    chip->io_reg = of_iomap(led_nd, 2);
+    if(chip->io_reg != NULL)
+    {
+        u32 regval = readl(chip->io_reg);
+        u32 is_active;
+        //gpiod_toggle_active_low(chip->led_desc);
+        is_active = gpiod_is_active_low(chip->led_desc);
+        dev_info(&pdev->dev, "reg value:0x%x, active_low:%d\n", regval, is_active);
+    }
+    else
+    {
+        dev_info(&pdev->dev, "of iomap failed\n");
+        return -EIO;
+    }
 
-    dev_info(&pdev->dev, "hardware init finished, %s num %d", led_nd->name, chip->gpio);
+    chip->led_pinctrl = devm_pinctrl_get(&pdev->dev);
+    if(IS_ERR_OR_NULL(chip->led_pinctrl))
+    {
+        dev_info(&pdev->dev, "devm_pinctrl_get failed\n");
+        return -EIO;
+    }
+
+    chip->pinctrl_state[0] = pinctrl_lookup_state(chip->led_pinctrl, "default");
+    if(IS_ERR_OR_NULL(chip->pinctrl_state[0]))
+    {
+        dev_info(&pdev->dev, "pinctrl_lookup_state default failed!\n");
+        return -EIO;
+    }
+
+    chip->pinctrl_state[1] = pinctrl_lookup_state(chip->led_pinctrl, "improve");
+    if(IS_ERR_OR_NULL(chip->pinctrl_state[1]))
+    {
+        dev_info(&pdev->dev, "pinctrl_lookup_state improve failed:%d!\n", IS_ERR_OR_NULL(chip->pinctrl_state[1]));
+        return -EIO;
+    }
+
+    gpiod_direction_output(chip->led_desc, LED_OFF);
+    dev_info(&pdev->dev, "hardware init success\n");
     return 0;
 }
 
@@ -259,7 +359,7 @@ static int led_probe(struct platform_device *pdev)
     int ret;
     static struct led_data *chip;
 
-    /*1. 申请管理LED驱动的资源 */
+    //1.申请led控制块空间，并赋值
     chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
     if (!chip){
         dev_err(&pdev->dev, "memory alloc failed!\n");
@@ -268,14 +368,14 @@ static int led_probe(struct platform_device *pdev)
     platform_set_drvdata(pdev, chip);
     chip->pdev = pdev;
 
-    /*2. 初始化LED的硬件(基于设备树) */
+    //2.初始化LED硬件设备
     ret = led_hardware_init(chip);
     if (ret){
-        dev_err(&pdev->dev, "hardware init faile, error:%d!\n", ret);
+        dev_err(&pdev->dev, "hardware init failed, error:%d!\n", ret);
         return ret;
     }
 
-    /*3. 在系统中创建LED对象 */
+    //3.创建内核访问接口
     ret = led_device_create(chip);
     if (ret){
         dev_err(&pdev->dev, "device create faile, error:%d!\n", ret);
@@ -295,7 +395,8 @@ static int led_remove(struct platform_device *pdev)
 
     cdev_del(&chip->cdev);
     unregister_chrdev_region(chip->dev_id, 1);
-    
+    device_remove_file(&pdev->dev, &chip->led_attr);
+
     dev_info(&pdev->dev, "driver release!\n");
     return 0;
 }

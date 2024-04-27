@@ -1,15 +1,15 @@
 
 PLATFORM_BOOT=$(pwd)
 
-#SRC_DIR=${ENV_BOOT_DIR}
+#SRC_DIR=${SUPPORT_ENV_BOOT_DIR}
 #DST_DIR=${PLATFORM_BOOT}
 SRC_DIR=${PLATFORM_BOOT}
-DST_DIR=${ENV_BOOT_DIR}
+DST_DIR=${SUPPORT_ENV_BOOT_DIR}
 
 echo "start copy u-boot patch..."
 
 #configs
-cp -fv ${SRC_DIR}/configs/mx6ull_14x14_rmk_emmc_defconfig ${DST_DIR}/configs/
+cp -fv ${SRC_DIR}/configs/* ${DST_DIR}/configs/
 
 #dts
 cp -fv ${SRC_DIR}/arch/arm/dts/* ${DST_DIR}/arch/arm/dts/

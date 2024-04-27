@@ -32,3 +32,7 @@ export LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
 #local ip support 127.0.0.1
 ifconfig lo up
 ifconfig lo netmask 255.255.255.0
+
+ifconfig eth0 192.2.1.99 netmask 255.255.255.0
+route add default gw 192.2.1.1
+ifconfig eth0 up

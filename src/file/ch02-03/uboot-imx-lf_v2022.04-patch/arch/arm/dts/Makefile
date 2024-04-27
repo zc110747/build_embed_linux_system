@@ -878,6 +878,7 @@ dtb-$(CONFIG_MX6ULL) += \
 	imx6ull-14x14-ddr3-val-tsc.dtb \
 	imx6ull-14x14-evk.dtb \
 	imx6ull-14x14-rmk-emmc.dtb \
+	imx6ull-14x14-rmk-gpmi-weim.dtb \
 	imx6ull-14x14-evk-emmc.dtb \
 	imx6ull-14x14-evk-gpmi-weim.dtb \
 	imx6ull-9x9-evk.dtb \

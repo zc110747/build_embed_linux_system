@@ -43,7 +43,7 @@
         "configs/mx6[!u]*":true,
         "configs/mx6ul[!l]*":true,
         "configs/mx6ull_[!1]*":true,
-        "configs/mx6ull_14x14_[!e]*":true,
+        "configs/mx6ull_14x14_[!r, !e]*":true,
 
         "board/[a-e, g-z, A-Z]*":true,
         "board/fi*":true,
