@@ -63,7 +63,8 @@ git clone http://github.com/zc110747/remote_manage.git
   - [ch02-08.文件系统构建](./src/ch02-08.rootfs.md)
   - [ch02-09 qemu虚拟机环境构建](./src/ch02-09.qemu.md)
   - [ch02-10.安卓SDK构建](./src/ch02-10.android_sdk.md)
-  
+  - [ch02-11.u-boot spl和TF-A机制](./src/ch02-11.spl_and_tfa.md)
+
 - [ch03.Linux驱动开发](./src/ch03-00.driver_design.md)
   - [ch03-01.设备树说明](./src/ch03-01.device_tree.md)
   - [ch03-02.ARM内核和硬件分析](./src/ch03-02.armcore_analyse.md)
@@ -275,3 +276,4 @@ git clone http://github.com/zc110747/remote_manage.git
 - [ch02-08.文件系统构建](./src/ch02-08.rootfs.md)
 - [ch02-09 qemu虚拟机环境构建](./src/ch02-09.qemu.md)
 - [ch02-10.安卓SDK构建](./src/ch02-10.android_sdk.md)
+- [ch02-11.u-boot spl和TF-A机制](./src/ch02-11.spl_and_tfa.md)

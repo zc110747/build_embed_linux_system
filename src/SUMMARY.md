@@ -21,7 +21,8 @@
   - [ch02-08.文件系统构建](./ch02-08.rootfs.md)
   - [ch02-09 qemu虚拟机环境构建](./ch02-09.qemu.md)
   - [ch02-10.安卓SDK构建](./ch02-10.android_sdk.md)
-  
+  - [ch02-10.u-boot spl和TF-A机制](./ch02-11.spl_and_tfa.md)
+
 - [ch03.Linux驱动开发](./ch03-00.driver_design.md)
   - [ch03-01.设备树说明](./ch03-01.device_tree.md)
   - [ch03-02.ARM内核和硬件分析](./ch03-02.armcore_analyse.md)
