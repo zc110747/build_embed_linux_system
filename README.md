@@ -64,6 +64,8 @@ git clone http://github.com/zc110747/remote_manage.git
   - [ch02-09 qemu虚拟机环境构建](./src/ch02-09.qemu.md)
   - [ch02-10.安卓SDK构建](./src/ch02-10.android_sdk.md)
   - [ch02-11.u-boot spl和TF-A机制](./src/ch02-11.spl_and_tfa.md)
+  - [ch02-x1.I.MX6ull芯片平台编译方法](./src/ch02-x1.imx6ull_platform.md)
+  - [ch02-x2.RK3568平台编译方法](./src/ch02-x2.rk3568_platform.md)
 
 - [ch03.Linux驱动开发](./src/ch03-00.driver_design.md)
   - [ch03-01.设备树说明](./src/ch03-01.device_tree.md)
@@ -204,7 +206,7 @@ git clone http://github.com/zc110747/remote_manage.git
 - [ch03-06.i2c框架说明和应用](./src/ch03-06.i2c_frame.md)
 - [ch03-07.spi框架说明和应用](./src/ch03-07.spi_frame.md)
 - [ch03-08.iio子系统](./src/ch03-08.iio_subsystem.md)
-- [ch03-09.remap接口应用](./src/ch03-09.remap_interface.md)
+- [ch03-09.remap接口应用](./src/ch03-09.regmap_interface.md)
 - [ch03-10.rtc设备驱动实现](./src/ch03-10.rtc_subsystem.md)
 - [ch03-14.温度管理框架](./src/ch03-14.thermal_frame.md)
 - [ch03-15.中断子系统管理](./src/ch03-15.interrput_interaction.md)

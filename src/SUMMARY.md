@@ -22,6 +22,8 @@
   - [ch02-09 qemu虚拟机环境构建](./ch02-09.qemu.md)
   - [ch02-10.安卓SDK构建](./ch02-10.android_sdk.md)
   - [ch02-10.u-boot spl和TF-A机制](./ch02-11.spl_and_tfa.md)
+  - [ch02-x1.I.MX6ull芯片平台编译方法](./ch02-x1.imx6ull_platform.md)
+  - [ch02-x2.RK3568平台编译方法](./ch02-x2.rk3568_platform.md)
 
 - [ch03.Linux驱动开发](./ch03-00.driver_design.md)
   - [ch03-01.设备树说明](./ch03-01.device_tree.md)
@@ -32,7 +34,7 @@
   - [ch03-06.i2c框架说明和应用](./ch03-06.i2c_frame.md)
   - [ch03-07.spi框架说明和应用](./ch03-07.spi_frame.md)
   - [ch03-08.iio子系统](./ch03-08.iio_subsystem.md)
-  - [ch03-09.remap接口应用](./ch03-09.remap_interface.md)
+  - [ch03-09.remap接口应用](./ch03-09.regmap_interface.md)
   - [ch03-10.rtc设备驱动实现](./ch03-10.rtc_subsystem.md)
   - [ch03-11.块设备驱动](./ch03-11.block_device.md)
   - [ch03-12.网络设备驱动实现](./ch03-12.net_device.md)
