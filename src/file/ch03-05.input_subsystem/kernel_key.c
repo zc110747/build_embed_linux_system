@@ -146,7 +146,7 @@ static int key_hw_init(struct key_data *chip)
     timer_setup(&chip->key_timer, key_timer_func, 0);
     chip->key_protect = 0;
 
-    dev_info(&pdev->dev, "key interrupt num:%d\n", chip->irq);
+    dev_info(&pdev->dev, "key gpio:%d interrupt num:%d\n", chip->key_gpio, chip->irq);
     return 0;
 }
 

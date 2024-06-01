@@ -85,6 +85,7 @@ git clone http://github.com/zc110747/remote_manage.git
   - [ch03-15.中断子系统管理](./src/ch03-15.interrput_interaction.md)
   - [ch03-16.PWM管理框架](./src/ch03-16.pwm_frame.md)
   - [ch03-17.regulator电源管理](./src/ch03-17.regulator.md)
+  - [ch03-18.wdt系统监控](./src/ch03-18.wdt.md)
   - [ch03-x1.驱动基础接口](./src/ch03-x1.kernel_base_api.md)
   - [ch03-x2.驱动设备树接口](./src/ch03-x2.kernel_tree_api.md)
   - [ch03-x3.驱动基础devm接口](./src/ch03-x3.kernel_devm_base_api.md)
