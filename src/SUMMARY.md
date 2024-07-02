@@ -24,6 +24,7 @@
   - [ch02-10.u-boot spl和TF-A机制](./ch02-11.spl_and_tfa.md)
   - [ch02-x1.I.MX6ull芯片平台编译方法](./ch02-x1.imx6ull_platform.md)
   - [ch02-x2.RK3568平台编译方法](./ch02-x2.rk3568_platform.md)
+  - [ch02-x3.cmake语法](./ch02-x3.cmake.md)
 
 - [ch03.Linux驱动开发](./ch03-00.driver_design.md)
   - [ch03-01.设备树说明](./ch03-01.device_tree.md)
@@ -49,6 +50,7 @@
   - [ch03-x3.驱动基础devm接口](./ch03-x3.kernel_devm_base_api.md)
   - [ch03-x4.驱动扩展devm接口](./ch03-x4.kernel_devm_improve_api.md)
   - [ch03-x5.驱动并发接口](./ch03-x5.kernel_concurrency_api.md)
+  - [ch03-x6.I.MX6ULL设备树分析](./ch03-x6.mx6ull_dts_analysis.md)
 
 - [ch04.Linux应用开发设计](./ch04-00.application_design.md)
   - [ch04-01.C++语法说明](./ch04-01.cpp_grammar.md)
