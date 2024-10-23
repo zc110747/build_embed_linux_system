@@ -1,6 +1,10 @@
 <mxfile host="65bd71144e">
     <diagram id="bfOzilIBf9VVG14iztfe" name="device_tree">
+<<<<<<< HEAD
         <mxGraphModel dx="885" dy="797" grid="0" gridSize="10" guides="0" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+=======
+        <mxGraphModel dx="956" dy="490" grid="0" gridSize="10" guides="0" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+>>>>>>> 5782680cdac06ed195bc84dbaeb367c5d59bf04f
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -388,6 +392,7 @@
             </root>
         </mxGraphModel>
     </diagram>
+<<<<<<< HEAD
     <diagram id="CQJZV0U-XBz_TtGOHy0S" name="input">
         <mxGraphModel dx="885" dy="797" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
@@ -479,4 +484,6 @@
             </root>
         </mxGraphModel>
     </diagram>
+=======
+>>>>>>> 5782680cdac06ed195bc84dbaeb367c5d59bf04f
 </mxfile>
