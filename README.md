@@ -15,7 +15,7 @@
 - [ch02.Linux系统启动实现](./src/ch02-00.system_bringup.md)
   - [ch02-01.Makefile脚本语法](./src/ch02-01.makefile.md)
   - [ch02-02.menuconfig界面管理](./src/ch02-02.menuconfig.md)
-  - [ch02-03.uboot移植](./src/ch02-03.uboot_transplant.md)
+  - [ch02-03.uboot移植](./src/ch02-03.uboot_imx_transplate.md)
   - [ch02-04.uboot环境和命令](./src/ch02-04.uboot_env.md)
   - [ch02-05.uboot执行流程分析](./src/ch02-05.uboot_analyse.md)
   - [ch02-06.Linux kernel移植](./src/ch02-06.kernel_transplate.md)
@@ -31,8 +31,9 @@
   - [ch02-16 qemu虚拟机环境构建](./src/ch02-16.qemu.md)
   - [ch02-17.u-boot spl和TF-A机制](./src/ch02-17.spl_and_tfa.md)
   - [ch02-x1.I.MX6ull芯片平台编译方法](./src/ch02-x1.imx6ull_platform.md)
-  - [ch02-x2.RK3568平台编译方法](./src/ch02-x2.rk3568_platform.md)
-  - [ch02-x3.cmake语法](./src/ch02-x3.cmake.md)
+  - [ch02-x2.瑞芯微RK3568平台编译方法](./src/ch02-x2.rk3568_platform.md)
+  - [ch02-x3.全志H618平台编译方法](./src/ch02-x3.h618_platform.md)
+  - [ch02-x4.全志T113_i平台编译方法](./src/ch02-x4.t113i_platform.md)
 
 - [ch03.Linux驱动开发](./src/ch03-00.driver_design.md)
   - [ch03-01.设备树说明](./src/ch03-01.device_tree.md)
@@ -54,10 +55,12 @@
   - [ch03-17.regulator电源管理](./src/ch03-17.regulator.md)
   - [ch03-18.wdt系统监控](./src/ch03-18.wdt.md)
   - [ch03-19.系统随机数模块](./src/ch03-19.random.md)
+  - [ch03-20.nvmem子系统](./src/ch03-20.nvmem.md)
+  - [ch03-21.usb接口应用](./src/ch03-21.usb.md)
   - [ch03-x1.驱动基础接口](./src/ch03-x1.kernel_base_api.md)
   - [ch03-x2.驱动设备树接口](./src/ch03-x2.kernel_tree_api.md)
-  - [ch03-x3.驱动基础devm接口](./src/ch03-x3.kernel_devm_base_api.md)
-  - [ch03-x4.驱动扩展devm接口](./src/ch03-x4.kernel_devm_improve_api.md)
+  - [ch03-x3.驱动基础devm接口](./src/ch03-x3.kernel_resource_base_api.md)
+  - [ch03-x4.驱动扩展devm接口](./src/ch03-x4.kernel_resource_improve_api.md)
   - [ch03-x5.驱动并发接口](./src/ch03-x5.kernel_concurrency_api.md)
   - [ch03-x6.I.MX6ULL设备树分析](./src/ch03-x6.mx6ull_dts_analysis.md)
 
@@ -70,6 +73,8 @@
   - [ch04-06.复杂API接口说明](./src/ch04-06.linux_complex_api.md)
 
 [ch05.结语](./src/ch05.CONCLUSION.md)
+
+[附录一:网址和开源项目](./src/附录一.网址和开源项目.md)
 
 ## 说明
 

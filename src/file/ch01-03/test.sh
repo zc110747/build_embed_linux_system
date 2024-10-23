@@ -1,4 +1,7 @@
 #!/bin/bash
+<<comment
+这是块注释
+comment
 
 cat > test.txt << EOF
 这是测试文件!
