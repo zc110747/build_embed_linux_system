@@ -10,7 +10,8 @@
   - [ch01-03.Linux shell脚本语法](./src/ch01-03.linux_shell_grammar.md)
   - [ch01-04.Linux交叉编译方法](./src/ch01-04.linux_cross_compiler.md)
   - [ch01-05.Linux问题总结](./src/ch01-05.linux_issue_conclusion.md)
-  - [ch01-06.Linux快速部署](./src/ch01-06.linux_quick_deploy.md)
+  - [ch01-06.Linux快速部署和SDK构建方法](./src/ch01-06.linux_quick_deploy.md)
+  - [ch01-x1.Linux平台脚本应用](./src/ch01-x1.linux_function.md)
 
 - [ch02.Linux系统启动实现](./src/ch02-00.system_bringup.md)
   - [ch02-01.Makefile脚本语法](./src/ch02-01.makefile.md)
@@ -39,12 +40,12 @@
   - [ch03-01.设备树说明](./src/ch03-01.device_tree.md)
   - [ch03-02.ARM内核和硬件分析](./src/ch03-02.armcore_analyse.md)
   - [ch03-03.字符设备驱动说明](./src/ch03-03.char_device.md)
-  - [ch03-04.中断向量和中断管理](./src/ch03-04.interrput_interaction.md)
+  - [ch03-04.pinctrl和gpio子系统](./src/ch03-04.pinctrl_subsystem.md)
   - [ch03-05.input输入子系统](./src/ch03-05.input_subsystem.md)
   - [ch03-06.i2c框架说明和应用](./src/ch03-06.i2c_frame.md)
   - [ch03-07.spi框架说明和应用](./src/ch03-07.spi_frame.md)
   - [ch03-08.iio子系统](./src/ch03-08.iio_subsystem.md)
-  - [ch03-09.remap接口应用](./src/ch03-09.remap_interface.md)
+  - [ch03-09.remap接口应用](./src/ch03-09.regmap_interface.md)
   - [ch03-10.rtc设备驱动实现](./src/ch03-10.rtc_subsystem.md)
   - [ch03-11.块设备驱动](./src/ch03-11.block_device.md)
   - [ch03-12.网络设备驱动实现](./src/ch03-12.net_device.md)
@@ -57,12 +58,14 @@
   - [ch03-19.系统随机数模块](./src/ch03-19.random.md)
   - [ch03-20.nvmem子系统](./src/ch03-20.nvmem.md)
   - [ch03-21.usb接口应用](./src/ch03-21.usb.md)
+  - [ch03-22.tty输出和serial接口](./src/ch03-22.tty.md)
   - [ch03-x1.驱动基础接口](./src/ch03-x1.kernel_base_api.md)
   - [ch03-x2.驱动设备树接口](./src/ch03-x2.kernel_tree_api.md)
   - [ch03-x3.驱动基础devm接口](./src/ch03-x3.kernel_resource_base_api.md)
   - [ch03-x4.驱动扩展devm接口](./src/ch03-x4.kernel_resource_improve_api.md)
   - [ch03-x5.驱动并发接口](./src/ch03-x5.kernel_concurrency_api.md)
   - [ch03-x6.I.MX6ULL设备树分析](./src/ch03-x6.mx6ull_dts_analysis.md)
+  - [ch03-x7.驱动问题分析和解决](./src/ch03-x7.driver_issue_fix.md)
 
 - [ch04.Linux应用开发设计](./src/ch04-00.application_design.md)
   - [ch04-01.C++语法说明](./src/ch04-01.cpp_grammar.md)
@@ -133,13 +136,6 @@ git clone http://github.com/zc110747/remote_manage.git
 3. 常用软件查询，安装和应用(ssh, tftp, nfs, samba...)
 4. 能够使用gcc和Makefile构建应用
 
-目录文档:
-
-- [ch01.构建Linux开发平台环境](./src/ch01-00.platform_env_struct.md)
-- [ch01-01.shell命令](./src/ch01-01.linux_shell_cmd.md)
-- [ch01-02.Linux软件安装](./src/ch01-02.linux_software_install.md)
-- [ch01-05.Linux问题总结](./src/ch01-05.linux_issue_conclusion.md)
-
 ### step2: 基于已移植源码构建嵌入式Linux平台
 
 主要目标:
@@ -158,20 +154,6 @@ git clone http://github.com/zc110747/remote_manage.git
 5. 掌握U-Boot和Linux平台中的主要环境变量和系统命令
 6. 参考源码实现字符型设备驱动，完成驱动加载，移除, 设备的创建过程
 
-目录文档:
-
-- [ch02.Linux系统启动实现](./src/ch02-00.system_bringup.md)
-- [ch02-02.menuconfig界面管理](./src/ch02-02.menuconfig.md)
-- [ch02-04.uboot环境和命令](./src/ch02-04.uboot_env.md)
-- [ch03.Linux驱动开发](./src/ch03-00.driver_design.md)
-- [ch03-01.设备树说明](./src/ch03-01.device_tree.md)
-- [ch03-03.字符设备驱动说明](./src/ch03-03.char_device.md)
-- [ch02-x1.I.MX6ull芯片平台编译方法](./src/ch02-x1.imx6ull_platform.md)
-- [ch02-x2.RK3568平台编译方法](./src/ch02-x2.rk3568_platform.md)
-- [ch02-x3.全志H618平台构建方法](./src/ch02-x3.h618_platform.md)
-- [ch02-x4.全志t113i平台编译方法](./src/ch02-x4.t113i_platform.md)
-- [ch02-x5.cmake语法](./src/ch02-x5.cmake.md)
-
 ### step3：嵌入式Linux应用初步开发
 
 主要目标:
@@ -188,15 +170,6 @@ git clone http://github.com/zc110747/remote_manage.git
 2. Makefile语法和项目构建方法
 3. 基于gcc实现Linux平台应用
 4. Linux平台下库的交叉编译和应用(json, mqtt, asio, fmt...)
-
-目录文档:
-
-- [ch01-03.Linux shell脚本语法](./src/ch01-03.linux_shell_grammar.md)
-- [ch01-04.Linux交叉编译方法](./src/ch01-04.linux_cross_compiler.md)
-- [ch02-01.Makefile脚本语法](./src/ch02-01.makefile.md)
-- [ch04.Linux应用开发设计](./src/ch04-00.application_design.md)
-- [ch04-01.常用cpp语法应用](./src/ch04-01.cpp_grammar.md)
-- [ch04-05.Linux基础应用层接口](./src/ch04-05.linux_base_api.md)
 
 ### step4：深入学习嵌入式驱动开发
 
@@ -218,26 +191,6 @@ git clone http://github.com/zc110747/remote_manage.git
 5. spi, i2c框架下的驱动开发
 6. iio, rtc子系统下的驱动开发
 
-目录文档:
-
-- [ch03-02.ARM内核和硬件分析](./src/ch03-02.armcore_analyse.md)
-- [ch03-04.中断向量和中断管理](./src/ch03-04.interrput_interaction.md)
-- [ch03-05.输入子系统](./src/ch03-05.input_subsystem.md)
-- [ch03-06.i2c框架说明和应用](./src/ch03-06.i2c_frame.md)
-- [ch03-07.spi框架说明和应用](./src/ch03-07.spi_frame.md)
-- [ch03-08.iio子系统](./src/ch03-08.iio_subsystem.md)
-- [ch03-09.remap接口应用](./src/ch03-09.regmap_interface.md)
-- [ch03-10.rtc设备驱动实现](./src/ch03-10.rtc_subsystem.md)
-- [ch03-14.温度管理框架](./src/ch03-14.thermal_frame.md)
-- [ch03-15.中断子系统管理](./src/ch03-15.interrput_interaction.md)
-- [ch03-16.PWM管理框架](./src/ch03-16.pwm_frame.md)
-- [ch03-17.regulator电源管理](./src/ch03-17.regulator.md)
-- [ch03-x1.驱动基础接口](./src/ch03-x1.kernel_base_api.md)
-- [ch03-x2.驱动设备树接口](./src/ch03-x2.kernel_tree_api.md)
-- [ch03-x3.驱动基础devm接口](./src/ch03-x3.kernel_devm_base_api.md)
-- [ch03-x4.驱动扩展devm接口](./src/ch03-x4.kernel_devm_improve_api.md)
-- [ch03-x5.驱动并发接口](./src/ch03-x5.kernel_concurrency_api.md)
-
 ### step5： 嵌入式Linux平台应用方案构建
 
 主要目标:
@@ -254,15 +207,6 @@ git clone http://github.com/zc110747/remote_manage.git
 3. 基于node和vue的前后端框架实现
 4. 熟练掌握shell语法，基础上构建快速部署方案
 5. 基于打印或gdb的调试方法学习
-
-目录文档:
-
-- [ch01-03.Linux shell脚本语法](./src/ch01-03.linux_shell_grammar.md)
-- [ch01-06.Linux快速部署](./src/ch01-06.linux_quick_deploy.md)
-- [ch04-02.Linux平台调试方法](./src/ch04-02.linux_debug.md)  
-- [ch04-03.Linux平台界面设计](./src/ch04-03.gui_design.md)
-- [ch04-04.web应用设计](./src/ch04-04.web_design.md)
-- [ch04-06.Linux复杂应用层接口](./src/ch04-06.linux_complex_api.md)
 
 ### 扩展: 芯片bringup和Linux系统平台掌握
 
@@ -286,22 +230,3 @@ git clone http://github.com/zc110747/remote_manage.git
 6. Kernel执行流程分析
 7. 文件系统移植和构建方法
 8. qemu虚拟机模拟嵌入式Linux系统运行
-
-目录文档:
-
-- [ch03-11.块设备驱动](./src/ch03-11.block_device.md)
-- [ch03-12.网络设备驱动实现](./src/ch03-12.net_device.md)
-- [ch02-03.uboot移植](./src/ch02-03.uboot_transplant.md)
-- [ch02-05.uboot执行流程分析](./src/ch02-05.uboot_analyse.md)
-- [ch02-06.Linux kernel移植](./src/ch02-06.kernel_transplate.md)
-- [ch02-07.内核执行流程分析](./src/ch02-07.kernel_analyse.md)
-- [ch02-08.文件系统构建综述](./src/ch02-08.rootfs_overview.md)
-- [ch02-09.基于busybox构建文件系统](./src/ch02-09.rootfs_busybox.md)
-- [ch02-10.基于buildroot构建文件系统](./src/ch02-10.rootfs_buildroot.md)
-- [ch02-11.基于debain构建文件系统](./src/ch02-11.rootfs_debain.md)
-- [ch02-12.基于ubuntu构建文件系统](./src/ch02-12.rootfs_ubuntu.md)
-- [ch02-13 支持QT的Linux文件系统构建](./src/ch02-13.rootfs_qtsupport.md)
-- [ch02-14 基于OpenWRT构建系统平台](./src/ch02-14.rootfs_openwrt.md)
-- [ch02-15 安卓SDK构建](./src/ch02-15.android_sdk.md)
-- [ch02-16 qemu虚拟机环境构建](./src/ch02-16.qemu.md)
-- [ch02-17.u-boot spl和TF-A机制](./src/ch02-17.spl_and_tfa.md)

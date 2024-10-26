@@ -1,10 +1,7 @@
 #!/bin/bash
-<<<<<<< HEAD
 <<comment
 这是块注释
 comment
-=======
->>>>>>> 5782680cdac06ed195bc84dbaeb367c5d59bf04f
 
 cat > test.txt << EOF
 这是测试文件!
