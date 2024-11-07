@@ -24,7 +24,7 @@
   - [ch02-08.文件系统构建综述](./src/ch02-08.rootfs_overview.md)
   - [ch02-09.基于busybox构建文件系统](./src/ch02-09.rootfs_busybox.md)
   - [ch02-10.基于buildroot构建文件系统](./src/ch02-10.rootfs_buildroot.md)
-  - [ch02-11.基于debain构建文件系统](./src/ch02-11.rootfs_debain.md)
+  - [ch02-11.基于debian构建文件系统](./src/ch02-11.rootfs_debian.md)
   - [ch02-12.基于ubuntu构建文件系统](./src/ch02-12.rootfs_ubuntu.md)
   - [ch02-13 支持QT的Linux文件系统构建](./src/ch02-13.rootfs_qtsupport.md)
   - [ch02-14 基于OpenWRT构建系统平台](./src/ch02-14.rootfs_openwrt.md)
@@ -161,7 +161,7 @@ git clone http://github.com/zc110747/remote_manage.git
 1. 熟悉U-Boot，Kernel和rootfs基本概念
 2. 掌握menuconfig配置修改方法及Makefile编译
 3. 熟悉至少一款芯片的下载更新方法(包含不限于sdcard, tftp，nfs等)
-4. 尝试至少一种文件系统的编译构建过程(busybox, buildroot, yocto, debain, ubuntu或android)
+4. 尝试至少一种文件系统的编译构建过程(busybox, buildroot, yocto, debian, ubuntu或android)
 5. 掌握U-Boot和Linux平台中的主要环境变量和系统命令
 6. 参考源码实现字符型设备驱动，完成驱动加载，移除, 设备的创建过程
 
@@ -228,7 +228,7 @@ git clone http://github.com/zc110747/remote_manage.git
 3. U-Boot移植，理解U-Boot执行流程
 4. Kernel移植过程，理解Kernel执行流程
 5. 完成至少一款芯片的bringup完整流程
-6. 支持文件系统构建，busybox, debain, ubuntu和android.
+6. 支持文件系统构建，busybox, debian, ubuntu和android.
 7. 基于qemu的仿真环境构建系统
 
 主要内容:

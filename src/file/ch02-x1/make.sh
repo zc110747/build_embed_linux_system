@@ -29,10 +29,10 @@ KERNEL_DTB="${SUPPORT_ENV_KERNEL_DIR}/arch/arm/boot/dts/${DTB_FILE}"
 KERNEL_QEMU_DTB="${SUPPORT_ENV_KERNEL_DIR}/arch/arm/boot/dts/${QEMU_DTB_FILE}"
 
 #rootfs information
-DEBAIN_SIZE=2048
+DEBIAN_SIZE=2048
 
 ROOTFS_SHELL_PATH="${ROOTFS_PATH}/shell"
-ROOFTS_DEBAIN_PATH="${ROOTFS_PATH}/debain"
+ROOFTS_DEBIAN_PATH="${ROOTFS_PATH}/debian"
 ROOTFS_IMG_PATH="${ROOTFS_PATH}/img"
 
 ###############################################################################################################
@@ -64,7 +64,7 @@ function help()
     echo "  ./make.sh kernel qemu              --- pack linux kernel qemu mode"    
     echo "  ./make.sh rootfs                   --- pack rootfs, same as buildroot"
     echo "  ./make.sh rootfs buildroot         --- pack rootfs buildroot"
-    echo "  ./make.sh rootfs debain            --- pack rootfs debain"
+    echo "  ./make.sh rootfs debian            --- pack rootfs debian"
     echo "  ./make.sh rootfs ubuntu            --- pack rootfs ubuntu"
 }
 
@@ -146,34 +146,34 @@ compile_buildroot()
     cp -fv output/images/rootfs.ext2 "${PACKAGE_PATH}"/buildroot.img
 }
 
-compile_debain()
+compile_debian()
 {
-    echo "====== start create debain ======"
+    echo "====== start create debian ======"
 
     cd "${PACKAGE_PATH}" || return
 
-    if [ ! -f debain.img ]; then
-        dd if=/dev/zero of=debain.img bs=1M count=${DEBAIN_SIZE}
-        mkfs.ext4 debain.img
+    if [ ! -f debian.img ]; then
+        dd if=/dev/zero of=debian.img bs=1M count=${DEBIAN_SIZE}
+        mkfs.ext4 debian.img
     fi
 
-    sudo mount -o loop "${PACKAGE_PATH}"/debain.img  "${ROOFTS_DEBAIN_PATH}"/
+    sudo mount -o loop "${PACKAGE_PATH}"/debian.img  "${ROOFTS_DEBIAN_PATH}"/
 
     cd "${ROOTFS_SHELL_PATH}" || return
 
-    chmod 777 install-debain.sh && ./install-debain.sh "${ROOFTS_DEBAIN_PATH}"
+    chmod 777 install-debian.sh && ./install-debian.sh "${ROOFTS_DEBIAN_PATH}"
 
-    echo "====== debain build finished, success! ======"
+    echo "====== debian build finished, success! ======"
 
-    sudo umount "${ROOFTS_DEBAIN_PATH}"/
+    sudo umount "${ROOFTS_DEBIAN_PATH}"/
 }
 
 compile_rootfs()
 {
     rootfs=buildroot
 
-    if [ "$1" == "debain" ]; then
-        rootfs=debain
+    if [ "$1" == "debian" ]; then
+        rootfs=debian
     elif [ "$1" == "ubuntu" ];then
         rootfs=ubuntu
     fi
@@ -184,8 +184,8 @@ compile_rootfs()
     
     if [ "${rootfs}" == "buildroot" ]; then
         compile_buildroot
-    elif [ "${rootfs}" == "debain" ]; then     
-        compile_debain
+    elif [ "${rootfs}" == "debian" ]; then     
+        compile_debian
     fi
 }
 

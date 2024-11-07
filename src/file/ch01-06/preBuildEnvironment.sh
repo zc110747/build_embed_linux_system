@@ -49,7 +49,7 @@ echo "  ${greenText}${GLOBAL_PROGRAM_THIRDPARTS}/${defText}:第三方库解压�
 echo "  ${greenText}${GLOBAL_PROGRAM_SUPPORT}/compiler/${defText}:交叉编译工具, 将arm-gcc解压后内部文件复制到此目录下"
 echo "  ${greenText}${GLOBAL_PROGRAM_SUPPORT}/uboot/${defText}:uboot目录, 用于编译uboot的源码"
 echo "  ${greenText}${GLOBAL_PROGRAM_SUPPORT}/kernel/${defText}:kernel目录, 用于编译内核的源码"
-echo "  ${greenText}${GLOBAL_PROGRAM_SUPPORT}/rootfs/${defText}:文件系统目录, 用于编译文件系统的源码(busybox), 如debain或android个人很难从源码编译,直接获取编译好的文件系统"
+echo "  ${greenText}${GLOBAL_PROGRAM_SUPPORT}/rootfs/${defText}:文件系统目录, 用于编译文件系统的源码(busybox), 如debian或android个人很难从源码编译,直接获取编译好的文件系统"
 echo "  ${greenText}${GLOBAL_PROGRAM_SUPPORT}/build/${defText}:编译后系统文件存储目录"
 echo "  ${greenText}${GLOBAL_PROGRAM_SUPPORT}/application/${defText}:存放应用源码的目录"
 echo "未复制则后续编译时会显示找不到文件或者直接编译失败"
