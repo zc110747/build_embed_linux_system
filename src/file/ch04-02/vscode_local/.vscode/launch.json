@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch Remote",
+            "type": "cppdbg",
+            "request": "launch",
+            "args": ["1", "2"], 
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": true,
+            "program": "${workspaceFolder}/target", //具体的项目文件，编译的可执行文件
+            "setupCommands": [
+                { 
+                    "text": "-enable-pretty-printing", 
+                    "description": "Enable GDB pretty printing", 
+                    "ignoreFailures": true 
+                }
+            ],
+            "preLaunchTask": "build", //指定调试前执行的任务，查看tasks中的build变量
+            "miDebuggerPath": "gdb", //指定调试工具，本地用gdb, 跨平台用对应的调试器
+        }
+    ]
+}

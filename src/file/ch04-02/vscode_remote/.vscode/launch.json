@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch Remote",
+            "type": "cppdbg",
+            "request": "launch",
+            "args": [], 
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": true,
+            "program": "${workspaceFolder}/target",
+            "setupCommands": [
+                { 
+                    "text": "-enable-pretty-printing", 
+                    "description": "Enable GDB pretty printing", 
+                    "ignoreFailures": true 
+                }
+            ],
+            //"preLaunchTask": "build", //指定调试前执行的任务，查看tasks中的build变量
+            "miDebuggerPath": "arm-none-linux-gnueabihf-gdb",   //指定调试工具，本地用gdb, 跨平台用对应的调试器
+            "miDebuggerServerAddress": "192.168.2.99:1234",        //指定gdbserver连接端口，用于配合gdbserver调试
+        }
+    ]
+}
