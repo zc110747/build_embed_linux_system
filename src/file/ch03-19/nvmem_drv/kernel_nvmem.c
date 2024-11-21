@@ -18,7 +18,7 @@
 /*
 设备树
     usr_nvmem {
-        compatible = "rmk,nvmem";
+        compatible = "rmk,usr_nvmem";
         status = "okay";        
     };
 */
@@ -136,7 +136,7 @@ static int nvmem_remove(struct platform_device *pdev)
 
 //匹配的是根节点的compatible属性
 static const struct of_device_id nvmem_of_match[] = {
-    { .compatible = "rmk,usr-nvmem" },
+    { .compatible = "rmk,usr_nvmem" },
     { /* Sentinel */ }
 };
 
