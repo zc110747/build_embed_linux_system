@@ -70,12 +70,14 @@ pinctrl_led_improve: led-improve {
 #include <linux/platform_device.h>
 #include <linux/of_address.h>
 #include <linux/of_device.h>
+#include <linux/leds.h>
 
 struct led_data
 {
     /*device info*/
-    dev_t dev_id;     
+    dev_t dev_id;                      
     struct cdev cdev;
+    struct led_classdev led;
     struct class *class;
     struct device *device;
     struct platform_device *pdev;
@@ -104,8 +106,7 @@ static void led_hardware_set(struct led_data *chip, u8 status)
 
     pdev = chip->pdev;
 
-    switch (status)
-    {
+    switch (status) {
         case LED_OFF:
             dev_info(&pdev->dev, "off\n");
             gpiod_set_value(chip->led_desc, 0);
@@ -161,7 +162,7 @@ ssize_t led_write(struct file *filp, const char __user *buf, size_t size,  loff_
     pdev = chip->pdev;
 
     ret = copy_from_user(&data, buf, 1);
-    if (ret < 0){
+    if (ret < 0) {
         dev_err(&pdev->dev, "write failed!\n");
         return -EFAULT;
     }
@@ -178,8 +179,7 @@ long led_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
     chip = (struct led_data *)filp->private_data;
     pdev = chip->pdev;
 
-    switch (cmd)
-    {
+    switch (cmd) {
         case 0:
             led_hardware_set(chip, 0);
             break;
@@ -205,11 +205,26 @@ static struct file_operations led_fops = {
 
 static ssize_t led_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
-    int size;
+    int size, index;
     static struct led_data *chip;
-    
+    u32 regval[5] = {0};
+    void *__iomem io_reg;
+
+    for (index=0; index<5; index++) {
+        io_reg = of_iomap(dev->of_node, index);
+        if (io_reg != NULL) {
+            regval[index] = readl(io_reg);
+        }
+    }
     chip = container_of(attr, struct led_data, led_attr);
-    size = sprintf(buf, "status=%d\n", gpiod_get_value(chip->led_desc));
+    size = snprintf(buf, PAGE_SIZE, 
+                    "LED_STATUS = %d\n"
+                    "CCM_CCGR1 = 0x%08x\n"
+                    "SW_MUX_GPIO1_IO03 = 0x%08x\n"
+                    "SW_PAD_GPIO1_IO03 = 0x%08x\n"
+                    "GPIO_DR = 0x%08x\n"
+                    "GPIO_GDIR = 0x%08x\n", 
+                    gpiod_get_value(chip->led_desc), regval[0], regval[1], regval[2], regval[3], regval[4]);
 
     return size;
 }
@@ -223,24 +238,33 @@ static ssize_t led_store(struct device *dev, struct device_attribute *attr,  con
     chip = container_of(attr, struct led_data, led_attr);
     pdev = chip->pdev;
 
-    if (0 == memcmp(buf, "0", 1))
-    {
+    if (0 == memcmp(buf, "0", 1)) {
         pinctrl_select_state(chip->led_pinctrl, chip->pinctrl_state[0]);
         dev_info(&pdev->dev, "led pinctrl 0!\n");
-    }
-    else if (0 == memcmp(buf, "1", 1))
-    {
+    } else if (0 == memcmp(buf, "1", 1)) {
         pinctrl_select_state(chip->led_pinctrl, chip->pinctrl_state[1]);
         dev_info(&pdev->dev, "led pinctrl 1!\n");
     }
-    else
-    {
+    else {
         dev_info(&pdev->dev, "led store issue!\n");
     }
 
     regval = readl(chip->io_reg);
     dev_info(&pdev->dev, "regval:0x%x!\n", regval);
     return count;
+}
+
+static void gpio_led_set(struct led_classdev *led_cdev, enum led_brightness value)
+{
+	struct led_data *chip = container_of(led_cdev, struct led_data, led);
+	int level;
+
+	if (value == LED_OFF)
+		level = 0;
+	else
+		level = 1;
+    
+    led_hardware_set(chip, level);
 }
 
 static int led_device_create(struct led_data *chip)
@@ -253,33 +277,34 @@ static int led_device_create(struct led_data *chip)
     minor = DEFAULT_MINOR;
     pdev = chip->pdev;
 
-    if (major){
+    //1.申请设备号
+    if (major) {
         chip->dev_id = MKDEV(major, minor);
         ret = register_chrdev_region(chip->dev_id, 1, DEVICE_NAME);
     } else {
         ret = alloc_chrdev_region(&chip->dev_id, 0, 1, DEVICE_NAME);
     }
-
-    if (ret < 0){
+    if (ret < 0) {
         dev_err(&pdev->dev, "id alloc failed!\n");
         goto exit;
     }
     
+    //2.创建字符设备，关联设备号，并添加到内核
     cdev_init(&chip->cdev, &led_fops);
     chip->cdev.owner = THIS_MODULE;
     ret = cdev_add(&chip->cdev, chip->dev_id, 1);
-    if (ret){
+    if (ret) {
         dev_err(&pdev->dev, "cdev add failed:%d!\n", ret);
         goto exit_cdev_add;
     }
 
+    //3.创建设备类和设备文件，关联设备号，用于应用层访问
     chip->class = class_create(THIS_MODULE, DEVICE_NAME);
     if (IS_ERR(chip->class)) {
         dev_err(&pdev->dev, "class create failed!\n");
         ret = PTR_ERR(chip->class);
         goto exit_class_create;
     }
-
     chip->device = device_create(chip->class, NULL, chip->dev_id, NULL, DEVICE_NAME);
     if (IS_ERR(chip->device)) {
         dev_err(&pdev->dev, "device create failed!\n");
@@ -287,14 +312,31 @@ static int led_device_create(struct led_data *chip)
         goto exit_device_create;
     }
 
-    chip->led_attr.attr.name = "pinctrl-led";
+    //4.创建设备管理文件/sys/devices/platform/20c406c.usr_led/info
+    //cat info (status=1)
+    //echo 0 > info #选择配置0
+    //echo 1 > info #选择配置1
+    chip->led_attr.attr.name = "info";
     chip->led_attr.attr.mode = 0666;
     chip->led_attr.show = led_show;
     chip->led_attr.store = led_store;
     ret = device_create_file(&pdev->dev, &chip->led_attr);
-    if (ret != 0)
-    {
+    if (ret != 0) {
         dev_info(&pdev->dev, "device create file failed!\n");
+        goto exit_device_create;
+    }
+
+    //5.创建类管理文件，创建/sys/class/leds/led0目录，其下brigntness文件可以控制gpio状态
+    //echo 0 > brightness #关闭LEDcd
+    //echo 1 > brightness #开启LED
+	chip->led.name = "led0";
+	chip->led.brightness_set = gpio_led_set;
+	chip->led.flags = LED_CORE_SUSPENDRESUME;
+	chip->led.max_brightness = 1;
+	chip->led.default_trigger = "trigger_one";
+	ret = devm_led_classdev_register(&pdev->dev, &chip->led);
+    if (ret != 0) {
+        dev_info(&pdev->dev, "device create led class failed!\n");
         goto exit_device_create;
     }
 
@@ -316,53 +358,45 @@ static int led_hardware_init(struct led_data *chip)
     struct platform_device *pdev = chip->pdev;
     struct device_node *led_nd = pdev->dev.of_node;
 
+    //获取"led-gpios"指定的gpio属性
     chip->led_desc = devm_gpiod_get(&pdev->dev, "led", GPIOD_OUT_LOW);
-    if (chip->led_desc == NULL)
-    {
+    if (chip->led_desc == NULL) {
         dev_info(&pdev->dev, "devm_gpiod_get error!\n");
         return -EIO;
     }
 
+    //获取"reg"指定的寄存器属性
     chip->io_reg = of_iomap(led_nd, 2);
-    if (chip->io_reg != NULL)
-    {
+    if (chip->io_reg != NULL) {
         u32 regval = readl(chip->io_reg);
         u32 is_active;
-        //gpiod_toggle_active_low(chip->led_desc);
         is_active = gpiod_is_active_low(chip->led_desc);
         dev_info(&pdev->dev, "reg value:0x%x, active_low:%d\n", regval, is_active);
-    }
-    else
-    {
+    } else {
         dev_info(&pdev->dev, "[of_iomap]of iomap failed\n");
         return -EIO;
     }
 
+    //获取"pinctrl-x"属性
     chip->led_pinctrl = devm_pinctrl_get(&pdev->dev);
-    if (IS_ERR_OR_NULL(chip->led_pinctrl))
-    {
+    if (IS_ERR_OR_NULL(chip->led_pinctrl)) {
         dev_info(&pdev->dev, "[devm_pinctrl_get]failed\n");
         return -EIO;
     }
-
     chip->pinctrl_state[0] = pinctrl_lookup_state(chip->led_pinctrl, "default");
-    if (IS_ERR_OR_NULL(chip->pinctrl_state[0]))
-    {
+    if (IS_ERR_OR_NULL(chip->pinctrl_state[0])) {
         dev_info(&pdev->dev, "[pinctrl_lookup_state]read default failed!\n");
         return -EIO;
     }
-
     chip->pinctrl_state[1] = pinctrl_lookup_state(chip->led_pinctrl, "improve");
-    if (IS_ERR_OR_NULL(chip->pinctrl_state[1]))
-    {
+    if (IS_ERR_OR_NULL(chip->pinctrl_state[1])) {
         dev_info(&pdev->dev, "[pinctrl_lookup_state]read improve failed:%d!\n", IS_ERR_OR_NULL(chip->pinctrl_state[1]));
         return -EIO;
     }
 
-    /* 获取私有数据 */
+    //获取platform match表中的私有数据
     chip->init_data = of_device_get_match_data(&pdev->dev);
-    if (!chip->init_data)
-    {
+    if (!chip->init_data) {
         dev_info(&pdev->dev, "[of_device_get_match_data]read full, null!\n");
         return -ENOMEM;
     }
@@ -377,9 +411,9 @@ static int led_probe(struct platform_device *pdev)
     int ret;
     static struct led_data *chip;
 
-    //1.申请led控制块空间，并赋值
+    //1.申请led控制块
     chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
-    if (!chip){
+    if (!chip) {
         dev_err(&pdev->dev, "[devm_kzalloc]malloc failed!\n");
         return -ENOMEM;
     }
@@ -388,12 +422,12 @@ static int led_probe(struct platform_device *pdev)
 
     //2.初始化LED硬件设备
     ret = led_hardware_init(chip);
-    if (ret){
+    if (ret) {
         dev_err(&pdev->dev, "[led_hardware_init]run error:%d!\n", ret);
         return ret;
     }
 
-    //3.创建内核访问接口
+    //3.将设备注册到内核和系统中
     ret = led_device_create(chip);
     if (ret){
         dev_err(&pdev->dev, "[led_device_create]create error:%d!\n", ret);

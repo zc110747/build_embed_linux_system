@@ -65,6 +65,7 @@
   - [ch03-25.图形显示drm管理框架](./src/ch03-25.drm_frame.md)
   - [ch03-26.摄像头csi接口管理驱动](./src/ch03-26.csi_frame.md)
   - [ch03-27.系统时钟和OPP管理模块](./src/ch03-27.cpufreq_opp.md)
+  - [ch03-28.音频DAC输出模块](./src/ch03-28.audio_adc.md)
   - [ch03-x1.驱动基础接口](./src/ch03-x1.kernel_base_api.md)
   - [ch03-x2.驱动设备树接口](./src/ch03-x2.kernel_tree_api.md)
   - [ch03-x3.驱动基础devm接口](./src/ch03-x3.kernel_resource_base_api.md)
