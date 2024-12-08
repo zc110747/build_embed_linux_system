@@ -19,29 +19,37 @@
 /*
 设备树说明
 &ecspi3 {
-    fsl,spi-num-chipselects = <1>;
-    cs-gpios = <&gpio1 20 GPIO_ACTIVE_LOW>;
-    pinctrl-names = "default";
-    pinctrl-0 = <&pinctrl_ecspi3>;
-    status = "okay";
+	fsl,spi-num-chipselects = <1>;
+	pinctrl-names = "default";
+    cs-gpios = <&gpio1 20 GPIO_ACTIVE_LOW>; //cs-gpios中的位和reg对应
+	pinctrl-0 = <&pinctrl_ecspi3>;
+	status = "okay";
 
-    spidev0:icm20608@0 {
-        compatible = "rmk,icm20608";
-        spi-max-frequency = <8000000>;
-        reg = <0>;
-    };
+	spidev0:icm20608@0 {
+		compatible = "rmk,icm20608";
+		spi-max-frequency = <8000000>;
+		reg = <0>;
+
+		smplrt_div 		= /bits/ 8 <0x00>;
+		gyro_config 	= /bits/ 8 <0x18>;
+		accel_config 	= /bits/ 8 <0x18>;
+		config			= /bits/ 8 <0x04>;
+		accel_config2 	= /bits/ 8 <0x04>;
+		pwr_mgmt_2 		= /bits/ 8 <0x00>;
+		lp_mode_cfg 	= /bits/ 8 <0x00>;
+		fifo_en			= /bits/ 8 <0x00>;
+	};
 };
 
-pinctrl_ecspi3: ecspi3grp {
-    fsl,pins = <
-        MX6UL_PAD_UART2_TX_DATA__GPIO1_IO20		0x100b0
-        MX6UL_PAD_UART2_RTS_B__ECSPI3_MISO      0x100b1  
-        MX6UL_PAD_UART2_CTS_B__ECSPI3_MOSI      0x100b1 
-        MX6UL_PAD_UART2_RX_DATA__ECSPI3_SCLK    0x100b1
-    >;
-};
+	pinctrl_ecspi3: ecspi3grp {
+        fsl,pins = <
+			MX6UL_PAD_UART2_TX_DATA__GPIO1_IO20		0x100b0     //cs1
+			MX6UL_PAD_UART2_RTS_B__ECSPI3_MISO      0x100b1  
+			MX6UL_PAD_UART2_CTS_B__ECSPI3_MOSI      0x100b1 
+			MX6UL_PAD_UART2_RX_DATA__ECSPI3_SCLK    0x100b1
+        >;
+	};
 */
-
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/delay.h>
@@ -57,73 +65,7 @@ pinctrl_ecspi3: ecspi3grp {
 #include <linux/spi/spi.h>
 #include <linux/regmap.h>
 
-#define ICM20608G_ID                 0XAF
-#define ICM20608D_ID                 0XAE
-#define ICM20_SELF_TEST_X_GYRO       0x00
-#define ICM20_SELF_TEST_Y_GYRO       0x01
-#define ICM20_SELF_TEST_Z_GYRO       0x02
-#define ICM20_SELF_TEST_X_ACCEL      0x0D
-#define ICM20_SELF_TEST_Y_ACCEL      0x0E
-#define ICM20_SELF_TEST_Z_ACCEL      0x0F
-
-/* 陀螺仪静态偏移 */
-#define ICM20_XG_OFFS_USRH           0x13
-#define ICM20_XG_OFFS_USRL           0x14
-#define ICM20_YG_OFFS_USRH           0x15
-#define ICM20_YG_OFFS_USRL           0x16
-#define ICM20_ZG_OFFS_USRH           0x17
-#define ICM20_ZG_OFFS_USRL           0x18
-
-#define ICM20_SMPLRT_DIV             0x19
-#define ICM20_CONFIG                 0x1A
-#define ICM20_GYRO_CONFIG            0x1B
-#define ICM20_ACCEL_CONFIG           0x1C
-#define ICM20_ACCEL_CONFIG2          0x1D
-#define ICM20_LP_MODE_CFG            0x1E
-#define ICM20_ACCEL_WOM_THR          0x1F
-#define ICM20_FIFO_EN                0x23
-#define ICM20_FSYNC_INT              0x36
-#define ICM20_INT_PIN_CFG            0x37
-#define ICM20_INT_ENABLE             0x38
-#define ICM20_INT_STATUS             0x3A
-
-/* 加速度输出 */
-#define ICM20_ACCEL_XOUT_H           0x3B
-#define ICM20_ACCEL_XOUT_L           0x3C
-#define ICM20_ACCEL_YOUT_H           0x3D
-#define ICM20_ACCEL_YOUT_L           0x3E
-#define ICM20_ACCEL_ZOUT_H           0x3F
-#define ICM20_ACCEL_ZOUT_L           0x40
-
-/* 温度输出 */
-#define ICM20_TEMP_OUT_H             0x41
-#define ICM20_TEMP_OUT_L             0x42
-
-/* 陀螺仪输出 */
-#define ICM20_GYRO_XOUT_H            0x43
-#define ICM20_GYRO_XOUT_L            0x44
-#define ICM20_GYRO_YOUT_H            0x45
-#define ICM20_GYRO_YOUT_L            0x46
-#define ICM20_GYRO_ZOUT_H            0x47
-#define ICM20_GYRO_ZOUT_L            0x48
-
-#define ICM20_SIGNAL_PATH_RESET      0x68
-#define ICM20_ACCEL_INTEL_CTRL       0x69
-#define ICM20_USER_CTRL              0x6A
-#define ICM20_PWR_MGMT_1             0x6B
-#define ICM20_PWR_MGMT_2             0x6C
-#define ICM20_FIFO_COUNTH            0x72
-#define ICM20_FIFO_COUNTL            0x73
-#define ICM20_FIFO_R_W               0x74
-#define ICM20_WHO_AM_I               0x75
-
-/* 加速度静态偏移 */
-#define ICM20_XA_OFFSET_H            0x77
-#define ICM20_XA_OFFSET_L            0x78
-#define ICM20_YA_OFFSET_H            0x7A
-#define ICM20_YA_OFFSET_L            0x7B
-#define ICM20_ZA_OFFSET_H            0x7D
-#define ICM20_ZA_OFFSET_L            0x7E
+#include "kernel_regmap_spi.h"
 
 #define DEVICE_NAME                 "icm20608"
 #define DEVICE_CNT                  1
@@ -141,6 +83,18 @@ struct spi_read_data
     signed int temp_adc;
 };
 
+struct spi_reg_config
+{
+    u8 smplrt_div;
+    u8 gyro_config;
+    u8 accel_config;
+    u8 config;
+    u8 accel_config2;
+    u8 pwr_mgmt_2;
+    u8 lp_mode_cfg;
+    u8 fifo_en;
+};
+
 struct spi_icm_data
 {
     /* dev info */
@@ -150,6 +104,8 @@ struct spi_icm_data
     struct device *device;                
     void *private_data;         
     struct regmap *map;
+
+    struct spi_reg_config reg_config;
 
     /* read data info */
     struct spi_read_data data;
@@ -173,7 +129,7 @@ static ssize_t icm20608_read(struct file *filp, char __user *buf, size_t cnt, lo
     struct spi_device *spi = (struct spi_device *)chip->private_data;
 
     ret = regmap_bulk_read(chip->map, ICM20_ACCEL_XOUT_H, readbuf, 14);
-    if(ret < 0)
+    if (ret < 0)
     {
         dev_err(&spi->dev, "icm20608 read failed:%d\n", ret);
         return 0;
@@ -219,15 +175,77 @@ static const struct file_operations spi_icm_ops = {
 const struct regmap_config icm20608_regmap_config = {
     .reg_bits = 8,
     .val_bits = 8,
-    .read_flag_mask = 0x80,
+    .reg_stride = 1,
+    .read_flag_mask = BIT(7),
     .max_register = 255,
 };
+
+static int icm20608_parse_dt(struct spi_icm_data *chip)
+{
+    struct spi_device *spi;
+    struct device_node *np;
+    int ret;
+
+    spi = (struct spi_device *)chip->private_data;
+    np = spi->dev.of_node;
+
+    ret = of_property_read_u8(np, "smplrt_div", &chip->reg_config.smplrt_div);
+    if (ret) {
+        dev_warn(&spi->dev, "invalid smplrt_div attribute");
+        chip->reg_config.smplrt_div = 0x00;
+    }
+
+    ret = of_property_read_u8(np, "gyro_config", &chip->reg_config.gyro_config);
+    if (ret) {
+        dev_warn(&spi->dev, "invalid gyro_config attribute");
+        chip->reg_config.gyro_config = 0x18;
+    }
+
+    ret = of_property_read_u8(np, "accel_config", &chip->reg_config.accel_config);
+    if (ret) {
+        dev_warn(&spi->dev, "invalid accel_config attribute");
+        chip->reg_config.accel_config = 0x18;
+    }
+
+    ret = of_property_read_u8(np, "config", &chip->reg_config.config);
+    if (ret) {
+        dev_warn(&spi->dev, "invalid config attribute");
+        chip->reg_config.config = 0x04;
+    }
+
+    ret = of_property_read_u8(np, "accel_config2", &chip->reg_config.accel_config2);
+    if (ret) {
+        dev_warn(&spi->dev, "invalid accel_config2 attribute");
+        chip->reg_config.accel_config2 = 0x04;
+    }
+
+    ret = of_property_read_u8(np, "pwr_mgmt_2", &chip->reg_config.pwr_mgmt_2);
+    if (ret) {
+        dev_warn(&spi->dev, "invalid pwr_mgmt_2 attribute");
+        chip->reg_config.pwr_mgmt_2 = 0x00;
+    }
+
+    ret = of_property_read_u8(np, "lp_mode_cfg", &chip->reg_config.lp_mode_cfg);
+    if (ret) {
+        dev_warn(&spi->dev, "invalid lp_mode_cfg attribute");
+        chip->reg_config.lp_mode_cfg = 0x00;
+    }
+
+    ret = of_property_read_u8(np, "fifo_en", &chip->reg_config.fifo_en);
+    if (ret) {
+        dev_warn(&spi->dev, "invalid fifo_en attribute");
+        chip->reg_config.fifo_en = 0x00;
+    }
+
+    return ret;
+}
 
 static int spi_hardware_init(struct spi_icm_data *chip)
 {
     int data = 0;
     struct spi_device *spi;
 
+    //1.配置spi位regmap操作模式
     spi = (struct spi_device *)chip->private_data;
     chip->map = devm_regmap_init_spi(spi, &icm20608_regmap_config);
     if (IS_ERR(chip->map))
@@ -235,22 +253,35 @@ static int spi_hardware_init(struct spi_icm_data *chip)
         dev_err(&spi->dev, "chip map init failed\n");
     }
 
+    //2.复位芯片
     regmap_write(chip->map, ICM20_PWR_MGMT_1, 0x80);
     mdelay(50);
     regmap_write(chip->map, ICM20_PWR_MGMT_1, 0x01);
     mdelay(50);
 
+    //3.读取芯片ID
     regmap_read(chip->map, ICM20_WHO_AM_I, &data);
     dev_info(&spi->dev, "ICM20608 ID = %#X\n", data);
 
-    regmap_write(chip->map, ICM20_SMPLRT_DIV, 0x00);
-    regmap_write(chip->map, ICM20_GYRO_CONFIG, 0x18);
-    regmap_write(chip->map, ICM20_ACCEL_CONFIG, 0x18);
-    regmap_write(chip->map, ICM20_CONFIG, 0x04);
-    regmap_write(chip->map, ICM20_ACCEL_CONFIG2, 0x04);
-    regmap_write(chip->map, ICM20_PWR_MGMT_2, 0x00);
-    regmap_write(chip->map, ICM20_LP_MODE_CFG, 0x00);
-    regmap_write(chip->map, ICM20_FIFO_EN, 0x00);
+    //4.解析设备树，写入寄存器配置信息
+    icm20608_parse_dt(chip);
+    regmap_write(chip->map, ICM20_SMPLRT_DIV, chip->reg_config.smplrt_div);
+    regmap_write(chip->map, ICM20_GYRO_CONFIG, chip->reg_config.gyro_config);
+    regmap_write(chip->map, ICM20_ACCEL_CONFIG, chip->reg_config.accel_config);
+    regmap_write(chip->map, ICM20_CONFIG, chip->reg_config.config);
+    regmap_write(chip->map, ICM20_ACCEL_CONFIG2, chip->reg_config.accel_config2);
+    regmap_write(chip->map, ICM20_PWR_MGMT_2, chip->reg_config.pwr_mgmt_2);
+    regmap_write(chip->map, ICM20_LP_MODE_CFG, chip->reg_config.lp_mode_cfg);
+    regmap_write(chip->map, ICM20_FIFO_EN, chip->reg_config.fifo_en);
+    dev_info(&spi->dev, "icm20608 reg config list:%d, %d, %d, %d, %d, %d, %d, %d",
+            chip->reg_config.smplrt_div,
+            chip->reg_config.gyro_config,
+            chip->reg_config.accel_config,
+            chip->reg_config.config,
+            chip->reg_config.accel_config2,
+            chip->reg_config.pwr_mgmt_2,
+            chip->reg_config.lp_mode_cfg,
+            chip->reg_config.fifo_en);
 
     return 0;
 }
@@ -262,6 +293,7 @@ static int spi_device_create(struct spi_icm_data *chip)
     int minor = DEFAULT_MINOR;
     struct spi_device *spi = (struct spi_device *)chip->private_data;
 
+    //1.申请设备号
     if (major) {
         chip->dev_id= MKDEV(major, minor);
         result = register_chrdev_region(chip->dev_id, 1, DEVICE_NAME);
@@ -275,6 +307,7 @@ static int spi_device_create(struct spi_icm_data *chip)
         goto exit;
     }
 
+    //2.创建字符设备，关联设备号，并添加到内核
     cdev_init(&chip->cdev, &spi_icm_ops);
     chip->cdev.owner = THIS_MODULE;
     result = cdev_add(&chip->cdev, chip->dev_id, 1);
@@ -283,13 +316,13 @@ static int spi_device_create(struct spi_icm_data *chip)
         goto exit_cdev_add;
     }
 
+    //3.创建设备类和设备文件，关联设备号，用于应用层访问
     chip->class = class_create(THIS_MODULE, DEVICE_NAME);
     if (IS_ERR(chip->class)){
         dev_err(&spi->dev, "class create failed!\n");
         result = PTR_ERR(chip->class);
         goto exit_class_create;
     }
-
     chip->device = device_create(chip->class, NULL, chip->dev_id, NULL, DEVICE_NAME);
     if (IS_ERR(chip->device)){
         dev_err(&spi->dev, "device create failed, major:%d, minor:%d\n", major, minor);
@@ -315,6 +348,7 @@ static int icm20608_probe(struct spi_device *spi)
     int result;
     struct spi_icm_data *chip = NULL;
 
+    //1.申请spi管理控制块
     chip = devm_kzalloc(&spi->dev, sizeof(struct spi_icm_data), GFP_KERNEL);
     if (!chip){
         dev_err(&spi->dev, "malloc error\n");
@@ -323,12 +357,7 @@ static int icm20608_probe(struct spi_device *spi)
     chip->private_data = (void *)spi;
     spi_set_drvdata(spi, chip);
 
-    result = spi_device_create(chip);
-    if(result){
-        dev_err(&spi->dev, "device create failed!\n");
-        return result;
-    }
-
+    //2.初始化spi硬件模块
     result = spi_hardware_init(chip);
     if (result != 0)
     {
@@ -336,6 +365,13 @@ static int icm20608_probe(struct spi_device *spi)
         return -EINVAL;
     }
 
+    //3.将设备注册到内核和系统中
+    result = spi_device_create(chip);
+    if (result){
+        dev_err(&spi->dev, "device create failed!\n");
+        return result;
+    }
+    
     dev_info(&spi->dev, "spi probe success!\r\n");
     return 0;
 }

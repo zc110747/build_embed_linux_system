@@ -75,6 +75,7 @@
   - [ch03-x7.t113i设备树分析](./src/ch03-x7.t113_i_dts_analysis.md)
   - [ch03-x8.rk3568设备树分析](./src/ch03-x8.rk3568_dts_analysis.md)
   - [ch03-x9.驱动问题分析和解决](./src/ch03-x9.driver_feature_notes.md)
+  - [ch03-xa.内核中的并发管理](./src/ch03-xa.core_concurrency.md)
 
 - [ch04.linux应用开发设计](./src/ch04-00.application_design.md)
   - [ch04-01.c++语法说明](./src/ch04-01.cpp_grammar.md)
