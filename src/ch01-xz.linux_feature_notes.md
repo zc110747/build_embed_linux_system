@@ -558,4 +558,4 @@ make && make install
 
 [返回目录](../README.md)
 
-直接开始下一章节: [嵌入式Linux启动流程说明](./ch02-00.system_bringup.md)
+直接开始下一章节：[嵌入式Linux启动流程说明](./ch02-00.system_bringup.md)

@@ -10,7 +10,7 @@
   - [ch01-03.linux shell脚本语法](./src/ch01-03.linux_shell_grammar.md)
   - [ch01-04.linux交叉编译方法](./src/ch01-04.linux_cross_compiler.md)
   - [ch01-05.linux快速部署和SDK构建方法](./src/ch01-05.linux_quick_deploy.md)
-  - [ch01-x1.linux平台常见问题总结](./src/ch01-x1.linux_feature_notes.md)
+  - [ch01-xz.linux平台常见问题总结](./src/ch01-xz.linux_feature_notes.md)
 
 - [ch02.linux系统启动实现](./src/ch02-00.system_bringup.md)
   - [ch02-01.makefile脚本语法](./src/ch02-01.makefile.md)
@@ -35,7 +35,8 @@
   - [ch02-x3.全志h618平台编译方法](./src/ch02-x3.h618_platform.md)
   - [ch02-x4.全志t113i平台编译方法](./src/ch02-x4.t113i_platform.md)
   - [ch02-x5.从stm32移植u-boot理解启动流程](./src/ch02-x5.stm32_uboot.md)
-  - [ch02-x6.嵌入式linux平台常见问题总结](./src/ch02-x6.system_feature_notes.md)
+  - [ch02-x6.uboot命令行脚本和设备树overlay实现](./src/ch02-x6.uboot_script_overlay.md)
+  - [ch02-xz.系统平台常见问题总结](./src/ch02-xz.system_feature_notes.md)
 
 - [ch03.linux驱动开发](./src/ch03-00.driver_design.md)
   - [ch03-01.设备树说明](./src/ch03-01.device_tree.md)
@@ -65,7 +66,8 @@
   - [ch03-25.图形显示drm管理框架](./src/ch03-25.drm_frame.md)
   - [ch03-26.摄像头csi接口管理驱动](./src/ch03-26.csi_frame.md)
   - [ch03-27.系统时钟和OPP管理模块](./src/ch03-27.cpufreq_opp.md)
-  - [ch03-28.音频DAC输出模块](./src/ch03-28.audio_adc.md)
+  - [ch03-28.音频dac输出模块](./src/ch03-28.audio_adc.md)
+  - [ch03-29.内核中的并发管理](./src/ch03-29.core_concurrency.md)
   - [ch03-x1.驱动基础接口](./src/ch03-x1.kernel_base_api.md)
   - [ch03-x2.驱动设备树接口](./src/ch03-x2.kernel_tree_api.md)
   - [ch03-x3.驱动基础devm接口](./src/ch03-x3.kernel_resource_base_api.md)
@@ -74,8 +76,7 @@
   - [ch03-x6.imx6ull设备树分析](./src/ch03-x6.mx6ull_dts_analysis.md)
   - [ch03-x7.t113i设备树分析](./src/ch03-x7.t113_i_dts_analysis.md)
   - [ch03-x8.rk3568设备树分析](./src/ch03-x8.rk3568_dts_analysis.md)
-  - [ch03-x9.驱动问题分析和解决](./src/ch03-x9.driver_feature_notes.md)
-  - [ch03-xa.内核中的并发管理](./src/ch03-xa.core_concurrency.md)
+  - [ch03-xz.驱动问题分析和解决](./src/ch03-xz.driver_feature_notes.md)
 
 - [ch04.linux应用开发设计](./src/ch04-00.application_design.md)
   - [ch04-01.c++语法说明](./src/ch04-01.cpp_grammar.md)
@@ -91,7 +92,8 @@
 
 [ch05.结语](./src/ch05.CONCLUSION.md)
 
-[附录一:网址和开源项目](./src/附录一.网址和开源项目.md)
+[附录一:网址和开源项目](./src/end_annex-01.website.md)
+[附录一:面试问题整理](./src/end_annex-02.interview.md)
 
 ## 说明
 

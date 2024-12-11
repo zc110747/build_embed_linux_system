@@ -1,4 +1,4 @@
-# 附录六: 嵌入式Linux系统平台问题支持
+# 附录六: 系统平台常见问题总结
 
 - [修改内核logo显示](#feature-001)
 - [systemd增加自定义服务方法](#feature-002)
@@ -7,6 +7,7 @@
 - [nfs启动显示为Read-Only FileSystem](#feature-005)
 - [什么是核隔离，如何让系统支持核隔离](#feature-006)
 - [内核支持usb wifi芯片，并且开机自启动方法](#question-007)
+- [修改系统输出由uart1切换到uart3](#question-008)
 
 ## feature-001
 
@@ -249,6 +250,89 @@ obj-$(CONFIG_RTL8188EU) += rtl8188eus/
 编译内核，将RTL8188EUS设备插入即可工作。
 
 wlan启动并开启自启动的方法详细见文档：[wpa_supplicant交叉编译和使用方法](./ch01-04.linux_cross_compiler.md#wpa_supplicant)
+
+### question-008
+
+修改系统输出由uart1切换到uart3。
+
+更换串口模块，包含u-boot，bootargs, kernel和rootfs。
+
+- uboot模块修改
+
+```c
+// 设备树节点
+// arch/boot/dts/imx6ul-14x14-rmk.dtsi
+chosen {
+    stdout-path = &uart3;
+};
+
+&uart3 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&pinctrl_uart3>;
+    status = "okay";
+};
+
+// include/configs/mx6ullrmk.h
+#define CONFIG_MXC_UART_BASE    UART3_BASE
+
+// board/freescale/mx6ullrmk/mx6ullrmk.c
+static iomux_v3_cfg_t const uart3_pads[] = {
+    MX6_PAD_UART3_TX_DATA__UART3_DCE_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
+    MX6_PAD_UART3_RX_DATA__UART3_DCE_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
+};
+
+static void setup_iomux_uart(void)
+{
+    //setup uart1 pins
+    imx_iomux_v3_setup_multiple_pads(uart1_pads, ARRAY_SIZE(uart1_pads));
+
+    //setup uart3 pins
+    imx_iomux_v3_setup_multiple_pads(uart3_pads, ARRAY_SIZE(uart3_pads));
+}
+```
+
+- bootargs修改
+
+```c
+setenv bootargs "console=ttymxc2,115200 root=/dev/nfs nfsroot=${serverip}:${nfspath},proto=tcp,nfsvers=3 rw ip=${ipaddr}:${serverip}:${gateway}:${netmask}::eth0:off earlyprintk loglevel=${printk_level}"
+```
+
+- kernel修改
+
+```c
+// 设备树节点
+// arch/boot/dts/imx6ul-14x14-rmk.dtsi
+chosen {
+    stdout-path = &uart3;
+};
+
+&uart3 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&pinctrl_uart3>;
+    status = "okay";
+};
+```
+
+- rootfs修改
+
+对于busybox构建的sysvinit文件系统。
+
+```shell
+# /etc/inittab
+ttymxc2::respawn:/sbin/getty -L  ttymxc2 0 vt100 # GENERIC_SERIAL
+```
+
+对于debain和ubuntu使用systemd文件系统
+
+```shell
+cd /etc/systemd/system/getty.target.wants
+
+rm getty@ttymxc0.service
+
+cp -d getty@tty1.service getty@ttymxc2.service
+```
+
+主要修改如上。
 
 ## next_chapter
 

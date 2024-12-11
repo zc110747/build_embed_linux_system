@@ -470,4 +470,4 @@ static ssize_t led_store(struct device *dev, struct device_attribute *attr,  con
 
 [返回目录](../README.md)
 
-直接开始下一节说明: [内核中的并发管理](./ch03-xa.core_concurrency.md)
+直接开始下一节说明: [应用设计说明](./ch04-00.application_design.md)

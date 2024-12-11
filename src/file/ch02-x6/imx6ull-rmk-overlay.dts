@@ -1,0 +1,7 @@
+
+/dts-v1/;
+/plugin/;
+
+&usr_beep {
+    rmk,value = <0x1>;
+};

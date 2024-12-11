@@ -1,0 +1,24 @@
+## nfs network
+serverip=192.168.2.29
+ipaddr=192.168.2.99
+gateway=192.168.2.1
+netmask=255.255.255.0
+nfspath=/home/freedom/Desktop/user_git/sdk/nfs
+
+## loglevel
+printk_level=7
+
+## console set
+console_serial=ttymxc0
+console_baud=115200
+# display_bootinfo=enable
+
+## boot manage
+## net/mmc: net or mmc boot mode
+boot_mod=net
+
+## fdt file manage
+fdt_file=imx6ull-14x14-emmc-4.3-800x480-c.dtb
+
+## support overlays
+overlays=imx6ull-rmk-overlay

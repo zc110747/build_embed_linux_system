@@ -36,6 +36,7 @@
 6. js环境: <https://github.com/bellard/quickjs>
 7. sqlite开源项目: <https://www.sqlite.org/download.html>
 8. openssl开源项目: <https://github.com/openssl/openssl>
+9. nxp开源项目地址(u-boot, kernel): <https://github.com/nxp-imx/>
 
 ## 技术网站
 
