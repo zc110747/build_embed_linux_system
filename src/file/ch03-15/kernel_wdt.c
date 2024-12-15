@@ -42,8 +42,8 @@
 #include <linux/watchdog.h>
 
 #define DRIVER_NAME     "wdt_drv"
-#define IMX2_WDT_MAX_TIME	        120U
-#define IMX2_WDT_DEFAULT_TIME	    10		/* in seconds */
+#define CONFIG_WDT_MAX_TIME	        120U
+#define CONFIG_WDT_DEFAULT_TIME	    10		/* in seconds */
 
 struct kernel_wdt_data
 {
@@ -77,6 +77,7 @@ static int wdt_start(struct watchdog_device *wdog)
 {
 	set_bit(WDOG_HW_RUNNING, &wdog->status);
 
+    dev_info(&wdata->pdev->dev, "wdt start!");
 	return wdt_ping(wdog);
 }
 
@@ -94,7 +95,7 @@ static int wdt_set_timeout(struct watchdog_device *wdog,
 	unsigned int actual;
   	struct kernel_wdt_data *wdata = watchdog_get_drvdata(wdog); 
 
-	actual = min(new_timeout, IMX2_WDT_MAX_TIME);
+	actual = min(new_timeout, CONFIG_WDT_MAX_TIME);
 	wdog->timeout = new_timeout;
     dev_info(&wdata->pdev->dev, "wdt timeout:%d", wdog->timeout);
 	return 0;
@@ -105,7 +106,7 @@ static int wdt_set_pretimeout(struct watchdog_device *wdog,
 {
     struct kernel_wdt_data *wdata = watchdog_get_drvdata(wdog);
 
-	if (new_pretimeout >= IMX2_WDT_MAX_TIME)
+	if (new_pretimeout >= CONFIG_WDT_MAX_TIME)
 		return -EINVAL;
 
 	wdog->pretimeout = new_pretimeout;
@@ -116,6 +117,9 @@ static int wdt_set_pretimeout(struct watchdog_device *wdog,
 static int imx2_wdt_restart(struct watchdog_device *wdog, unsigned long action,
 			    void *data)
 {
+    struct kernel_wdt_data *wdata = watchdog_get_drvdata(wdog);
+
+    dev_info(&wdata->pdev->dev, "wdt timeout, device rst!");
 	return 0;
 }
 
@@ -156,11 +160,10 @@ static int wdt_probe(struct platform_device *pdev)
     wdog->info		= &wdt_info;
 	wdog->ops		= &wdt_ops;
 	wdog->min_timeout	= 1;
-	wdog->timeout		= IMX2_WDT_DEFAULT_TIME;
-	wdog->max_hw_heartbeat_ms = IMX2_WDT_MAX_TIME * 1000;
+	wdog->timeout		= CONFIG_WDT_DEFAULT_TIME;
+	wdog->max_hw_heartbeat_ms = CONFIG_WDT_MAX_TIME * 1000;
 	wdog->parent		= &pdev->dev;
     wdog->bootstatus    = 0;
-    wdog->status        = WDOG_HW_RUNNING;
 	watchdog_set_drvdata(wdog, wdata);
 
     ret = devm_watchdog_register_device(&pdev->dev, wdog);
@@ -179,7 +182,7 @@ static void wdt_shutdown(struct platform_device *pdev)
 	struct kernel_wdt_data *wdata = platform_get_drvdata(pdev);
     struct watchdog_device *wdog = &wdata->wdog;
 
-    wdt_set_timeout(wdog, IMX2_WDT_MAX_TIME);
+    wdt_set_timeout(wdog, CONFIG_WDT_MAX_TIME);
     wdt_ping(wdog);
     dev_crit(&pdev->dev, "Device shutdown: Expect reboot!\n");
 }
