@@ -30,7 +30,7 @@
 
 1. QT开源项目: <https://gitee.com/feiyangqingyun/QWidgetDemo.git>
 2. CPlusPlusThings: <https://github.com/Light-City/CPlusPlusThings>
-3. freeType(开源字体引擎)：<https://freetype.org/>
+3. freeType(开源字体引擎): <https://freetype.org/>
 4. 基于qt的开源键盘固件: <https://github.com/qmk/qmk_firmware>
 5. 快速无损的压缩算法ztsd: <https://github.com/facebook/zstd>
 6. js环境: <https://github.com/bellard/quickjs>

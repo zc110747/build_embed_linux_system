@@ -1,0 +1,8 @@
+# The primary network interface, address and gateway set as the 
+auto eth0
+iface eth0 inet static
+	address 192.168.1.125
+	netmask 255.255.255.0
+	gateway 192.168.1.1
+
+# 注意，address和gateway的设置根据路由器或者网关来定义，启动IP地址不能与当前局域网内设备冲突。

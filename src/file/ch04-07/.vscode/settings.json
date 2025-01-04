@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.cmd": "shellscript",
         "iostream": "cpp",
         "array": "cpp",
         "atomic": "cpp",
@@ -53,6 +54,8 @@
         "typeinfo": "cpp",
         "condition_variable": "cpp",
         "mutex": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "map": "cpp",
+        "fstream": "cpp"
     }
 }

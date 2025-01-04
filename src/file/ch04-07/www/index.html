@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>device mange</title>
+        <link href="css/global.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <div id="app" v-cloak>
+            <div class="segregate">
+                <div id= "menu_block">
+                    <div class="menu"><a @click="changeShow(0)"><span name="Lan">设备配置</span></a></div>
+                    <div class="menu"><a @click="changeShow(1)"><span name="Lan">当前状态</span></a></div>
+                </div>
+                <div id="info_block" v-if="isShow">
+                    <table class="tableList">
+                        <tr>
+                            <td><span>LED Config:</span></td>
+                            <td><button class="btnCss" @click.native="dev_set('led', 'on')">LED ON</button></td>
+                            <td><button class="btnCss" @click.native="dev_set('led', 'off')">LED OFF</button></td>
+                        </tr>
+                        <tr>
+                            <td><span>BEEP Config:</span></td>
+                            <td><button class="btnCss" @click.native="dev_set('beep', 'on')">BEEP ON</button></td>
+                            <td><button class="btnCss" @click.native="dev_set('beep', 'off')">BEEP OFF</button></td>
+                        <tr>
+                    </table>
+                </div>
+                <div id="info_block" v-if="!isShow">
+                    <table class="tableList">
+                        <tr>
+                            <td><span>LED-STAT:</span></td>
+                            <td><span>{{ deviceInfo.data.led }}</span></td>
+                        </tr>
+                        <tr>
+                            <td><span>BEEP-STAT:</span></td>
+                            <td><span>{{ deviceInfo.data.beep }}</span></td>
+                        <tr>
+                        <tr>
+                            <td><span>AP-STAT:</span></td>
+                            <td><span>ir-{{ deviceInfo.data.ap.ir }}, als-{{ deviceInfo.data.ap.als }}, ps-{{ deviceInfo.data.ap.ps }}</span></td>
+                        <tr>
+                        <tr>
+                            <td><span>ICM-GYRO:</span></td>
+                            <td><span>x-{{ deviceInfo.data.icm.gyro_x }}, y-{{ deviceInfo.data.icm.gyro_y }}, z-{{ deviceInfo.data.icm.gyro_z }}</span></td>
+                        <tr>
+                        <tr>
+                            <td><span>ICM-ACCEL:</span></td>
+                            <td><span>x-{{ deviceInfo.data.icm.accel_x }}, y-{{ deviceInfo.data.icm.accel_y }}, z-{{ deviceInfo.data.icm.accel_z }}</span></td>
+                        <tr>
+                        <tr>
+                            <td><span>ICM-TEMP:</span></td>
+                            <td><span>{{ deviceInfo.data.icm.temp_act }}</span></td>
+                        <tr>
+                        <tr>
+                            <td><span>ANGLE:</span></td>
+                            <td><span>{{ deviceInfo.data.angle }}°</span></td>
+                        <tr>
+                    </table>
+                </div>
+            </div>
+            <div style="padding-left:45px;">
+                <span>Logger Message:</span>
+                <span>{{ message }}</span>
+            </div>
+        </div>
+    </body>
+    <script src="js/axios.js"></script>
+    <script src="js/vue.global.js"></script>
+    <script type="module" src="js/main.js"></script>
+</html>

@@ -17,16 +17,18 @@
 //  Revision History:
 //      12/10/2024   Create New Version
 /////////////////////////////////////////////////////////////////////////////
-#include "includes/include.hpp"
+_Pragma("once");
 
-class tcp_server
+#include "includes.hpp"
+
+class http_server
 {
 public:
     /// \brief constructor
-    tcp_server() {}
+    http_server() {}
 
     /// \brief destructor   
-    ~tcp_server() {}
+    ~http_server() {}
 
     /// \brief init
     /// - This method is used to init the object.
@@ -50,9 +52,9 @@ private:
     /// - This method is for thread accept loop run.
     void run();
 
-    /// \brief recv_task_run
+    /// \brief recv_process_task
     /// - This method is for thread recv loop run.    
-    void recv_task_run(int fd);
+    void recv_process_task(int fd);
 
 private:
     /// \brief ipaddr_

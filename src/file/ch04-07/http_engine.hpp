@@ -16,8 +16,10 @@
 //  Revision History:
 //      12/10/2024   Create New Version
 /////////////////////////////////////////////////////////////////////////////
+_Pragma("once");
 
-#include "includes/include.hpp"
+#include "includes.hpp"
+#include "http_resource.hpp"
 
 typedef enum
 {
@@ -25,6 +27,19 @@ typedef enum
     METHOD_POST,
     METHOD_PUT,  
 }HTTP_METHOD;
+
+typedef enum
+{
+    FILE_TYPE_TEXT = 0,
+    FILE_TYPE_JPG,
+    FILE_TYPE_PNG,
+    FILE_TYPE_HTML,
+    FILE_TYPE_GIF,
+    FILE_TYPE_JS,
+    FILE_TYPE_ASP,
+    FILE_TYPE_CSS,
+    FILE_TYPE_JSON,
+}HTTP_FILE_TYPE;
 
 struct http_protocol
 {
@@ -38,19 +53,27 @@ struct http_protocol
 
     /// \brief ver_
     /// - the version for the http request.   
-    std::string ver_;   
+    std::string ver_;
+
+    /// \brief is_dynamic
+    /// - wheather the process is dynamic
+    bool is_dynamic{false};
+
+    /// \brief type_
+    /// - file type
+    HTTP_FILE_TYPE type_;
 };
 
 class http_engine
 {
 public:
     /// \brief constructor
-    http_engine() {
+    http_engine(std::function<void(const char *ptr, int size)> func):handle_tx_(func) 
+    {
     };
 
     /// \brief destructor 
     ~http_engine() {
-        release();
     };
 
     /// \brief process
@@ -58,46 +81,37 @@ public:
     /// \param rx_buffer - rx buffer process.
     /// \param rx_size - rx size.
     /// \return Wheather process success or failed.
-    bool process(char *rx_buffer, int rx_size, std::string& Str);
-
-    /// \brief get_tx_buf_
-    /// - This method is used to process output buffer.
-    /// \return the tx buffer point.
-    char *get_tx_buf_() {
-        return ptxbuf_;
-    }
-
-    /// \brief get_tx_size
-    /// - This method is used to process output buffer size.
-    /// \return the tx buffer size. 
-    int get_tx_size() {
-        return tx_size_;
-    }
+    bool process(char *rx_buffer, int rx_size);
 
     /// \brief get_tx_size
     /// - This method is used for static process.
     void static_process();
 
-    void release() {
-        if (!ptxbuf_) {
-            delete ptxbuf_;
-            ptxbuf_ = nullptr;
-        }
-    }
-
 private:
-     /// \brief decode_header
+    /// \brief decode_request_line
     /// - This method is used to decode the http header.
     /// \param head_str - the substring data.
     /// \return Wheather process success or failed.   
-    bool decode_header(const std::string &head_str);
+    bool decode_request_line(const std::string &head_str);
 
-    bool create_out_buffer(const std::string& http_header, const std::string& body);
+    /// \brief format_header_extra_info
+    /// - This method is used to format extra header info
+    /// \param type - file type.
+    /// \param size - file size.
+    /// \return string return for header
+    std::string format_header_extra_info(HTTP_FILE_TYPE type, int size);
+
+    /// \brief engine_static_process
+    /// - This method is used to static engine process. 
+    /// \return weather can find file  
+    bool engine_static_process();
+
+    /// \brief engine_static_process
+    /// - This method is used to dynamic engine process. 
+    /// \return the final for the process
+    bool engine_dynamic_process();
+
 private:
-    /// \brief ptxbuf_
-    /// - the tx buffer point
-    char *ptxbuf_{nullptr};
-
     /// \brief tx_size_
     /// - the tx size
     int tx_size_{0};
@@ -105,5 +119,9 @@ private:
     /// \brief protocol_
     /// - the http protocol info  
     http_protocol protocol_;
+
+    /// \brief handle_tx_
+    /// - tx handler
+    std::function<void(const char *ptr, int size)> handle_tx_;
 };
 

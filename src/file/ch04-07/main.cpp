@@ -16,18 +16,17 @@
 //  Revision History:
 //      12/10/2024   Create New Version
 /////////////////////////////////////////////////////////////////////////////
-#include "tcp_socket.hpp"
+#include "http_server.hpp"
 #include "semaphore.hpp"
 
-#define SERVER_IPADDR   "172.20.79.132"
+#define SERVER_IPADDR   "172.27.83.254"
 #define SERVER_PORT     8080
-
 
 static semaphore global_exit_sem;
 
 int main(int argc, char *argv[])
 {
-    tcp_server server;
+    http_server server;
     server.init(std::string(SERVER_IPADDR), SERVER_PORT);
     server.start();
 

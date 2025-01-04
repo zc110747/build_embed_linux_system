@@ -18,10 +18,10 @@
 //      12/10/2024   Create New Version
 /////////////////////////////////////////////////////////////////////////////
 
-#include "tcp_socket.hpp"
+#include "http_server.hpp"
 #include "http_engine.hpp"
 
-bool tcp_server::start()
+bool http_server::start()
 {
     socket_fd_ = socket(PF_INET, SOCK_STREAM, 0);
     if (socket_fd_ < 0) {
@@ -38,12 +38,12 @@ bool tcp_server::start()
     }
 
     // 启动线程
-    std::thread(std::bind(&tcp_server::run, this)).detach();
+    std::thread(std::bind(&http_server::run, this)).detach();
 
     return true;
 }
 
-void tcp_server::run()
+void http_server::run()
 {   
     struct sockaddr_in servaddr, clientaddr;
 
@@ -60,7 +60,7 @@ void tcp_server::run()
             sleep(5);
             continue;     
         } else {
-            std::cout<<"socket bind ok, "<<ipaddr_<<" "<<port_<<std::endl;
+            std::cout<<"socket bind ok, address "<<ipaddr_<<":"<<port_<<std::endl;
             break;  
         }
     }while(1);
@@ -81,40 +81,36 @@ void tcp_server::run()
             continue;
         } else {
             // 启动线程
-            std::thread(std::bind(&tcp_server::recv_task_run, this, client_fd)).detach();
+            std::thread(std::bind(&http_server::recv_process_task, this, client_fd)).detach();
         }         
     }    
     close(socket_fd_);
 }
 
-void tcp_server::recv_task_run(int fd)
+void http_server::recv_process_task(int fd)
 {
     char recvbuf[1024] = {0};
     int recv_len;
-    http_engine enginee;
+    http_engine engine([&](const char *ptr, int size){
+        write(fd, ptr, size);
+    });
     std::string out_str;
 
-    while(1)
-    {
-        memset(recvbuf, 0, sizeof(recvbuf));
+    memset(recvbuf, 0, sizeof(recvbuf));
 
-        //接收客户端发送的数据
-        recv_len = recv(fd, recvbuf, sizeof(recvbuf), 0);
-        if (recv_len < 0) {        
-            std::cout<<"server recv failed, break!"<<std::endl;
-            break;
-        } else if (recv_len == 0) {
-            std::cout<<"server recv zero, break!"<<std::endl;
-            break;
-        } else {
-            std::cout<<"recv len:"<<recv_len<<std::endl;
-            recvbuf[recv_len] = '\0';
+    //接收客户端发送的数据
+    recv_len = recv(fd, recvbuf, sizeof(recvbuf), 0);
+    if (recv_len > 0) {  
+        std::cout<<"recv len:"<<recv_len<<std::endl;
+        recvbuf[recv_len] = '\0';
 
-            if(enginee.process(recvbuf, recv_len, out_str)) {
-                std::cout<<out_str<<std::endl;
-                write(fd, out_str.c_str(), out_str.size());
-            }
+        if(engine.process(recvbuf, recv_len)) {
+            std::cout<<"server callback ok"<<std::endl;
         }
+    } else if (recv_len == 0) {
+        std::cout<<"server recv zero, break!"<<std::endl;
+    } else {
+        std::cout<<"server recv failed, break!"<<std::endl;
     }
 
     close(fd);

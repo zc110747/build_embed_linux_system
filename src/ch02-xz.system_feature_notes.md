@@ -8,6 +8,7 @@
 - [什么是核隔离，如何让系统支持核隔离](#feature-006)
 - [内核支持usb wifi芯片，并且开机自启动方法](#question-007)
 - [修改系统输出由uart1切换到uart3](#question-008)
+- [如何管理Linux硬盘分区，例如支持data，recovery分区](#question-009)
 
 ## feature-001
 
@@ -333,6 +334,81 @@ cp -d getty@tty1.service getty@ttymxc2.service
 ```
 
 主要修改如上。
+
+### question-009
+
+如何管理Linux硬盘分区，例如支持data，recovery分区(imx6ull mmc或者sd卡为例)。
+
+首先要明白一点，对于嵌入式Linux来说，硬盘分区除了对u-boot的起始地址，以及env的地址有明确定义外，其它的分区和大小只要满足最低的容量需求，是可以任意分区的，不过这也引起了新的问题，如何找到相应分区，这就涉及之前讲解过的设备地址文件，如/dev/mmcblk1p2，其中2就是所在分区的编号。那么如何实现呢。
+
+对于SD卡比较简单，参考[附录一:I.MX6ULL平台SDK操作和移植说明, SD卡下载方法](./ch02-x1.imx6ull_platform.md#sdcard)的说明，分区中增加相应块即可。
+
+对于emmc，则需要修改mgtool来支持文件，这里说下mgtool实现原理。
+
+1. mgtool连接后，通过usb下载支持UTP的固件到sdram中，跳转执行
+2. 通过UTP协议，传递命令(在ucl2.xml中实现)到内核中，并执行
+3. 通过命令完成emmc分盘，文件下载导入和同步功能
+
+如果希望emmc支持，主要修改以下部分。
+
+- 修改mksdcard.sh，增加分区
+
+```shell
+# 增加32M的userdata分区
+sfdisk --force ${node} << EOF
+${BOOT_ROM_SIZE}M,128M,c
+138M,32M,83
+200M,,83
+write
+EOF
+```
+
+- 修改传递的命令
+
+```xml
+<LIST name="eMMC" desc="Choose eMMC as media">
+    <!-- ...... -->
+
+    <!-- create partition -->
+    <CMD state="Updater" type="push" body="send" file="mksdcard.sh">Sending partition shell</CMD>
+    <CMD state="Updater" type="push" body="$ chmod 777 $FILE "> Partitioning...</CMD>
+    <CMD state="Updater" type="push" body="$ cp $FILE mksdcard.sh "> Partitioning...</CMD>
+    <CMD state="Updater" type="push" body="$ sh mksdcard.sh /dev/mmcblk1"> Partitioning...</CMD>
+
+    <!-- ...... -->
+
+    <!-- format and mount rootfs partition -->
+    <CMD state="Updater" type="push" body="$ mkfs.ext3 -F -E nodiscard /dev/mmcblk1p2">Formatting rootfs partition</CMD>
+    <CMD state="Updater" type="push" body="$ mkdir -p /mnt/mmcblk1p2"/>
+    <CMD state="Updater" type="push" body="$ mount -t ext3 /dev/mmcblk1p2 /mnt/mmcblk1p2"/>
+
+    <CMD state="Updater" type="push" body="$ mkfs.ext3 -F -E nodiscard /dev/mmcblk1p3">Formatting rootfs partition</CMD>
+    <CMD state="Updater" type="push" body="$ mkdir -p /mnt/mmcblk1p3"/>
+    <CMD state="Updater" type="push" body="$ mount -t ext3 /dev/mmcblk1p3 /mnt/mmcblk1p3"/>
+
+    <!-- burn rootfs -->
+    <CMD state="Updater" type="push" body="pipe tar -jxv -C /mnt/mmcblk1p3" file="files/filesystem/rootfs.tar.bz2" ifdev="MX6ULL">Sending and writting rootfs</CMD>
+    <CMD state="Updater" type="push" body="frf">Finishing rootfs write</CMD>
+    <CMD state="Updater" type="push" body="send" file="files/modules/modules.tar.bz2" ifdev="MX6ULL">Sending Modules file</CMD>
+    <CMD state="Updater" type="push" body="$ mkdir -p /mnt/mmcblk1p3/lib/modules">Mkdir -p /mnt/mmcblk1p3/lib/modules</CMD>
+    <CMD state="Updater" type="push" body="$ tar jxf $FILE -C /mnt/mmcblk1p3/lib/modules/" ifdev="MX6ULL">tar Modules file</CMD>
+    <CMD state="Updater" type="push" body="$ sleep 1">delay</CMD>
+    <CMD state="Updater" type="push" body="$ sync">Sync...</CMD>
+    <CMD state="Updater" type="push" body="$ umount /mnt/mmcblk1p3">Unmounting rootfs partition</CMD>
+    <CMD state="Updater" type="push" body="$ echo Update Complete!">Done</CMD>
+</LIST>
+```
+
+- 修改bootargs适配新的文件系统地址
+
+```shell
+setenv bootargs "console=ttymxc0,115200 panic=5 rootwait root=/dev/mmcblk1p3 earlyprintk rw"
+```
+
+相应文件如下所示。
+
+1. [硬盘格式化的脚本mksdcard.sh](./file/ch02-xz/mksdcard.sh)
+2. [UTP协议执行脚本ucl2.xml](./file/ch02-xz/ucl2.xml)
 
 ## next_chapter
 

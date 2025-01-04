@@ -1,0 +1,275 @@
+<!--
+* Copyright (C) 2012, Freescale Semiconductor, Inc. All Rights Reserved.
+* The CFG element contains a list of recognized usb devices.
+*  DEV elements provide a name, class, vid and pid for each device.
+*
+* Each LIST element contains a list of update instructions.
+*  "Install" - Erase media and install firmware.
+*  "Update" - Update firmware only.
+*
+* Each CMD element contains one update instruction of attribute type.
+*  "pull" - Does UtpRead(body, file) transaction.
+*  "push" - Does UtpWrite(body, file) transaction.
+*  "drop" - Does UtpCommand(body) then waits for device to disconnect.
+*  "boot" - Finds configured device, forces it to "body" device and downloads "file".
+*  "find" - Waits for "timeout" seconds for the "body" device to connect.
+*  "show" - Parse and show device info in "file".  
+-->
+
+
+<UCL>
+  <CFG>
+	<STATE name="BootStrap" dev="MX6UL" vid="15A2" pid="007D"/>
+    <STATE name="BootStrap" dev="MX6ULL" vid="15A2" pid="0080"/>
+    <STATE name="Updater"   dev="MSC" vid="066F" pid="37FF"/>
+  </CFG>
+
+  
+  <LIST name="SDCard" desc="Choose SD Card as media">
+	<CMD state="BootStrap" type="boot" body="BootStrap" file ="firmware/u-boot-imx6ull-14x14-sd.imx" ifdev="MX6ULL">Loading U-boot</CMD>
+		
+	<CMD state="BootStrap" type="load" file="firmware/zImage" address="0x80800000"
+		loadSection="OTH" setSection="OTH" HasFlashHeader="FALSE" ifdev="MX6ULL">Loading Kernel.</CMD>
+
+	<CMD state="BootStrap" type="load" file="firmware/fsl-image-mfgtool-initramfs-imx_mfgtools.cpio.gz.u-boot" address="0x83800000"
+		loadSection="OTH" setSection="OTH" HasFlashHeader="FALSE" ifdev="MX6ULL">Loading Initramfs.</CMD>
+
+	<CMD state="BootStrap" type="load" file="firmware/imx6ull-14x14-sd.dtb" address="0x83000000"
+		loadSection="OTH" setSection="OTH" HasFlashHeader="FALSE" ifdev="MX6ULL">Loading device tree.</CMD>
+
+
+	<CMD state="BootStrap" type="jump" > Jumping to OS image. </CMD>
+
+
+	<!-- create partition -->
+	<CMD state="Updater" type="push" body="send" file="mksdcard.sh.tar">Sending partition shell</CMD>
+	<CMD state="Updater" type="push" body="$ tar -xf $FILE "> Partitioning...</CMD>
+	<CMD state="Updater" type="push" body="$ sh mksdcard.sh /dev/mmcblk0"> Partitioning...</CMD>
+
+	<!-- burn uboot -->
+	<CMD state="Updater" type="push" body="$ dd if=/dev/zero of=/dev/mmcblk0 bs=1k seek=768 conv=fsync count=8">clear u-boot env</CMD>
+	<CMD state="Updater" type="push" body="send" file="files/boot/u-boot-imx6ull-14x14-ddr%ddr%-%board%%boot%.imx" ifdev="MX6ULL">Sending u-boot.bin</CMD>
+	<CMD state="Updater" type="push" body="$ dd if=$FILE of=/dev/mmcblk0 bs=1k seek=1 conv=fsync">write u-boot.bin to sd card</CMD>
+
+	<!-- format and mount boot partition -->
+	<CMD state="Updater" type="push" body="$ while [ ! -e /dev/mmcblk0p1 ]; do sleep 1; echo \"waiting...\"; done ">Waiting for the partition ready</CMD>
+	<CMD state="Updater" type="push" body="$ mkfs.vfat -F 32 -n \"boot\" /dev/mmcblk0p1">Formatting rootfs partition</CMD>
+	<CMD state="Updater" type="push" body="$ mkdir -p /mnt/mmcblk0p1"/>
+	<CMD state="Updater" type="push" body="$ mount -t vfat /dev/mmcblk0p1 /mnt/mmcblk0p1"/>
+
+	<!-- burn logo -->
+	<!--<CMD state="Updater" type="push" body="send" file="files/alientek.bmp">Sending logo</CMD> 
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk0p1/alientek.bmp">write boot logo to sd card</CMD> -->
+
+	<!-- burn zImage -->
+	<CMD state="Updater" type="push" body="send" file="files/boot/zImage">Sending kernel</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk0p1/zImage">write kernel image to sd card</CMD>
+
+	<!-- burn dtb -->
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-%board%-4.3-480x272-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk0p1/imx6ull-14x14-%board%-4.3-480x272-c.dtb" ifdev="MX6ULL">write device tree to sd card</CMD>
+	
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-%board%-4.3-800x480-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk0p1/imx6ull-14x14-%board%-4.3-800x480-c.dtb" ifdev="MX6ULL">write device tree to sd card</CMD>
+
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-%board%-7-800x480-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk0p1/imx6ull-14x14-%board%-7-800x480-c.dtb" ifdev="MX6ULL">write device tree to sd card</CMD>
+
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-%board%-7-1024x600-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk0p1/imx6ull-14x14-%board%-7-1024x600-c.dtb" ifdev="MX6ULL">write device tree to sd card</CMD>
+
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-%board%-10.1-1280x800-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk0p1/imx6ull-14x14-%board%-10.1-1280x800-c.dtb" ifdev="MX6ULL">write device tree to sd card</CMD>
+	
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-%board%-hdmi.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk0p1/imx6ull-14x14-%board%-hdmi.dtb" ifdev="MX6ULL">write device tree to sd card</CMD>
+	
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-%board%-vga.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk0p1/imx6ull-14x14-%board%-vga.dtb" ifdev="MX6ULL">write device tree to sd card</CMD>
+	<CMD state="Updater" type="push" body="$ sleep 1">delay</CMD>
+	<CMD state="Updater" type="push" body="$ sync">Sync...</CMD>
+	<CMD state="Updater" type="push" body="$ umount /mnt/mmcblk0p1">Unmounting vfat partition</CMD>
+
+	<!-- format and mount rootfs partition -->
+	<CMD state="Updater" type="push" body="$ mkfs.ext3 -F -j -L \"rootfs\" /dev/mmcblk0p2">Formatting rootfs partition</CMD>
+	<CMD state="Updater" type="push" body="$ mkdir -p /mnt/mmcblk0p2"/>
+	<CMD state="Updater" type="push" body="$ mount -t ext3 /dev/mmcblk0p2 /mnt/mmcblk0p2"/>
+
+	<!-- burn rootfs -->
+	<CMD state="Updater" type="push" body="pipe tar -jxv -C /mnt/mmcblk0p2" file="files/filesystem/rootfs.tar.bz2" ifdev="MX6ULL">Sending and writting rootfs</CMD>
+	<CMD state="Updater" type="push" body="frf">Finishing rootfs write</CMD>
+	<CMD state="Updater" type="push" body="$ mkdir -p /mnt/mmcblk0p2/lib/modules">Mkdir -p /mnt/mmcblk0p2/lib/modules</CMD>
+	<CMD state="Updater" type="push" body="send" file="files/modules/modules.tar.bz2" ifdev="MX6ULL">Sending Modules file</CMD>
+	<CMD state="Updater" type="push" body="$ tar jxf $FILE -C /mnt/mmcblk0p2/lib/modules/" ifdev="MX6ULL">tar Modules file</CMD>
+	<CMD state="Updater" type="push" body="$ sleep 1">delay</CMD>
+	<CMD state="Updater" type="push" body="$ sync">Sync...</CMD>
+	<CMD state="Updater" type="push" body="$ umount /mnt/mmcblk0p2">Unmounting rootfs partition</CMD>
+	<CMD state="Updater" type="push" body="$ echo Update Complete!">Done</CMD>
+  </LIST>
+
+
+  <LIST name="eMMC" desc="Choose eMMC as media">
+	<CMD state="BootStrap" type="boot" body="BootStrap" file ="firmware/u-boot-imx6ull-14x14-emmc.imx" ifdev="MX6ULL">Loading U-boot</CMD>
+		
+	<CMD state="BootStrap" type="load" file="firmware/zImage" address="0x80800000"
+		loadSection="OTH" setSection="OTH" HasFlashHeader="FALSE" ifdev="MX6ULL">Loading Kernel.</CMD>
+
+	<CMD state="BootStrap" type="load" file="firmware/fsl-image-mfgtool-initramfs-imx_mfgtools.cpio.gz.u-boot" address="0x83800000"
+		loadSection="OTH" setSection="OTH" HasFlashHeader="FALSE" ifdev="MX6ULL">Loading Initramfs.</CMD>
+
+	<CMD state="BootStrap" type="load" file="firmware/imx6ull-14x14-emmc.dtb" address="0x83000000"
+		loadSection="OTH" setSection="OTH" HasFlashHeader="FALSE" ifdev="MX6ULL">Loading device tree.</CMD>
+
+	<CMD state="BootStrap" type="jump" > Jumping to OS image. </CMD>
+
+
+	<!-- create partition -->
+	<CMD state="Updater" type="push" body="send" file="mksdcard.sh">Sending partition shell</CMD>
+	<CMD state="Updater" type="push" body="$ chmod 777 $FILE "> Partitioning...</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE mksdcard.sh "> Partitioning...</CMD>
+	<CMD state="Updater" type="push" body="$ sh mksdcard.sh /dev/mmcblk1"> Partitioning...</CMD>
+
+	<!-- burn uboot -->
+	<CMD state="Updater" type="push" body="$ dd if=/dev/zero of=/dev/mmcblk1 bs=1k seek=768 conv=fsync count=8">clear u-boot env</CMD>
+	<CMD state="Updater" type="push" body="$ echo 0 > /sys/block/mmcblk1boot0/force_ro">access boot partition 1</CMD>
+	<CMD state="Updater" type="push" body="send" file="files/boot/u-boot-imx6ull-14x14-ddr%ddr%-emmc.imx" ifdev="MX6ULL">Sending u-boot.bin</CMD>
+	<CMD state="Updater" type="push" body="$ dd if=$FILE of=/dev/mmcblk1boot0 bs=512 seek=2">write U-Boot to sd card</CMD>
+	<CMD state="Updater" type="push" body="$ echo 1 > /sys/block/mmcblk1boot0/force_ro"> re-enable read-only access </CMD>
+	<CMD state="Updater" type="push" body="$ mmc bootpart enable 1 1 /dev/mmcblk1">enable boot partion 1 to boot</CMD>
+
+	<!-- format and mount boot partition -->
+	<CMD state="Updater" type="push" body="$ while [ ! -e /dev/mmcblk1p1 ]; do sleep 1; echo \"waiting...\"; done ">Waiting for the partition ready</CMD>
+	<CMD state="Updater" type="push" body="$ mkfs.vfat -F 32 /dev/mmcblk1p1">Formatting rootfs partition</CMD>
+	<CMD state="Updater" type="push" body="$ mkdir -p /mnt/mmcblk1p1"/>
+	<CMD state="Updater" type="push" body="$ mount -t vfat /dev/mmcblk1p1 /mnt/mmcblk1p1"/>
+
+	<!-- burn logo -->
+	<!--<CMD state="Updater" type="push" body="send" file="files/alientek.bmp">Sending Boot Logo</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk1p1/alientek.bmp">write boot logo to sd card</CMD> -->
+
+	<!-- burn zImage -->
+	<CMD state="Updater" type="push" body="send" file="files/boot/zImage">Sending kernel zImage</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk1p1/zImage">write kernel image to sd card</CMD>
+
+	<!-- burn dtb -->
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-emmc-4.3-480x272-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk1p1/imx6ull-14x14-emmc-4.3-480x272-c.dtb" ifdev="MX6ULL">write device tree to eMMC card</CMD>
+	
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-emmc-4.3-800x480-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk1p1/imx6ull-14x14-emmc-4.3-800x480-c.dtb" ifdev="MX6ULL">write device tree to eMMC card</CMD>
+
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-emmc-7-800x480-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk1p1/imx6ull-14x14-emmc-7-800x480-c.dtb" ifdev="MX6ULL">write device tree to eMMC card</CMD>
+
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-emmc-7-1024x600-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk1p1/imx6ull-14x14-emmc-7-1024x600-c.dtb" ifdev="MX6ULL">write device tree to eMMC card</CMD>
+
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-emmc-10.1-1280x800-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk1p1/imx6ull-14x14-emmc-10.1-1280x800-c.dtb" ifdev="MX6ULL">write device tree to eMMC card</CMD>
+	
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-emmc-hdmi.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk1p1/imx6ull-14x14-emmc-hdmi.dtb" ifdev="MX6ULL">write device tree to eMMC card</CMD>
+	
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-emmc-vga.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ cp $FILE /mnt/mmcblk1p1/imx6ull-14x14-emmc-vga.dtb" ifdev="MX6ULL">write device tree to eMMC card</CMD>
+	
+	<CMD state="Updater" type="push" body="$ sleep 1">delay</CMD>
+	<CMD state="Updater" type="push" body="$ sync">Sync...</CMD>
+	<CMD state="Updater" type="push" body="$ umount /mnt/mmcblk1p1">Unmounting vfat partition</CMD>
+
+	<!-- format and mount rootfs partition -->
+	<CMD state="Updater" type="push" body="$ mkfs.ext3 -F -E nodiscard /dev/mmcblk1p2">Formatting rootfs partition</CMD>
+	<CMD state="Updater" type="push" body="$ mkdir -p /mnt/mmcblk1p2"/>
+	<CMD state="Updater" type="push" body="$ mount -t ext3 /dev/mmcblk1p2 /mnt/mmcblk1p2"/>
+
+	<CMD state="Updater" type="push" body="$ mkfs.ext3 -F -E nodiscard /dev/mmcblk1p3">Formatting rootfs partition</CMD>
+	<CMD state="Updater" type="push" body="$ mkdir -p /mnt/mmcblk1p3"/>
+	<CMD state="Updater" type="push" body="$ mount -t ext3 /dev/mmcblk1p3 /mnt/mmcblk1p3"/>
+
+	<!-- burn rootfs -->
+	<CMD state="Updater" type="push" body="pipe tar -jxv -C /mnt/mmcblk1p3" file="files/filesystem/rootfs.tar.bz2" ifdev="MX6ULL">Sending and writting rootfs</CMD>
+	<CMD state="Updater" type="push" body="frf">Finishing rootfs write</CMD>
+	<CMD state="Updater" type="push" body="send" file="files/modules/modules.tar.bz2" ifdev="MX6ULL">Sending Modules file</CMD>
+	<CMD state="Updater" type="push" body="$ mkdir -p /mnt/mmcblk1p3/lib/modules">Mkdir -p /mnt/mmcblk1p3/lib/modules</CMD>
+	<CMD state="Updater" type="push" body="$ tar jxf $FILE -C /mnt/mmcblk1p3/lib/modules/" ifdev="MX6ULL">tar Modules file</CMD>
+	<CMD state="Updater" type="push" body="$ sleep 1">delay</CMD>
+	<CMD state="Updater" type="push" body="$ sync">Sync...</CMD>
+	<CMD state="Updater" type="push" body="$ umount /mnt/mmcblk1p3">Unmounting rootfs partition</CMD>
+	<CMD state="Updater" type="push" body="$ echo Update Complete!">Done</CMD>
+  </LIST>
+
+
+  <LIST name="NAND Flash" desc="Choose NAND as media">
+	<CMD state="BootStrap" type="boot" body="BootStrap" file ="firmware/u-boot-imx6ull-14x14-nand.imx" ifdev="MX6ULL">Loading U-boot</CMD>
+
+	<CMD state="BootStrap" type="load" file="firmware/zImage" address="0x80800000"
+		loadSection="OTH" setSection="OTH" HasFlashHeader="FALSE" ifdev="MX6ULL">Loading Kernel.</CMD>
+
+	<CMD state="BootStrap" type="load" file="firmware/fsl-image-mfgtool-initramfs-imx_mfgtools.cpio.gz.u-boot" address="0x83800000"
+				loadSection="OTH" setSection="OTH" HasFlashHeader="FALSE" ifdev="MX6ULL">Loading Initramfs.</CMD>
+
+	<CMD state="BootStrap" type="load" file="firmware/imx6ull-14x14-nand.dtb" address="0x83000000"
+		loadSection="OTH" setSection="OTH" HasFlashHeader="FALSE" ifdev="MX6ULL">Loading device tree.</CMD>
+
+	<CMD state="BootStrap" type="jump" > Jumping to OS image. </CMD>
+
+	<!--burn the uboot to NAND: -->	
+	<CMD state="Updater" type="push" body="$ mount -t debugfs debugfs /sys/kernel/debug">Mounting debugfs</CMD>
+	<CMD state="Updater" type="push" body="$ flash_erase /dev/mtd0 0 0">Erasing Boot partition</CMD>
+	<CMD state="Updater" type="push" body="send" file="files/boot/u-boot-imx6ull-14x14-ddr%ddr%-nand.imx" ifdev="MX6ULL">Sending u-boot.bin</CMD>
+	<CMD state="Updater" type="push" body="$ kobs-ng init -x -v --chip_0_device_path=/dev/mtd0 $FILE">Flashing Bootloader</CMD>
+
+	<!--erase env partition: -->
+	<CMD state="Updater" type="push" body="$ flash_erase /dev/mtd1 0 0">Erasing Env partition</CMD>
+
+	<!--burn the logo to NAND: -->
+	<!--<CMD state="Updater" type="push" body="$ flash_erase /dev/mtd2 0 0">Erasing Logo partition</CMD>
+	<CMD state="Updater" type="push" body="send" file="files/alientek.bmp">Sending Boot Logo</CMD>
+	<CMD state="Updater" type="push" body="$ nandwrite -p /dev/mtd2 $FILE">Flashing Logo</CMD> -->
+
+	<!--burn the dtb to NAND: -->
+	<CMD state="Updater" type="push" body="$ flash_erase /dev/mtd3 0 0">Erasing dtb partition</CMD>
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-nand-4.3-480x272-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ nandwrite -p /dev/mtd3 $FILE">Flashing dtb</CMD>
+
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-nand-4.3-800x480-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ nandwrite -s 0x20000 -p /dev/mtd3 $FILE">Flashing dtb</CMD>
+
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-nand-7-800x480-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ nandwrite -s 0x40000 -p /dev/mtd3 $FILE">Flashing dtb</CMD>
+
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-nand-7-1024x600-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ nandwrite -s 0x60000 -p /dev/mtd3 $FILE">Flashing dtb</CMD>
+
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-nand-10.1-1280x800-c.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ nandwrite -s 0x80000 -p /dev/mtd3 $FILE">Flashing dtb</CMD>
+	
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-nand-hdmi.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ nandwrite -s 0xa0000 -p /dev/mtd3 $FILE">Flashing dtb</CMD>
+	
+	<CMD state="Updater" type="push" body="send" file="files/boot/imx6ull-14x14-nand-vga.dtb" ifdev="MX6ULL">Sending Device Tree file</CMD>
+	<CMD state="Updater" type="push" body="$ nandwrite -s 0xc0000 -p /dev/mtd3 $FILE">Flashing dtb</CMD>
+
+	<!--burn the kernel to NAND: -->
+	<CMD state="Updater" type="push" body="$ flash_erase /dev/mtd4 0 0">Erasing Kernel partition</CMD>
+	<CMD state="Updater" type="push" body="send" file="files/boot/zImage">Sending kernel zImage</CMD>
+	<CMD state="Updater" type="push" body="$ nandwrite -p /dev/mtd4 $FILE">Flashing Kernel</CMD>
+
+	<!--burn the rootfs to NAND: -->
+	<CMD state="Updater" type="push" body="$ flash_erase /dev/mtd5 0 0">Erasing rootfs partition</CMD>
+	<CMD state="Updater" type="push" body="$ ubiformat /dev/mtd5"/>
+	<CMD state="Updater" type="push" body="$ ubiattach /dev/ubi_ctrl -m 5">Attaching UBI partition</CMD>
+	<CMD state="Updater" type="push" body="$ ubimkvol /dev/ubi0 -Nrootfs -m"/>
+	<CMD state="Updater" type="push" body="$ mkdir -p /mnt/mtd5"/>
+	<CMD state="Updater" type="push" body="$ mount -t ubifs ubi0:rootfs /mnt/mtd5"/>
+	<CMD state="Updater" type="push" body="pipe tar -jxv -C /mnt/mtd5" file="files/filesystem/rootfs.tar.bz2" ifdev="MX6ULL">Sending and writting rootfs</CMD>
+	<CMD state="Updater" type="push" body="frf">Finishing rootfs write</CMD>
+	<CMD state="Updater" type="push" body="send" file="files/modules/modules.tar.bz2" ifdev="MX6ULL">Sending Modules file</CMD>
+	<CMD state="Updater" type="push" body="$ mkdir -p /mnt/mtd5/lib/modules">mkdir -p /mnt/mtd5/lib/modules</CMD>
+	<CMD state="Updater" type="push" body="$ tar jxf $FILE -C /mnt/mtd5/lib/modules/" ifdev="MX6ULL">tar Modules file</CMD>
+	<CMD state="Updater" type="push" body="$ sleep 1">delay</CMD>
+	<CMD state="Updater" type="push" body="$ sync">Sync...</CMD>
+	<CMD state="Updater" type="push" body="$ umount /mnt/mtd5">Unmounting rootfs partition</CMD>
+	<CMD state="Updater" type="push" body="$ echo Update Complete!">Done</CMD>
+  </LIST>
+</UCL>
