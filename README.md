@@ -96,8 +96,8 @@
 
 - [ch05.结语](./src/ch05.CONCLUSION.md)
 
-- [附录一:网址和开源项目](./src/end_annex-01.website.md)
-- [附录二:面试问题整理](./src/end_annex-02.interview.md)
+- [附录一: Linux相关技术网站和资源整理](./src/end_annex-01.website.md)
+- [附录二: 面试问题整理](./src/end_annex-02.interview.md)
 
 ## 说明
 
