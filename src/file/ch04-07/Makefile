@@ -4,7 +4,7 @@ SRC := $(wildcard $(CUR_DIR)/*.c) $(wildcard $(CUR_DIR)/*.cpp)
 OBJ := $(patsubst %.c,%.o,$(notdir $(SRC)))
 CC := gcc
 CCPLUS := g++
-CFLAGS := -Wall -I$(INC_DIR) -lpthread
+CFLAGS := -Wall -I$(INC_DIR) -lpthread -std=c++2a
 
 all: target
 
@@ -18,4 +18,4 @@ target: $(OBJ)
 		$(CCPLUS) $^ -o $@
 
 clean:
-		rm -rf $(OBJ)
+		rm -rf target *.o

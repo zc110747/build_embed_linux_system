@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.cmd": "shellscript",
         "stat.h": "c",
         "dirent.h": "c",
         "unistd.h": "c",
@@ -56,7 +57,10 @@
         "chrono": "cpp",
         "ctime": "cpp",
         "ratio": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "condition_variable": "c",
+        "map": "cpp",
+        "mutex": "cpp"
     },
     "MicroPython.executeButton": [
         {
