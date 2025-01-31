@@ -219,6 +219,12 @@ feature问题: GPG error, <http://us.archive.ubuntu.com/ubuntu> trusty Release: 
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys [key]
 ```
 
+W: http://us.archive.ubuntu.com/ubuntu/dists/trusty/Release.gpg: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
+
+```shell
+cp etc/apt/trusted.gpg /etc/apt/trusted.gpg.d/
+```
+
 ### feature-01-13
 
 创建apt私有源的方法。
