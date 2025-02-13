@@ -13,6 +13,7 @@
 7. Ti官网说明: <https://www.ti.com.cn/product/cn/TPS386040>
 8. 瑞芯微官方文档wiki网址: <https://opensource.rock-chips.com/wiki_Main_Page>
 9. arm官方编译工具地址: <https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads>
+10. opkg地址目录: <https://www.embedian.com/arago/armv7ahf-vfp-neon-3.2>
 
 其它镜像资源
 

@@ -16,7 +16,7 @@
                     "ignoreFailures": true 
                 }
             ],
-            "preLaunchTask": "build", //指定调试前执行的任务，查看tasks中的build变量
+            //"preLaunchTask": "build", //指定调试前执行的任务，查看tasks中的build变量
             "miDebuggerPath": "gdb", //指定调试工具，本地用gdb, 跨平台用对应的调试器
         }
     ]
