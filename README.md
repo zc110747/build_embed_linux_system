@@ -1,6 +1,13 @@
 # 嵌入式Linux系统总结
 
-## 系列目录
+本系列整理一系列嵌入式Linux学习和开发中应用的技术，按照功能划分为SDK平台构建、嵌入式Linux运行平台构建，驱动开发技术和应用开发技术，涉及嵌入式Linux开发中的主要技术。
+
+1. SDK平台构建，包含Linux平台安装(Ubuntu、Arch、centos)，软件和支持库安装，交叉编译，shell语法，快速部署SDK脚本工具集实现
+2. 嵌入式Linux运行平台构建，包含u-boot移植和框架，kernel移植和框架，rootfs文件系统构建方法，qemu实用虚拟机启动Linux平台
+3. 驱动开发技术，包含Linux内核驱动接口，设备树语法和设备树接口，字符设备，块设备和网络设备，子系统功能实现(i2c, spi, input, iio)
+4. 应用开发技术，Linu应用层接口，cpp语法小结，Linux平台调试方法，Linux框架设计和web应用开发，Linux平台GUI开发技术
+
+目录如下所示。
 
 [ch00.前言](./src/ch00.PRFEACE.md)
 
@@ -30,7 +37,6 @@
   - [ch02-15 安卓sdk构建](./src/ch02-15.android_sdk.md)
   - [ch02-16 qemu虚拟机环境构建](./src/ch02-16.qemu.md)
   - [ch02-17.u-boot spl和TF-A机制](./src/ch02-17.spl_and_tfa.md)
-  - [ch02-18.异构多核芯片工作处理](./src/ch02-18.heterogeneous_multi_core.md)
   - [ch02-x1.imx6ull芯片平台编译方法](./src/ch02-x1.imx6ull_platform.md)
   - [ch02-x2.瑞芯微rk3568平台编译方法](./src/ch02-x2.rk3568_platform.md)
   - [ch02-x3.全志t113i平台编译方法](./src/ch02-x3.t113i_platform.md)
@@ -48,7 +54,7 @@
   - [ch03-06.驱动中断管理](./src/ch03-06.interrput_interaction.md)
   - [ch03-07.i2c设备和驱动管理框架](./src/ch03-07.i2c_frame.md)
   - [ch03-08.spi设备和驱动管理框架](./src/ch03-08.spi_frame.md)
-  - [ch03-09.iio子系统驱动框架](./src/ch03-09.iio_subsystem.md)
+  - [ch03-09.iio子系统驱动框架和ADC模块驱动](./src/ch03-09.iio_subsystem.md)
   - [ch03-10.regmap驱动框架说明](./src/ch03-10.regmap_interface.md)
   - [ch03-11.rtc硬件管理框架](./src/ch03-11.rtc_subsystem.md)
   - [ch03-12.pwm子系统设备框架](./src/ch03-12.pwm_frame.md)
@@ -103,30 +109,6 @@
 - [附录二: 面试问题整理](./src/end_annex-02.interview.md)
 
 ## 说明
-
-本系列整理一系列嵌入式Linux学习和开发中应用的技术，按照功能划分为SDK平台构建、嵌入式Linux运行平台构建，驱动开发技术和应用开发技术，理论上涉及嵌入式Linux开发中的主要技术。
-
-- SDK平台构建
-  - Linux平台安装(Ubuntu、Arch、centos)
-  - 软件和支持库安装，交叉编译
-  - shell语法
-  - 快速部署SDK脚本工具集实现
-- 嵌入式Linux运行平台构建
-  - u-boot移植和框架
-  - kernel移植和框架
-  - rootfs文件系统构建方法
-  - qemu实用虚拟机启动Linux平台
-- 驱动开发技术
-  - Linux内核驱动接口
-  - 设备树语法和设备树接口
-  - 字符设备，块设备和网络设备
-  - 子系统功能实现(i2c, spi, input, iio)
-- 应用开发技术
-  - Linu应用层接口
-  - cpp语法小结
-  - Linux平台调试方法
-  - Linux框架设计和web应用开发
-  - Linux平台GUI开发技术
 
 本系列主要按照如何构建一个完整嵌入Linux产品应用的开发流程来说明，而不是以难易度进行先后顺序的整理。如果在学习和理解中遇到难题，可以跳过直接进行后续的学习，从简单的入手，熟悉基础知识后可能更高效。另外嵌入式Linux系统是用于设计产品的技术，只依靠文档学习是远远不够的，需要在实际硬件平台调试验证，理解源码，自己设计开发应用，才能够深入理解掌握。可以看到本系列文章涉及内容广泛，限于篇幅部分技术只能浅尝辄止，在讲解相应章节时也会列出我在整理以及开发时涉及的书籍，可以同步去学习。
 
