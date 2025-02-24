@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="Pv3sBYRrSlboccctLOhg" name="TF-A">
-        <mxGraphModel dx="785" dy="792" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="755" dy="651" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -1353,7 +1353,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="xaftUCWSohLcwmVJ6i1O" name="regmap">
-        <mxGraphModel dx="865" dy="530" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="755" dy="651" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -1624,7 +1624,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="aJyrI3SDnQdQ7eXT7tWm" name="nvmem">
-        <mxGraphModel dx="785" dy="792" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="755" dy="651" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -2314,6 +2314,159 @@
                 </mxCell>
                 <mxCell id="_IGO6xMcl8cA5A9N4PRu-20" value="总线驱动" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="560" y="490" width="60" height="25" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="5HgpL2fvpM4exSg6pwgW" name="thermal">
+        <mxGraphModel dx="755" dy="651" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="HdxG36LlacZhHUi4oGMA-10" value="Thermal框架驱动" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;" vertex="1" parent="1">
+                    <mxGeometry x="140" y="1210" width="480" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-32" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="100" width="670" height="530" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-29" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="G3MBhdGI9iqYOmxtWA3z-1" target="-LcCSiH4AJhq6j6gdG90-2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="G3MBhdGI9iqYOmxtWA3z-1" value="&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;/sys/class/thermal/cooling_device0/*&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="490" y="115" width="200" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-28" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="G3MBhdGI9iqYOmxtWA3z-2" target="-LcCSiH4AJhq6j6gdG90-2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="G3MBhdGI9iqYOmxtWA3z-2" value="/sys/class/thermal/thermal_zone0/*" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="160" y="120" width="200" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="UhhlAjh8QkzccytWmMgf-1" value="应用层" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="125" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-1" value="内核层" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="280" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-2" value="Thermal Subsytem" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="230" width="330" height="210" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-8" style="edgeStyle=none;html=1;" parent="1" source="-LcCSiH4AJhq6j6gdG90-3" target="-LcCSiH4AJhq6j6gdG90-4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-3" value="thermal_governor" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="230" y="270" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-4" value="cooling_device" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="380" y="270" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-5" value="theramal_zone" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="230" y="360" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-9" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="-LcCSiH4AJhq6j6gdG90-6" target="-LcCSiH4AJhq6j6gdG90-4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-10" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="-LcCSiH4AJhq6j6gdG90-6" target="-LcCSiH4AJhq6j6gdG90-5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-6" value="device_tree" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="380" y="360" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-7" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="-LcCSiH4AJhq6j6gdG90-5" target="-LcCSiH4AJhq6j6gdG90-3" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="300" y="400" as="sourcePoint"/>
+                        <mxPoint x="350" y="350" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-24" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LcCSiH4AJhq6j6gdG90-11" target="-LcCSiH4AJhq6j6gdG90-13" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-11" value="PWM/DAC" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="550" y="360" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-25" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LcCSiH4AJhq6j6gdG90-12" target="-LcCSiH4AJhq6j6gdG90-14" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-12" value="Freq Opp" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="360" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-13" value="Fan" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="550" y="560" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-14" value="Cpu" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="560" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-15" value="NTC" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="180" y="560" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-21" style="edgeStyle=none;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="-LcCSiH4AJhq6j6gdG90-16" target="-LcCSiH4AJhq6j6gdG90-5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-16" value="CPU Temp Sensor" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="560" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-18" value="硬件层" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="550" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-20" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="-LcCSiH4AJhq6j6gdG90-15" target="-LcCSiH4AJhq6j6gdG90-5" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="380" y="590" as="sourcePoint"/>
+                        <mxPoint x="430" y="540" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-22" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LcCSiH4AJhq6j6gdG90-4" target="-LcCSiH4AJhq6j6gdG90-11" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="590" y="300"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-23" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="-LcCSiH4AJhq6j6gdG90-4" target="-LcCSiH4AJhq6j6gdG90-12" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="380" y="430" as="sourcePoint"/>
+                        <mxPoint x="430" y="380" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="680" y="300"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-26" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" parent="1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="60" y="500" as="sourcePoint"/>
+                        <mxPoint x="730" y="500" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="-LcCSiH4AJhq6j6gdG90-27" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;" parent="1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="60" y="200" as="sourcePoint"/>
+                        <mxPoint x="730" y="200" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="HdxG36LlacZhHUi4oGMA-6" style="edgeStyle=none;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="HdxG36LlacZhHUi4oGMA-1" target="HdxG36LlacZhHUi4oGMA-2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="HdxG36LlacZhHUi4oGMA-1" value="NTC Sensor&lt;div&gt;iio adc device&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="160" y="1360" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="HdxG36LlacZhHUi4oGMA-7" style="edgeStyle=none;html=1;" edge="1" parent="1" source="HdxG36LlacZhHUi4oGMA-2" target="HdxG36LlacZhHUi4oGMA-3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="HdxG36LlacZhHUi4oGMA-2" value="Thermal Zone Device" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="160" y="1240" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="HdxG36LlacZhHUi4oGMA-8" style="edgeStyle=none;html=1;" edge="1" parent="1" source="HdxG36LlacZhHUi4oGMA-3" target="HdxG36LlacZhHUi4oGMA-4">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="HdxG36LlacZhHUi4oGMA-3" value="Thermal&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; white-space: pre;&quot;&gt;governor&lt;/span&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;Device&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="320" y="1240" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="HdxG36LlacZhHUi4oGMA-9" style="edgeStyle=none;html=1;" edge="1" parent="1" source="HdxG36LlacZhHUi4oGMA-4" target="HdxG36LlacZhHUi4oGMA-5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="HdxG36LlacZhHUi4oGMA-4" value="Thermal Cooling Device" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="480" y="1240" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="HdxG36LlacZhHUi4oGMA-5" value="fan device&lt;div&gt;pwm interface&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="480" y="1360" width="120" height="40" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
