@@ -203,7 +203,7 @@ git clone http://github.com/zc110747/remote_manage.git
 1. APP功能框架构建和代码实现
 2. 实现基于Qt C++的应用实现
 3. 基于node和vue的web应用构建
-4. 实现系统快速部署和编译命令实现
+4. 系统快速部署和编译命令实现
 
 主要内容:
 
