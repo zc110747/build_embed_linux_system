@@ -216,7 +216,7 @@ mount rw -o remount /
 
 在Linux系统中，核隔离(也称为CPU隔离或CPU pinning)是一种将特定的任务或进程绑定到特定的CPU核心上的技术。这可以提高系统性能，尤其是在需要实时响应的应用中。如果需要核隔离，首先确保芯片为多核才有意义，实现核隔离的方法如下所示。
 
-- 通过修改u-boot中的bootargs，确保内核支持核隔离功能
+- 通过修改U-Boot中的bootargs，确保内核支持核隔离功能
 
 ```shell
 # 增加核隔离相关说明
@@ -258,7 +258,7 @@ wlan启动并开启自启动的方法详细见文档：[wpa_supplicant交叉编�
 
 更换串口模块，包含u-boot，bootargs, kernel和rootfs。
 
-- uboot模块修改
+- U-Boot模块修改
 
 ```c
 // 设备树节点

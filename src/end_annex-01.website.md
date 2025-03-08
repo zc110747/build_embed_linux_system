@@ -55,7 +55,7 @@
 12. 小林x图解计算机基础: <https://www.xiaolincoding.com/>
 13. 核桃派资源网站: <https://www.walnutpi.com/docs/directory/>
 14. 测试C++在线编程地址: <https://godbolt.org/>
-15. Linux驱动和资源解析文档说明：<https://www.cnblogs.com/arnoldlu>
+15. Linux系统知识博客分享：<https://www.cnblogs.com/arnoldlu>
 
 ## 常用软件下载地址
 
