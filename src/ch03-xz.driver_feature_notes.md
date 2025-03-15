@@ -334,7 +334,7 @@ static void spi_bit_transfer_configure(u8 bit_per_word, void __iomem *base_addr)
 
 Linux串口接收二进制字符0x11，0x13, 0x0d等特殊字符串丢弃和转换，如何处理
 
-一般linux串口编程中，对c_iflag（termios成员变量）这个变量都没有进行有效的设置。在传送ASCII码时没什么问题，但在传送二进制数据时遇到0x0d,0x11和0x13却会被丢掉，通过配置c_iflag可以解决
+一般linux串口编程中，对c_iflag（termios成员变量）这个变量都没有进行有效的设置。在传送ASCII码时没什么问题，但在传送二进制数据时遇到0x0d、0x11和0x13却会被丢掉，通过配置c_iflag可以解决
 
 ```c
 // 关闭输入的CR转换为NL - 0x0d
