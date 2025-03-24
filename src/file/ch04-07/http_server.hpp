@@ -40,6 +40,8 @@ _Pragma("once");
 #include <sstream>
 #include <map>
 #include <fstream>
+#include <string_view>
+#include <mutex>
 
 #define HEAD_RESP_200   0
 #define HEAD_RESP_400   1
@@ -121,17 +123,120 @@ namespace HTTP_SREVER
     using http_dynamic_func_type = std::function<bool(const std::string& url, const std::string& data, std::string& response)>;
     using http_dynamic_map_type = std::map<std::string, http_dynamic_func_type>;
 
+    class logger final
+    {
+    public:
+        enum class LOGGER_LEVEL {
+            DEBUG = 0,
+            INFO,
+            WARN,
+            ERROR,
+            FATAL,
+        };
+
+        /// \brief constructor
+        logger() {};
+
+        /// \brief destructor
+        ~logger() {};
+
+        static logger *get_instance() {
+            static logger instance;
+            return &instance;
+        }
+
+        /// @brief logger_message
+        /// - This method is used to print the log message.
+        /// @param format - the string base format.
+        /// @param args - args process int the format
+        template<typename... Args>
+        void logger_message(bool with_endl, const std::string& format, Args... args) const {
+            std::ostringstream oss;
+            format_message(oss, format, args...);
+
+            if(with_endl){
+                std::cout << oss.str() << std::endl;
+            } else {
+                std::cout << oss.str();
+            }
+        }
+
+        /// @brief logger_message
+        /// - This method is used to print the log message.
+        /// @param format - the string base format.
+        /// @param args - args process int the format   
+        template<typename... Args>
+        void logger_message(LOGGER_LEVEL level, const std::string& format, Args... args) const {
+            if (level >= level_) {
+                std::lock_guard<std::mutex> lock(log_mutex_);
+                logger_message(false, "LOG_LEVEL:{} DATA: ", static_cast<int>(level));
+                logger_message(true, format, args...);
+            }
+        }
+    private:
+        /// @brief error level
+        /// - the error level for the log message.
+        LOGGER_LEVEL level_{LOGGER_LEVEL::DEBUG};
+
+        /// @brief log_mutex_
+        /// - mutex for thread-safe logging
+        mutable std::mutex log_mutex_;    
+    private:   
+        /// @brief format_message
+        /// - This method is used to format message.
+        /// @param oss - the stringstream.
+        /// @param format - the string base format.
+        /// @param value - the value to be formatted.
+        /// @param args - args process int the format
+        template<typename T, typename... Args>
+        void format_message(std::ostringstream& oss, const std::string& format, T value, Args... args) const {
+            size_t pos = format.find("{}");
+            if(pos == std::string::npos) {
+                oss << format;
+                return;
+            }
+            oss << format.substr(0, pos);
+            oss << value;
+            format_message(oss, format.substr(pos + 2), args...);
+        }
+
+        // @brief format_message
+        /// - This final method while format message
+        /// @param oss - the stringstream.
+        /// @param format - the string base format.
+        void format_message(std::ostringstream& oss, const std::string& format) const {
+            oss << format;
+        }
+    };
+
+    #define LOG_MESSAGE(...)    do {  \
+                                    logger::get_instance()->logger_message(true, __VA_ARGS__); \
+                                }while(0);
+    #define LOG_DEBUG(...)      do { \
+                                    logger::get_instance()->logger_message(logger::LOGGER_LEVEL::DEBUG, __VA_ARGS__); \
+                                }while(0);          
+    #define LOG_INFO(...)       do {  \
+                                    logger::get_instance()->logger_message(logger::LOGGER_LEVEL::INFO, __VA_ARGS__); \
+                                }while(0);
+    #define LOG_WARN(...)       do {  \
+                                    logger::get_instance()->logger_message(logger::LOGGER_LEVEL::WARN, __VA_ARGS__); \
+                                }while(0);
+    #define LOG_ERROR(...)      do {  \
+                                    logger::get_instance()->logger_message(logger::LOGGER_LEVEL::ERROR, __VA_ARGS__); \
+                                }while(0);
+    #define LOG_FATAL(...)      do {  \
+                                    logger::get_instance()->logger_message(logger::LOGGER_LEVEL::FATAL, __VA_ARGS__); \
+                                }while(0);
+
     class http_engine
     {
     public:
         /// \brief constructor
-        http_engine(http_tx_func_type tx_process):handle_tx_(tx_process) 
-        {
+        http_engine(http_tx_func_type tx_process): handle_tx_(tx_process) {
         };
 
         /// \brief destructor 
-        ~http_engine() {
-        };
+        ~http_engine() {};
 
         /// \brief process
         /// - This method is used to process the http decode.
@@ -143,20 +248,20 @@ namespace HTTP_SREVER
             
             std::string buffer(rx_buffer, rx_size);
             std::string sub_str("\r\n");
-            std::cout<<buffer<<std::endl;
+            LOG_DEBUG(buffer);
 
             tx_size_ = 0;
 
             //decode get header string
             std::size_t pos = buffer.find(sub_str);
             std::string head_str = buffer.substr(0, pos);
-            std::cout<<head_str<<std::endl;
+            LOG_DEBUG(head_str);
             
             ret = decode_request_line(head_str);
             if (ret) {
-                std::cout<<"method:"<<protocol_.method_<<std::endl;
-                std::cout<<"url:"<<protocol_.url_<<std::endl;
-                std::cout<<"ver:"<<protocol_.ver_<<std::endl;
+                LOG_INFO("method: {}", protocol_.method_);
+                LOG_INFO("url: {}", protocol_.url_);
+                LOG_INFO("ver: {}", protocol_.ver_);
 
                 if (protocol_.is_dynamic) {
                     std::size_t pos = buffer.find("\r\n\r\n");
@@ -192,7 +297,7 @@ namespace HTTP_SREVER
             }
 
             if (tokens.size() != 3) {
-                std::cout<<"decode header failed!"<<std::endl;
+                LOG_ERROR("decode header failed!");
                 return false;
             }
 
@@ -232,66 +337,47 @@ namespace HTTP_SREVER
             return true;
         }
 
-        /// \brief format_header_extra_info
+        /// \brief format_web_header_info
         /// - This method is used to format extra header info
         /// \param type - file type.
         /// \param size - file size.
         /// \return string return for header
-        std::string format_header_extra_info(HTTP_FILE_TYPE type, int size)
+        std::string format_web_header_info(HTTP_FILE_TYPE type, uint32_t size)
         {
-            std::string base_string = "Content-type: ";
+            static const std::map<HTTP_FILE_TYPE, std::string> mime_type_map = {
+                {FILE_TYPE_TEXT, "text/plain"},
+                {FILE_TYPE_JPG, "application/x-jpg"},
+                {FILE_TYPE_PNG, "image/png"},
+                {FILE_TYPE_HTML, "text/html"},
+                {FILE_TYPE_GIF, "image/gif"},
+                {FILE_TYPE_JS, "application/x-javascript"},
+                {FILE_TYPE_ASP, "text/asp"},
+                {FILE_TYPE_CSS, "text/css"},
+                {FILE_TYPE_JSON, "application/json"}
+            };
 
-            switch ((type))
-            {
-            case FILE_TYPE_TEXT:
-                base_string += "text/plain;charset=utf-8\r\n";
-                break;
-            
-            case FILE_TYPE_JPG:
-                base_string += "application/x-jpg;charset=utf-8\r\n";
-                break;
-
-            case FILE_TYPE_PNG:
-                base_string += "image/png;charset=utf-8\r\n";
-                break;
-
-            case FILE_TYPE_HTML:
-                base_string += "text/html;charset=utf-8\r\n";
-                break;
-
-            case FILE_TYPE_GIF:
-                base_string += "image/gif;charset=utf-8\r\n";
-                break;
-
-            case FILE_TYPE_JS:
-                base_string += "application/x-javascript;charset=utf-8\r\n";
-                break;
-
-            case FILE_TYPE_ASP:
-                base_string += "text/asp;charset=utf-8\r\n";
-                break;
-
-            case FILE_TYPE_CSS:
-                base_string += "text/css;charset=utf-8\r\n";
-                break;
-
-            case FILE_TYPE_JSON:
-                base_string += "application/json;charset=utf-8\r\n";
-                break;
-
-            default:
-                base_string += "text/html;charset=utf-8\r\n";   
-                break;
+            // 通过ostringstream来构建发送首部字符串
+            std::ostringstream oss;
+            oss << "Content-type: ";
+            auto it = mime_type_map.find(type);
+            if (it != mime_type_map.end()) {
+                oss << it->second;
+            } else {
+                oss << "text/html";
             }
+            oss << ";charset=utf-8\r\n";
+            
+            oss << "Connection: close\r\n"
+                << "Server: c++ sever\r\n"
+                << "Content-length: " << size << "\r\n\r\n";
+            
+            return oss.str();         
+        }
 
-            base_string += "Connection: close\r\n";
-            base_string += "Server: c++ sever\r\n";
-
-            base_string += "Content-Length: ";
-            base_string += std::to_string(size);
-            base_string += "\r\n\r\n";
-
-            return base_string;           
+        void send_response_header(std::streamsize body_size) {
+            handle_tx_(resource_.http_resp_header_resource[HEAD_RESP_200].c_str(), resource_.http_resp_header_resource[HEAD_RESP_200].size());
+            auto &&header_extra_str = format_web_header_info(protocol_.type_, body_size);
+            handle_tx_(header_extra_str.c_str(), header_extra_str.size());
         }
 
         /// \brief engine_static_process
@@ -303,8 +389,8 @@ namespace HTTP_SREVER
             std::ifstream input_file(url, std::ios::binary);
             char buffer[1024];
 
-            if (!input_file) {
-                std::cerr << "无法打开文件: " << url << std::endl;
+            if (!input_file.is_open()) {
+                LOG_ERROR("Can't open file: {}", url);
                 return false;
             }
 
@@ -314,9 +400,7 @@ namespace HTTP_SREVER
             input_file.seekg(0, std::ios::beg);
 
             // 发送响应头
-            handle_tx_(resource_.http_resp_header_resource[HEAD_RESP_200].c_str(), resource_.http_resp_header_resource[HEAD_RESP_200].size());
-            auto &&header_extra_str = format_header_extra_info(protocol_.type_, body_size);
-            handle_tx_(header_extra_str.c_str(), header_extra_str.size());
+            send_response_header(body_size);
             
             // 发送文件内容
             while (input_file) {
@@ -328,9 +412,9 @@ namespace HTTP_SREVER
                 }
 
                 if (input_file.bad()) {
-                    std::cerr << "读取文件时发生错误。" << std::endl;
+                    LOG_ERROR("read file {} error!", url);
                     input_file.close();
-                    return 1;
+                    return false;
                 }
 
                 if (input_file.eof() && bytesRead == 0) {
@@ -366,7 +450,7 @@ namespace HTTP_SREVER
 
             handle_tx_(resource_.http_resp_header_resource[HEAD_RESP_200].c_str(), resource_.http_resp_header_resource[HEAD_RESP_200].size());
 
-            auto &&header_extra_str = format_header_extra_info(FILE_TYPE_JSON, dynamic_rep.size());
+            auto &&header_extra_str = format_web_header_info(FILE_TYPE_JSON, dynamic_rep.size());
             handle_tx_(header_extra_str.c_str(), header_extra_str.size());
             handle_tx_(dynamic_rep.c_str(), dynamic_rep.size());
             return true;
@@ -377,7 +461,7 @@ namespace HTTP_SREVER
         void html404_translate(void)
         {
             handle_tx_(resource_.http_resp_header_resource[HEAD_RESP_404].c_str(), resource_.http_resp_header_resource[HEAD_RESP_404].size());
-            auto &&header_extra_str = format_header_extra_info(FILE_TYPE_HTML, resource_.HTTP_NOT_FOUND_BODY.size());
+            auto &&header_extra_str = format_web_header_info(FILE_TYPE_HTML, resource_.HTTP_NOT_FOUND_BODY.size());
             handle_tx_(header_extra_str.c_str(), header_extra_str.size());
             handle_tx_(resource_.HTTP_NOT_FOUND_BODY.c_str(), resource_.HTTP_NOT_FOUND_BODY.size());
         }
@@ -451,14 +535,14 @@ namespace HTTP_SREVER
         {
             socket_fd_ = socket(PF_INET, SOCK_STREAM, 0);
             if (socket_fd_ < 0) {
-                std::cout<<"socket init error!"<<std::endl;
+                LOG_ERROR("socket init error!");
                 return false;
             }
 
             // 配置运行绑定在TIME_WAIT的接口
             int flag = 1;
             if (setsockopt(socket_fd_, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == -1) {
-                std::cout<<"setsockopt failed."<<std::endl;
+                LOG_ERROR("setsockopt failed!");
                 socket_fd_ = -1;
                 return false;
             }
@@ -485,11 +569,11 @@ namespace HTTP_SREVER
             do 
             {
                 if (bind(socket_fd_, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {      
-                    std::cout<<"socket bind failed!"<<ipaddr_<<" "<<port_<<std::endl;
+                    LOG_MESSAGE("socket bind failed, ip:{}, port:{}!", ipaddr_, port_);;
                     sleep(5);
                     continue;     
                 } else {
-                    std::cout<<"socket bind ok, address "<<ipaddr_<<":"<<port_<<std::endl;
+                    LOG_MESSAGE("socket bind ok, ip:{}, port:{}!", ipaddr_, port_);
                     break;  
                 }
             }while(1);
@@ -506,7 +590,7 @@ namespace HTTP_SREVER
                 //等待客户端的TCP进行三次握手连接
                 client_fd = accept(socket_fd_, (struct sockaddr *)&clientaddr, &client_size);
                 if (client_fd < 0) {
-                    std::cout<<"socket accept failed!"<<std::endl;
+                    LOG_ERROR("socket accept failed!");
                     continue;
                 } else {
                     // 启动线程
@@ -533,16 +617,16 @@ namespace HTTP_SREVER
             //接收客户端发送的数据
             recv_len = recv(fd, recvbuf, sizeof(recvbuf), 0);
             if (recv_len > 0) {  
-                std::cout<<"recv len:"<<recv_len<<std::endl;
+                LOG_DEBUG("recv len: {}", recv_len);
                 recvbuf[recv_len] = '\0';
                 
                 if(engine.process(recvbuf, recv_len, dynamic_map_)) {
-                    std::cout<<"server callback ok"<<std::endl;
+                    LOG_INFO("server callback ok");;
                 }
             } else if (recv_len == 0) {
-                std::cout<<"server recv zero, break!"<<std::endl;
+                LOG_ERROR("server recv zero, break!");
             } else {
-                std::cout<<"server recv failed, break!"<<std::endl;
+                LOG_ERROR("server recv failed, break!");
             }
 
             close(fd);
