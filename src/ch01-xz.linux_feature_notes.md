@@ -392,9 +392,9 @@ vers2=y
 
 ### feature-03-03
 
-feature问题: ping the outer ipadress success, but outer host failed.
+feature问题: ping the outer ipadress success, but outer host failed. 
 
-原因: 系统不支持dns服务器，导致无法ping通host
+原因: 系统网络连接正常，而dns服务器异常；导致使用ping命令不能直接访问host网址
 
 解决办法:
 
@@ -431,7 +431,7 @@ feature问题: 在sudo使用命令，报错 **sudo: /usr/bin/sudo must be owned 
 ```shell
 #在root权限下处理
 chown root:root /usr/bin/sudo
-chmod 4755  /usr/bin/sudo
+chmod 4755 /usr/bin/sudo
 ```
 
 ### feature-04-02
