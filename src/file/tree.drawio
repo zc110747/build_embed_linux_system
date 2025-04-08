@@ -1,6 +1,10 @@
 <mxfile host="65bd71144e">
     <diagram id="Pv3sBYRrSlboccctLOhg" name="TF-A">
+<<<<<<< HEAD
         <mxGraphModel dx="828" dy="505" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+=======
+        <mxGraphModel dx="746" dy="475" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+>>>>>>> 9bfd39eb3de7e2e181ff480806f6f772ea7b57b1
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -2712,7 +2716,11 @@
         </mxGraphModel>
     </diagram>
     <diagram id="7CEKV7lOLNoO5vWjX9Uk" name="application">
+<<<<<<< HEAD
         <mxGraphModel dx="828" dy="505" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+=======
+        <mxGraphModel dx="746" dy="475" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+>>>>>>> 9bfd39eb3de7e2e181ff480806f6f772ea7b57b1
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -2827,6 +2835,7 @@
                 <mxCell id="8T0k7gCzq3CH_AvOYtmv-20" value="通讯模块" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="160" y="850" width="80" height="120" as="geometry"/>
                 </mxCell>
+<<<<<<< HEAD
                 <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-1" value="空调内机" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;" parent="1" vertex="1">
                     <mxGeometry x="160" y="1160" width="380" height="250" as="geometry"/>
                 </mxCell>
@@ -2837,10 +2846,23 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-14" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="x-Kmh2w1V9-tP9r-qRXQ-13" edge="1">
+=======
+                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-1" value="空调内机" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;" vertex="1" parent="1">
+                    <mxGeometry x="160" y="1160" width="380" height="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-2" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;startArrow=classic;startFill=1;endArrow=none;endFill=0;" edge="1" parent="1" source="x-Kmh2w1V9-tP9r-qRXQ-4" target="x-Kmh2w1V9-tP9r-qRXQ-5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-3" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="x-Kmh2w1V9-tP9r-qRXQ-4" target="x-Kmh2w1V9-tP9r-qRXQ-6">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-14" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="x-Kmh2w1V9-tP9r-qRXQ-13">
+>>>>>>> 9bfd39eb3de7e2e181ff480806f6f772ea7b57b1
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="410" y="1300" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
+<<<<<<< HEAD
                 <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-4" value="空调外机主控" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="290" y="1200" width="120" height="200" as="geometry"/>
                 </mxCell>
@@ -2892,6 +2914,32 @@
                 <mxCell id="QURIpbC49f0VAfjIDdzg-8" value="空调外机交互" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="546" y="1312" width="79" height="30" as="geometry"/>
                 </mxCell>
+=======
+                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-4" value="空调外机主控" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="290" y="1200" width="120" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-5" value="红外接收解析" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="170" y="1200" width="80" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-6" value="空调外机通讯" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="450" y="1320" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-10" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=blockThin;startFill=1;" edge="1" parent="1" source="x-Kmh2w1V9-tP9r-qRXQ-9" target="x-Kmh2w1V9-tP9r-qRXQ-4">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-9" value="WIFI通讯组网客户端" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="170" y="1270" width="80" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-12" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="x-Kmh2w1V9-tP9r-qRXQ-11" target="x-Kmh2w1V9-tP9r-qRXQ-4">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-11" value="面板按键" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="170" y="1340" width="80" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-13" value="面板UI显示" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="450" y="1200" width="80" height="80" as="geometry"/>
+                </mxCell>
+>>>>>>> 9bfd39eb3de7e2e181ff480806f6f772ea7b57b1
             </root>
         </mxGraphModel>
     </diagram>
