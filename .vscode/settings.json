@@ -60,7 +60,8 @@
         "thread": "cpp",
         "condition_variable": "c",
         "map": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "port.h": "c"
     },
     "MicroPython.executeButton": [
         {

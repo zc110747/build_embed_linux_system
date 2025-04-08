@@ -125,7 +125,7 @@ systemctl status example.service
 
 加载成功后，状态如下所示.
 
-![image](./image/ch02-x6-01.png)
+![image](./image/ch02-xz-01.png)
 
 注意：shell脚本首行要指定使用的shell平台，例如bash脚本则为"#!/bin/bash"，否则脚本会执行失败。
 

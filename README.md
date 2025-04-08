@@ -100,15 +100,18 @@
   - [ch04-09.LVGL移植和图形应用开发](./src/ch04-09.lvgl_application.md)
   - [ch04-10.Python应用开发](./src/ch04-10.python_design.md)
   - [ch04-11.ffmpeg网络推流应用实现](./src/ch04-11.ffmpeg_webrtc.md)
-  - [ch04-12.综合应用开发项目](./src/ch04-12.integrated_design.md)
+  - [ch04-12.mqtt组网和客户端应用实现](./src/ch04-12.mqtt_client.md)
+  - [ch04-13.modbus应用开发实现](./src/ch04-13.modbus.md)
+  - [ch04-14.基于v4l2的摄像头开发](./src/ch04-14.v4l2_opencv.md)
+  - [ch04-15.综合应用开发项目](./src/ch04-15.integrated_design.md)
   - [ch04-x1.Linux平台基础api接口](./src/ch04-x1.linux_base_api.md)
   - [ch04-x2.Linux平台复杂api接口](./src/ch04-x2.linux_complex_api.md)
   - [ch04-x3.cmake编译语法](./src/ch04-x3..cmake.md)
 
 - [ch05.结语](./src/ch05.CONCLUSION.md)
 
-- [附录一: Linux相关技术网站和资源整理](./src/end_annex-01.website.md)
-- [附录二: 面试问题整理](./src/end_annex-02.interview.md)
+- [附录一: Linux相关技术网站和资源整理](./src/end_appendix-01.website.md)
+- [附录二: 面试问题整理](./src/end_appendix-02.interview.md)
 
 ## 说明
 
