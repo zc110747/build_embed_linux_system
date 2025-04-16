@@ -1,10 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="Pv3sBYRrSlboccctLOhg" name="TF-A">
-<<<<<<< HEAD
-        <mxGraphModel dx="828" dy="505" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
-=======
-        <mxGraphModel dx="746" dy="475" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
->>>>>>> 9bfd39eb3de7e2e181ff480806f6f772ea7b57b1
+        <mxGraphModel dx="828" dy="797" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -2716,14 +2712,13 @@
         </mxGraphModel>
     </diagram>
     <diagram id="7CEKV7lOLNoO5vWjX9Uk" name="application">
-<<<<<<< HEAD
-        <mxGraphModel dx="828" dy="505" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
-=======
-        <mxGraphModel dx="746" dy="475" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
->>>>>>> 9bfd39eb3de7e2e181ff480806f6f772ea7b57b1
+        <mxGraphModel dx="690" dy="664" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-27" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="110" y="1530" width="450" height="390" as="geometry"/>
+                </mxCell>
                 <mxCell id="8T0k7gCzq3CH_AvOYtmv-12" value="遥控器控制模块" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;" parent="1" vertex="1">
                     <mxGeometry x="150" y="440" width="400" height="260" as="geometry"/>
                 </mxCell>
@@ -2835,7 +2830,6 @@
                 <mxCell id="8T0k7gCzq3CH_AvOYtmv-20" value="通讯模块" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="160" y="850" width="80" height="120" as="geometry"/>
                 </mxCell>
-<<<<<<< HEAD
                 <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-1" value="空调内机" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;" parent="1" vertex="1">
                     <mxGeometry x="160" y="1160" width="380" height="250" as="geometry"/>
                 </mxCell>
@@ -2846,23 +2840,10 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-14" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="x-Kmh2w1V9-tP9r-qRXQ-13" edge="1">
-=======
-                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-1" value="空调内机" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;" vertex="1" parent="1">
-                    <mxGeometry x="160" y="1160" width="380" height="250" as="geometry"/>
-                </mxCell>
-                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-2" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;startArrow=classic;startFill=1;endArrow=none;endFill=0;" edge="1" parent="1" source="x-Kmh2w1V9-tP9r-qRXQ-4" target="x-Kmh2w1V9-tP9r-qRXQ-5">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-3" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="x-Kmh2w1V9-tP9r-qRXQ-4" target="x-Kmh2w1V9-tP9r-qRXQ-6">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-14" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="x-Kmh2w1V9-tP9r-qRXQ-13">
->>>>>>> 9bfd39eb3de7e2e181ff480806f6f772ea7b57b1
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="410" y="1300" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-<<<<<<< HEAD
                 <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-4" value="空调外机主控" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="290" y="1200" width="120" height="200" as="geometry"/>
                 </mxCell>
@@ -2914,32 +2895,83 @@
                 <mxCell id="QURIpbC49f0VAfjIDdzg-8" value="空调外机交互" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="546" y="1312" width="79" height="30" as="geometry"/>
                 </mxCell>
-=======
-                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-4" value="空调外机主控" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="290" y="1200" width="120" height="200" as="geometry"/>
-                </mxCell>
-                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-5" value="红外接收解析" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="170" y="1200" width="80" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-6" value="空调外机通讯" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="450" y="1320" width="80" height="80" as="geometry"/>
-                </mxCell>
-                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-10" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=blockThin;startFill=1;" edge="1" parent="1" source="x-Kmh2w1V9-tP9r-qRXQ-9" target="x-Kmh2w1V9-tP9r-qRXQ-4">
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-11" style="edgeStyle=none;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="Vf1PJ4E1PgoYU-geBlLU-1" target="Vf1PJ4E1PgoYU-geBlLU-2">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-9" value="WIFI通讯组网客户端" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="170" y="1270" width="80" height="60" as="geometry"/>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-1" value="Modbus App&lt;div&gt;（寄存器管理)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="160" y="1600" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-12" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="x-Kmh2w1V9-tP9r-qRXQ-11" target="x-Kmh2w1V9-tP9r-qRXQ-4">
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-12" style="edgeStyle=none;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="Vf1PJ4E1PgoYU-geBlLU-2" target="Vf1PJ4E1PgoYU-geBlLU-3">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-11" value="面板按键" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="170" y="1340" width="80" height="60" as="geometry"/>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-20" style="edgeStyle=none;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="Vf1PJ4E1PgoYU-geBlLU-2" target="Vf1PJ4E1PgoYU-geBlLU-1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="252" y="1681" as="targetPoint"/>
+                    </mxGeometry>
                 </mxCell>
-                <mxCell id="x-Kmh2w1V9-tP9r-qRXQ-13" value="面板UI显示" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="450" y="1200" width="80" height="80" as="geometry"/>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-2" value="Modbus协议层" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="160" y="1720" width="120" height="60" as="geometry"/>
                 </mxCell>
->>>>>>> 9bfd39eb3de7e2e181ff480806f6f772ea7b57b1
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-13" style="edgeStyle=none;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="Vf1PJ4E1PgoYU-geBlLU-3" target="Vf1PJ4E1PgoYU-geBlLU-7">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-19" style="edgeStyle=none;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="Vf1PJ4E1PgoYU-geBlLU-3" target="Vf1PJ4E1PgoYU-geBlLU-2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-3" value="Modbus物理层&lt;div&gt;(Port Interface tcp/serial)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="160" y="1838" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-4" value="Master" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="177" y="1570" width="73" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-16" style="edgeStyle=none;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="Vf1PJ4E1PgoYU-geBlLU-5" target="Vf1PJ4E1PgoYU-geBlLU-6">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-5" value="Modbus App&lt;div&gt;（寄存器读写)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="400" y="1600" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-15" style="edgeStyle=none;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="Vf1PJ4E1PgoYU-geBlLU-6" target="Vf1PJ4E1PgoYU-geBlLU-5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-17" style="edgeStyle=none;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="Vf1PJ4E1PgoYU-geBlLU-6" target="Vf1PJ4E1PgoYU-geBlLU-7">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-6" value="Modbus协议层" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="400" y="1720" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-14" style="edgeStyle=none;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="Vf1PJ4E1PgoYU-geBlLU-7" target="Vf1PJ4E1PgoYU-geBlLU-6">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-18" style="edgeStyle=none;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="Vf1PJ4E1PgoYU-geBlLU-7" target="Vf1PJ4E1PgoYU-geBlLU-3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-7" value="&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Modbus物理层&lt;/span&gt;&lt;div&gt;(Port Interface tcp/serial)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="400" y="1838" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-8" value="Slave" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="427" y="1570" width="73" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-21" value="请求" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="310" y="1889" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-22" value="响应" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="310" y="1820" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-23" value="" style="endArrow=classic;startArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="Vf1PJ4E1PgoYU-geBlLU-1" target="Vf1PJ4E1PgoYU-geBlLU-5">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="290" y="1680" as="sourcePoint"/>
+                        <mxPoint x="340" y="1630" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-25" value="" style="endArrow=classic;startArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="Vf1PJ4E1PgoYU-geBlLU-2" target="Vf1PJ4E1PgoYU-geBlLU-6">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="290" y="1740" as="sourcePoint"/>
+                        <mxPoint x="340" y="1690" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="Vf1PJ4E1PgoYU-geBlLU-26" value="Modbus Protocol" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="134" y="1540" width="96" height="30" as="geometry"/>
+                </mxCell>
             </root>
         </mxGraphModel>
     </diagram>

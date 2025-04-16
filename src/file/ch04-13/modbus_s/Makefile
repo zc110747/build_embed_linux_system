@@ -2,18 +2,18 @@
 
 EXCUTABLE ?= target
 
-OBJECTS = ../freemodbus/mb.o \
-		  ../freemodbus/ascii/mbascii.o \
-		  ../freemodbus/functions/mbfunccoils.o \
-		  ../freemodbus/functions/mbfuncdiag.o \
-		  ../freemodbus/functions/mbfuncdisc.o \
-		  ../freemodbus/functions/mbfuncholding.o \
-		  ../freemodbus/functions/mbfuncinput.o \
-		  ../freemodbus/functions/mbfuncother.o \
-		  ../freemodbus/functions/mbutils.o \
-		  ../freemodbus/rtu/mbcrc.o \
-		  ../freemodbus/rtu/mbrtu.o \
-		  ../freemodbus/tcp/mbtcp.o \
+OBJECTS = freemodbus/mb.o \
+		  freemodbus/ascii/mbascii.o \
+		  freemodbus/functions/mbfunccoils.o \
+		  freemodbus/functions/mbfuncdiag.o \
+		  freemodbus/functions/mbfuncdisc.o \
+		  freemodbus/functions/mbfuncholding.o \
+		  freemodbus/functions/mbfuncinput.o \
+		  freemodbus/functions/mbfuncother.o \
+		  freemodbus/functions/mbutils.o \
+		  freemodbus/rtu/mbcrc.o \
+		  freemodbus/rtu/mbrtu.o \
+		  freemodbus/tcp/mbtcp.o \
 		  port/portevent.o \
 		  port/portserial.o \
 		  port/porttimer.o \
@@ -25,11 +25,11 @@ OBJECTS = ../freemodbus/mb.o \
 INCLUDE_PATH = 	-I"port/" \
 				-I"event/" \
 				-I"../include/" \
-				-I"../freemodbus/include/" \
-			   	-I"../freemodbus/functions/" \
-			   	-I"../freemodbus/rtu/" \
-			   	-I"../freemodbus/ascii/" \
-				-I"../freemodbus/tcp/"
+				-I"freemodbus/include/" \
+			   	-I"freemodbus/functions/" \
+			   	-I"freemodbus/rtu/" \
+			   	-I"freemodbus/ascii/" \
+				-I"freemodbus/tcp/"
 
 #支持的C编译选项
 CFLAGS += -O1 -lm -g -lpthread

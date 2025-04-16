@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.cmd": "shellscript",
+        "*.tcc": "cpp"
+    }
+}

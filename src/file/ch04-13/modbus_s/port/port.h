@@ -63,6 +63,13 @@ typedef int32_t LONG;
 #define FALSE           0
 #endif
 
+#define PORT_SERIAL_NODE        "/dev/ttyS1"
+#define PORT_FIFO_NODE          "/tmp/fifo_modbus_slave"
+
+#define PORT_SERIAL_MODE        0
+#define PORT_FIFO_MODE          1
+#define PORT_RUN_MODE           PORT_SERIAL_MODE
+
 #ifdef __cplusplus
 PR_END_EXTERN_C
 #endif

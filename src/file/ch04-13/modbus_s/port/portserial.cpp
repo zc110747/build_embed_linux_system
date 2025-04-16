@@ -33,13 +33,6 @@
 #include "fifo_manage.hpp"
 #include "tty.hpp"
 
-#define PORT_SERIAL_NODE        "/dev/ttyS1"
-
-#define PORT_SERIAL_MODE        0
-#define PORT_FIFO_MODE          1
-#define PORT_RUN_MODE           PORT_SERIAL_MODE
-
-
 /* ----------------------- static parameter ---------------------------------*/
 #define RX_BUFFER_SIZE      1024
 #define TX_BUFFER_SIZE      1024
@@ -121,11 +114,9 @@ void port_tty_rx_thread(void)
 #else
         n_size = portserial.fifo_point_->read(portserial.rx_buffer, RX_BUFFER_SIZE);
 #endif
-        if (n_size > 0) {        
-            LOG_INFO(0, "rx n_size:{}", n_size); 
+        if (n_size > 0) {
             portserial.rx_buffer_size = 0;
-            for (int index=0; index<n_size; index++)
-            {
+            for (int index=0; index<n_size; index++) {
                 prvvUARTRxISR();
             }
         } else if ( n_size == 0) {
@@ -149,7 +140,7 @@ xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
         return FALSE;
     }
 #else
-    portserial.fifo_point_ = std::make_unique<fifo_manage>("/tmp/fifo_modbus_slave", S_FIFO_WORK_MODE);
+    portserial.fifo_point_ = std::make_unique<fifo_manage>(PORT_FIFO_NODE, S_FIFO_WORK_MODE);
     if(portserial.fifo_point_ == nullptr) {
         LOG_ERROR(0, "fifo_manage malloc error");
         return FALSE;

@@ -139,7 +139,7 @@ eMBTCPSend( UCHAR _unused, const UCHAR * pucFrame, USHORT usLength )
     UCHAR          *pucMBTCPFrame = ( UCHAR * ) pucFrame - MB_TCP_FUNC;
     USHORT          usTCPLength = usLength + MB_TCP_FUNC;
 
-    printf("eMBTCPSend: usLength = %d\n", usLength);
+    //printf("eMBTCPSend: usLength = %d\n", usLength);
     
     /* The MBAP header is already initialized because the caller calls this
      * function with the buffer returned by the previous call. Therefore we 

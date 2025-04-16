@@ -371,7 +371,7 @@ eMBPoll( void )
             ucFunctionCode = ucMBFrame[MB_PDU_FUNC_OFF];
             eException = MB_EX_ILLEGAL_FUNCTION;
 
-            printf("ucFunctionCode:%d\n", ucFunctionCode);
+            //printf("ucFunctionCode:%d\n", ucFunctionCode);
             
             for( i = 0; i < MB_FUNC_HANDLERS_MAX; i++ )
             {
