@@ -1,0 +1,5 @@
+# 收集 lib 目录下的源文件
+file(GLOB LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+
+# 将 LIB_SOURCES 变量传递给父级作用域
+set(LIB_SOURCES ${LIB_SOURCES} PARENT_SCOPE)

@@ -7,6 +7,8 @@
 3. 驱动开发技术，包含Linux内核驱动接口，设备树语法和设备树接口，字符设备，块设备和网络设备，子系统功能实现(i2c, spi, input, iio)
 4. 应用开发技术，Linu应用层接口，cpp语法小结，Linux平台调试方法，Linux框架设计和web应用开发，Linux平台GUI开发技术
 
+因为本系列涉及知识点较多，来自于个人实践和理解，难免有纰漏和不足之处，欢迎各位批评指正；如果有疑问，请提issue或加新建qq群(877393195)进行讨论。
+
 目录如下所示。
 
 [ch00.前言](./src/ch00.PRFEACE.md)
@@ -32,10 +34,10 @@
   - [ch02-10.基于buildroot构建文件系统](./src/ch02-10.rootfs_buildroot.md)
   - [ch02-11.基于debian构建文件系统](./src/ch02-11.rootfs_debian.md)
   - [ch02-12.基于ubuntu构建文件系统](./src/ch02-12.rootfs_ubuntu.md)
-  - [ch02-13 支持qt的linux文件系统构建](./src/ch02-13.rootfs_qtsupport.md)
-  - [ch02-14 基于openwrt构建系统平台](./src/ch02-14.rootfs_openwrt.md)
-  - [ch02-15 安卓sdk构建](./src/ch02-15.android_sdk.md)
-  - [ch02-16 qemu虚拟机环境构建](./src/ch02-16.qemu.md)
+  - [ch02-13.支持qt的linux文件系统构建](./src/ch02-13.rootfs_qtsupport.md)
+  - [ch02-14.基于openwrt构建系统平台](./src/ch02-14.rootfs_openwrt.md)
+  - [ch02-15.安卓sdk构建](./src/ch02-15.android_sdk.md)
+  - [ch02-16.qemu虚拟机环境构建](./src/ch02-16.qemu.md)
   - [ch02-17.u-boot spl和TF-A机制](./src/ch02-17.spl_and_tfa.md)
   - [ch02-18.异构多核芯片功能应用](./src/ch02-18.multi_core.md)
   - [ch02-x1.imx6ull芯片平台编译方法](./src/ch02-x1.imx6ull_platform.md)
@@ -106,12 +108,14 @@
   - [ch04-15.综合应用开发项目](./src/ch04-15.integrated_design.md)
   - [ch04-x1.Linux平台基础api接口](./src/ch04-x1.linux_base_api.md)
   - [ch04-x2.Linux平台复杂api接口](./src/ch04-x2.linux_complex_api.md)
-  - [ch04-x3.cmake编译语法](./src/ch04-x3..cmake.md)
+  - [ch04-x3.cmake编译语法](./src/ch04-x3.cmake.md)
 
 - [ch05.结语](./src/ch05.CONCLUSION.md)
 
 - [附录一: Linux相关技术网站和资源整理](./src/end_appendix-01.website.md)
-- [附录二: 面试问题整理](./src/end_appendix-02.interview.md)
+- [附录二: 基础面试问题整理](./src/end_appendix-02.interview_base.md)
+- [附录三: 驱动面试问题整理](./src/end_appendix-03.interview_driver.md)
+- [附录四: 应用面试问题整理](./src/end_appendix-04.interview_app.md)
 
 ## 说明
 

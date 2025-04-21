@@ -1,4 +1,4 @@
-# Linux面试题整理(二)：Linux驱动问题整理
+# Linux面试题整理(二)：Linux驱动面试问题整理
 
 - [Linux驱动问题整理](#linux-driver)
   - [Linux设备驱动分类，阐述它们的区别，并分别列举一些实际设备](#interview-001)
@@ -14,7 +14,7 @@
   - [IRQ(Interrupt Request)和FIQ(Fast Interrupt Request)在CPU实现中有什么区别](#interview-011)
   - [中断的为啥分上半部分和下半部分，讲下如何实现](#interview-012)
   - [驱动使用什么函数接口访问绝对物理地址，为什么需要](#interview-013)
-  - [什么是内存屏障，常见的内存屏障有哪些，应用场景是什么](#interview-018)
+  - [什么是内存屏障，常见的内存屏障有哪些，应用场景是什么](#interview-014)
 
 ## linux-driver
 
@@ -147,7 +147,7 @@ void __iomem *iomem; // 映射物理内存到虚拟地址空间
 iomem = ioremap(DEVICE_PHYS_ADDR, DEVICE_SIZE);
 ```
 
-### interview-018
+### interview-014
 
 什么是内存屏障。常见的内存屏障有哪些，应用场景是什么。
 

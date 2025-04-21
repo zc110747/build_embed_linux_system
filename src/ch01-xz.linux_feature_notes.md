@@ -21,6 +21,7 @@
   - [如何创建apt私有源](#feature-01-13)
   - [Could not get lock /var/lib/dpkg/lock - open](#feature-01-14)
   - [dpkg: error processing archive /var/cache/apt/archives/texlive-generic-recommended_2013.20140215-1_all.deb (--unpack)](#feature-01-15)
+  - [/usr/bin/mandb: can't chmod /var/cache/man/CACHEDIR.TAG: Operation not permitted](#feature-01-16)
 - [disk加载和卸载问题](#featurelist-02)
   - [umount dir: target is busy](#feature-02-01)
   - [mount: /dev/mmcblk1p1: can't read superblock](#feature-02-02)
@@ -298,6 +299,18 @@ sudo dpkg -i --force-overwrite /var/cache/apt/archives/texlive-generic-recommend
 sudo apt automove
 ```
 
+### feature-01-16
+
+/usr/bin/mandb: can't chmod /var/cache/man/CACHEDIR.TAG: Operation not permitted
+
+原因: /var/cache/man目录下文件权限不正确
+
+```shell
+# 执行权限修改命令
+sudo chown man:root /var/cache/man -R
+sudo chmod g+s /var/cache/man -R
+```
+
 ## featurelist-02
 
 ### feature-02-01
@@ -429,7 +442,7 @@ feature问题: 在sudo使用命令，报错 **sudo: /usr/bin/sudo must be owned 
 解决办法:
 
 ```shell
-#在root权限下处理
+# 在root权限下处理
 chown root:root /usr/bin/sudo
 chmod 4755 /usr/bin/sudo
 ```

@@ -83,7 +83,7 @@ static void tcp_rx_process(int client_fd)
                 if (len > TCP_RX_BUFFER_SIZE) {
                     LOG_ERROR(0, "rx_frame_size:{} > TCP_RX_BUFFER_SIZE:{}", len, TCP_RX_BUFFER_SIZE);
                     porttcp_info.rx_frame_size = 0;
-                    continue;;
+                    continue;
                 }
 
                 if (porttcp_info.rx_frame_size >= len) {

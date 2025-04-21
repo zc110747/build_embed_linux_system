@@ -1,5 +1,7 @@
 *.o
-*.so
-*.a
 *.7z
 target
+
+
+src/file/ch04-13/modbus_s/build/*
+src/file/ch04-x3/*/build/*
