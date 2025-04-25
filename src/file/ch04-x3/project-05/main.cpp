@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include "test.hpp"
 
 extern int test1_func();
 

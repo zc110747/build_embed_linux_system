@@ -2,6 +2,6 @@
 *.7z
 target
 
-
+src/file/ch04-12/build/*
 src/file/ch04-13/modbus_s/build/*
 src/file/ch04-x3/*/build/*

@@ -108,8 +108,10 @@ private:
 
         std::cout << "mqtt run..." << std::endl;
         
-        connect(info_.host.c_str(), info_.port, info_.keepalive);
-    
+        int ret = connect(info_.host.c_str(), info_.port, info_.keepalive);
+        
+        std::cout << "mqtt connect: " << ret << std::endl;
+
         while (1)
         {
             loop_forever();
@@ -159,7 +161,7 @@ int main(int argc, char *argv[])
 
     while(1)
     {
-        mqtt_client->publish_msg("test", 1, "hello", 5);
+        mqtt_client->publish_msg("/info/winform_topic", 1, "hello", 5);
         std::this_thread::sleep_for(std::chrono::seconds(3));
     }
 

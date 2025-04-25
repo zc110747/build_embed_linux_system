@@ -1,7 +1,7 @@
 #variable
 #定义编译的生成可执行文件名
 EXCUTABLE ?= target
-OBJECTS = mqtt_client.o
+OBJECTS = main.o
 INCLUDE_PATH = 
 CFLAGS += -O1 -lm -lmosquitto -lmosquittopp -std=c++17
 CC ?= gcc                                 

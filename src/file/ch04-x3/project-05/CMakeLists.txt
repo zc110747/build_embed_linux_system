@@ -14,9 +14,11 @@ add_subdirectory(lib)
 
 file(GLOB MAIN_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
-set(ALL_SOURCES ${MAIN_SOURCES} ${LIB_SOURCES})
+add_executable(target)
 
-add_executable(target ${ALL_SOURCES})
+target_sources(target PRIVATE ${MAIN_SOURCES} ${LIB_SOURCES})
+
+target_include_directories(target PRIVATE ${INCLUDE_HEADERS})
 
 # 添加编译选项
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
