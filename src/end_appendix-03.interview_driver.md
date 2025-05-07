@@ -107,7 +107,7 @@ int cdev_add(struct cdev *p, dev_t dev, unsigned count)
 简述设备驱动模型构成，platform总线的匹配规则，注册驱动和注册设备需要先后顺序吗？
 
 1. 设备驱动模型由总线，设备，驱动三部分组成
-2. Platform总线是Linux内核中用于管理不直接挂接在物理总线上的设备（如LED、LCD、RTC等）的一种虚拟总线，其主要匹配支持platform访问的节点(一般为根节点，或者在其compatible属性中包含"simple-bus", "simple-mfd", "isa", "arm,amba-bus"节点的子节点)，与可访问设备字节中的compatible属性字符串匹配则加载驱动。
+2. Platform总线是Linux内核中用于管理不直接挂接在物理总线上的设备（如LED、LCD、RTC等）的一种平台总线，其主要匹配支持platform访问的节点(一般为根节点，或者在其compatible属性中包含"simple-bus", "simple-mfd", "isa", "arm,amba-bus"节点的子节点)，与可访问设备字节中的compatible属性字符串匹配则加载驱动。
 3. 对于片上设备和大部分板级设备，都是需要先注册设备，再注册驱动。部分支持热插拔的设备(USB，HDMI)等，则是先注册驱动，当设备插入时才注册设备，匹配驱动执行
 
 ### interview-010

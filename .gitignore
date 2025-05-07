@@ -1,7 +1,14 @@
 *.o
 *.7z
+*.cmd
+*.mod*
+*.ko*
+*.order
+*.symvers
+*.d
 target
 
-src/file/ch04-12/build/*
-src/file/ch04-13/modbus_s/build/*
-src/file/ch04-x3/*/build/*
+src/file/ch*/*/build/*
+src/file/ch*/build/*
+src/file/ch04-12/mqtt_node_1/mqtt_node1
+src/file/ch04-12/mqtt_node_0/mqtt_node0

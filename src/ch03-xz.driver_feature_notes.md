@@ -248,17 +248,17 @@ gpio_keys: gpio_keys@0 {
 
 第一步，全局检索compatible对应的字符串，查找到驱动地址，确定为drivers/input/keyboard/gpio-keys.c
 
-![image](./image/ch03-x7-01.png)
+![image](./image/ch03-xz-01.png)
 
 第二步，查询同目录下的Makefile文件，确定该文件被包含需要满足的条件，确定为宏**CONFIG_KEYBOARD_GPIO**
 
-![image](./image/ch03-x7-02.png)
+![image](./image/ch03-xz-02.png)
 
 第三步, 在menuconfig菜单中检索CONFIG_KEYBOARD_GPIO，查找路径并置位。可以看到路径如下所示。
 
 Device Driver > Input device support > Generic input layer > Keyboards > GPIO buttons
 
-![image](./image/ch03-x7-03.png)
+![image](./image/ch03-xz-03.png)
 
 修改保存后，查看内核根目录下是否有CONFIG_KEYBOARD_GPIO，如果存在则表示设置成功。
 
@@ -268,7 +268,7 @@ Device Driver > Input device support > Generic input layer > Keyboards > GPIO bu
 
 pinctrl复用被占用一般发生在设备树添加某个模块时，其gpio和设备树中已有的I/O功能冲突，此时注释掉原pinctrl中引脚即可。
 
-![image](./image/ch03-x7-04.png)
+![image](./image/ch03-xz-04.png)
 
 可以看到gpio-keys0中增加的pinctrl与原2190000.mmc冲突(对应usdhc1接口)，注释掉相应的pinctrl，并关闭模块即可。
 

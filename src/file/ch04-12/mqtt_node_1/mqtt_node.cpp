@@ -30,8 +30,7 @@ public:
     /// \brief constructor
     /// \param info -- info used to initialize the mqtt service.
     mqtt_device(const mqtt_info &info, std::function<void(char *ptr, int size)> handler)
-    :mosquittopp(info.id.c_str())
-    {
+    :mosquittopp(info.id.c_str()) {
         info_ = info;
         func_handler_ = handler;
         memset(buffer_, 0, sizeof(buffer_));
@@ -45,10 +44,16 @@ public:
     /// - This method is used do mqtt connect
     /// \param rc -- state for mqtt connect, 0 is success.
     void on_connect(int rc) {
-        if (rc == 0)
-        {
+
+        std::cout << "Connected with broker, state: " << rc << std::endl;
+        if (rc == 0) {
             /* Only attempt to subscribe on a successful connect. */
-            subscribe(NULL, info_.sub_topic.c_str(), info_.qos);
+            if (!info_.sub_topic.empty()) {
+                subscribe(NULL, info_.sub_topic.c_str(), info_.qos);
+            } else {
+                std::cout << "Sub topic is empty." << std::endl;
+            }
+            
             is_connet_ = true;
         }
     }
@@ -57,13 +62,11 @@ public:
     /// - This method is used do mqtt message receive
     /// \param message -- memssage when receive from subscribe topic
     void on_message(const struct mosquitto_message *message) {
-        if (!strcmp(message->topic, info_.sub_topic.c_str()))
-        {
+        if (!strcmp(message->topic, info_.sub_topic.c_str())) {
             /* Copy N-1 bytes to ensure always 0 terminated. */
             memcpy(buffer_, message->payload, message->payloadlen);
             buffer_[message->payloadlen] = '\0';
-            if (func_handler_)
-            {
+            if (func_handler_) {
                 func_handler_(buffer_, message->payloadlen);
             }
         }
@@ -83,10 +86,14 @@ public:
     /// \param str -- memssage when receive by subscribe
     /// \return publish msg process.
     int publish_msg(const std::string &topic, int qos, const char* ptr, int size) {
-        int ret = 0;
+        int ret = -1;
 
         if (is_connet_ && size > 0) {
-            ret = publish(NULL, topic.c_str(), size, ptr, qos);
+            if (!topic.empty()) {
+                ret = publish(NULL, topic.c_str(), size, ptr, qos);
+            } else {
+                std::cout << "topic is empty." << std::endl;
+            }
         }
         
         return ret;
@@ -108,12 +115,9 @@ private:
 
         std::cout << "mqtt run..." << std::endl;
         
-        int ret = connect(info_.host.c_str(), info_.port, info_.keepalive);
-        
-        std::cout << "mqtt connect: " << ret << std::endl;
-
-        while (1)
-        {
+        connect(info_.host.c_str(), info_.port, info_.keepalive);
+    
+        while (1) {
             loop_forever();
         }
     
@@ -145,23 +149,22 @@ private:
 int main(int argc, char *argv[])
 {
     mqtt_info mqtt_process_info = {
-        id: "mqtt_client",
+        id: "mqtt_node1",
         host: "172.27.83.254",
         port:1883,
-        sub_topic:"/info/mp_topic",
+        sub_topic:"/topic/temperature",
         keepalive:60,
         qos:1
     };
 
     std::shared_ptr<mqtt_device> mqtt_client = std::make_shared<mqtt_device>(mqtt_process_info, [](char *ptr, int size) {
+        ptr[size] = '\0';
         std::cout << "recv msg: " << ptr << std::endl;
     });
 
     mqtt_client->start();
 
-    while(1)
-    {
-        mqtt_client->publish_msg("/info/winform_topic", 1, "hello", 5);
+    while(1) {
         std::this_thread::sleep_for(std::chrono::seconds(3));
     }
 
