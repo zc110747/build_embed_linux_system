@@ -15,9 +15,10 @@
 
 int main(int argc, const char *argv[])
 {
-    char buffer[64];
+    char w_buffer[64];
+    char r_buffer[64] = {0};
     int fd;
-    int size = 0;
+    int ret;
 
     fd = open(NVMEM_DEVICE_FILE, O_RDWR | O_NDELAY);
     if (fd == -1) {
@@ -25,17 +26,36 @@ int main(int argc, const char *argv[])
         return -1;
     }
 
-    // 移动指针位置
+    // 写入数据
+    for (int i = 0; i < 64; i++) {
+        w_buffer[i] = i;
+    }
     lseek(fd, 100, SEEK_SET);
-
-    size = read(fd, buffer, sizeof(buffer));
-    if (size >= 0) {
-        printf("read size:%d\n", size);
-    } else {
-        printf("read failed:%d\n", size);
+    ret = write(fd, w_buffer, 64);
+    if (ret < 0) {
+        printf("write failed:%d\n", ret);
+        goto __exit;
     }
 
-    close(fd); 
+    // 读取数据
+    lseek(fd, 100, SEEK_SET);
+    ret = read(fd, r_buffer, sizeof(r_buffer));
+    if (ret < 0) {
+        printf("read failed:%d\n", ret);
+        goto __exit;
+    }
 
+    // 比较数据
+    for (int i = 0; i < 64; i++) {
+        if (r_buffer[i] != w_buffer[i]) {
+            printf("no equal, %d:%d\n", r_buffer[i], w_buffer[i]);
+            goto __exit;
+        }
+    }
+
+    printf("nvmem test success\n");
+
+__exit:
+    close(fd); 
     return 0;
 }
