@@ -85,5 +85,6 @@
         "enableCodeCompletionPro": false
     },
     "marscode.enableInlineCommand": true,
-    "marscode.chatLanguage": "cn"
+    "marscode.chatLanguage": "cn",
+    "cmake.sourceDirectory": "D:/user_project/coding_git/build_embed_linux_system/src/file/ch04-08"
 }

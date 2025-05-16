@@ -15,24 +15,17 @@
 //      pwm导出信息
 //      pwmchip
 //      使能pwm
-//          echo 0 > /sys/class/pwm/pwmchip7/export                 #导出pwm
-//          echo 1 > /sys/class/pwm/pwmchip7/pwm0/enable            #使能pwm输出
-//          echo 50000 > /sys/class/pwm/pwmchip7/pwm0/period        #设置周期
-//          echo 50000 > /sys/class/pwm/pwmchip7/pwm0/duty_cycle    #设置占空比
-
+//          echo 0 > /sys/class/pwm/pwmchip1/export                 #导出pwm
+//          echo 1 > /sys/class/pwm/pwmchip1/pwm0/enable            #使能pwm输出
+//          echo 50000 > /sys/class/pwm/pwmchip1/pwm0/period        #设置周期
+//          echo 25000 > /sys/class/pwm/pwmchip1/pwm0/duty_cycle    #设置占空比
 // struct pwm_state {
-//     u64 period;
-//     u64 duty_cycle;
-//     enum pwm_polarity polarity;
-//     bool enabpwm;
-//     bool usage_power;
+//     u64 period;                     //PWM周期时间，单位ns
+//     u64 duty_cycle;                 //PWM有效时间(占空比时间)，单位ns
+//     enum pwm_polarity polarity;     //PWM极性，有效电平是高电平还是低电平
+//     bool enabled;                   //PWM使能状态
+//     bool usage_power;               //如果设置，PWM驱动器只需要保持功率输出，但在信号形式方面有更多的自由，可通过移相改变EMI特性(I.MX6ULL不支持)
 // };
-// period: pwm周期
-// duty_cycle: pwm占空比
-// polarity: pwm极性，
-// enable: pwm工作状态
-// usage_power:?
-//
 //  Revision History:
 //      4/3/2022   Create New Version
 /////////////////////////////////////////////////////////////////////////////
@@ -71,9 +64,10 @@ pwm7: pwm@20f8000 {
 };
 
 &pwm7 {
-    pinctrl-names = "default";
-    pinctrl-0 = <&pinctrl_pwm7>;
-    status = "okay";
+    compatible = "rmk,pwm";                                         //覆盖pwm标签，用于驱动匹配
+    pinctrl-names = "default";                                      //引脚复用名称
+    pinctrl-0 = <&pinctrl_pwm7>;                                    //引脚复用配置  
+    status = "okay";                                                //pwm状态，打开
 };
 */
 
@@ -183,14 +177,14 @@ static int pwm_driver_get_state(struct pwm_chip *chip, struct pwm_device *pwm, s
 
     val = readl(info->mmio_base + MX3_PWMCR);
     
-    /* 获取使能状态 */
+    /*1. 获取PWM使能状态 */
     if (val & MX3_PWMCR_EN) {
         state->enabled = true;
     } else {
         state->enabled = false;
     }
 
-    /* 获取pwm极性*/
+    /*2. 获取当前pwm极性*/
     switch (FIELD_GET(MX3_PWMCR_POUTC, val)) {
         case MX3_PWMCR_POUTC_NORMAL:
             state->polarity = PWM_POLARITY_NORMAL;
@@ -202,7 +196,7 @@ static int pwm_driver_get_state(struct pwm_chip *chip, struct pwm_device *pwm, s
             dev_warn(chip->dev, "can't set polarity, output disconnected\n");
     }
 
-    /* 获取周期 */
+    /*3. 获取周期 */
     prescaler = MX3_PWMCR_PRESCALER_GET(val);
     pwm_clk = clk_get_rate(info->clk_per);
     val = readl(info->mmio_base + MX3_PWMPR);
@@ -210,18 +204,20 @@ static int pwm_driver_get_state(struct pwm_chip *chip, struct pwm_device *pwm, s
     tmp = NSEC_PER_SEC * (u64)(period + 2) * prescaler;
     state->period = DIV_ROUND_UP_ULL(tmp, pwm_clk);
 
-    /* 获取占空比, 管理时钟 */
+    /*4. 获取占空比, 管理时钟 */
     if (state->enabled) {
         val = readl(info->mmio_base + MX3_PWMSAR);
     } else {
         val = info->duty_cycle;
         pwm_clk_disable(info);
     }
-
     tmp = NSEC_PER_SEC * (u64)(val) * prescaler;
     state->duty_cycle = DIV_ROUND_UP_ULL(tmp, pwm_clk);
-    dev_info(chip->dev, "[pwm_driver_get_state]enable:%d, period:%lld, duty_cycle:%lld\n", 
-                        state->enabled, state->period, state->duty_cycle);
+
+    dev_info(chip->dev, "enable:%d, period:%lld, duty_cycle:%lld\n", 
+                        state->enabled, 
+                        state->period, 
+                        state->duty_cycle);
     return 0;
 }
 
@@ -275,33 +271,13 @@ static int pwm_driver_apply(struct pwm_chip *chip, struct pwm_device *pwm, const
     int ret;
     u32 cr, timeout = 1000;
 
-    /* 调用pwm_imx27_apply, 获取当前配置 */
+    /*1. 调用pwm_imx27_apply, 获取当前pwm设置状态 */
     info = container_of(chip, struct pwm_driver_info, chip);
     reg_sar = info->mmio_base + MX3_PWMSAR;
     pwm_get_state(pwm, &cstate); 
-
-    /* 获取时钟，并计算周期 */
     clkrate = clk_get_rate(info->clk_per);
 
-    /* 计算period_cycles, prescale后续会更新分频寄存器 */
-    c = clkrate * state->period;
-    do_div(c, NSEC_PER_SEC);
-    period_cycles = c;
-    prescale = period_cycles / 0x10000 + 1;
-    period_cycles /= prescale;
-    if (period_cycles > 2) {
-        period_cycles -= 2;
-    }else {
-        period_cycles = 0;
-    }
-
-    /* 计算duty_cycles */
-    c = clkrate * state->duty_cycle;
-    do_div(c, NSEC_PER_SEC);
-    duty_cycles = c;
-    duty_cycles /= prescale;
-
-    /* 时钟管理 */
+    /*2. 判断当前pwm状态，如果开启则等待缓存中处理完，未开启则复位pwm模块*/
     if (cstate.enabled) {
         pwm_wait_fifo_slot(info, pwm);
     } else {
@@ -312,7 +288,28 @@ static int pwm_driver_apply(struct pwm_chip *chip, struct pwm_device *pwm, const
         pwm_sw_reset(info);
     }
 
-    /* 等待duty_cycle fifo更新 */
+    /* 3. 根据周期时间，计算分频和设置周期数，period的单位是ns*/
+    c = clkrate * state->period;
+    do_div(c, NSEC_PER_SEC);          
+    period_cycles = c;
+    prescale = period_cycles / 0x10000 + 1;     //根据周期计算分频系数，peroid为16位，所以分频后要保证peroid小于16位
+    period_cycles /= prescale;
+    if (period_cycles > 2) {
+        period_cycles -= 2;
+    }else {
+        period_cycles = 0;
+    }
+
+    /* 4.根据duty_cycles和分频，确定duty_cycles的设置值 */
+    c = clkrate * state->duty_cycle;
+    do_div(c, NSEC_PER_SEC);
+    duty_cycles = c;
+    duty_cycles /= prescale;
+
+    /* 5.更新duty_cycle fifo更新
+        (1)duty_cycle比当前值PWM设置大时，直接写入
+        (2)duty_cycle比当前值PWM设置小时，根据当前计数器的值，先写入上一次PWM值，在修改为当前值(应该是为了解决PWM切换时波形不完整畸变的问题)
+     */
     if (duty_cycles < info->duty_cycle) {
         c = clkrate * 1500;
         do_div(c, NSEC_PER_SEC);
@@ -337,32 +334,28 @@ static int pwm_driver_apply(struct pwm_chip *chip, struct pwm_device *pwm, const
     } else {
         writel(duty_cycles, info->mmio_base + MX3_PWMSAR);
     }
-
-    /* 写入周期寄存器 */
-    writel(period_cycles, info->mmio_base + MX3_PWMPR);
-
     info->duty_cycle = duty_cycles;
 
-    /* 更新cr寄存器 */
+    /* 6. 写入周期寄存器, 配置寄存器，使能PWM */
+    writel(period_cycles, info->mmio_base + MX3_PWMPR);
     cr = MX3_PWMCR_PRESCALER_SET(prescale) |
          MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEN | MX3_PWMCR_WAITEN |
          FIELD_PREP(MX3_PWMCR_CLKSRC, MX3_PWMCR_CLKSRC_IPG_HIGH) |
          MX3_PWMCR_DBGEN;
-
     if (state->polarity == PWM_POLARITY_INVERSED)
         cr |= FIELD_PREP(MX3_PWMCR_POUTC,
                 MX3_PWMCR_POUTC_INVERTED);
-
     if (state->enabled)
         cr |= MX3_PWMCR_EN;
-
     writel(cr, info->mmio_base + MX3_PWMCR);
 
+    /* 7. 未开启pwm时，关闭PWM时钟 */
     if (!state->enabled) {
         pwm_clk_disable(info);
     }
 
-    dev_info(chip->dev, "pwm state:%d, period:%ld, duty:%ld", 
+    dev_info(chip->dev, "clk_rate:%lld, pwm state:%d, period:%ld, duty:%ld",
+                        clkrate, 
                         state->enabled,
                         period_cycles,
                         duty_cycles);
@@ -400,39 +393,37 @@ static int pwm_driver_probe(struct platform_device *pdev)
         dev_err(&pdev->dev, "getting per clock failed\r\n!");  
         return -ENXIO;
     }
-    
-    spin_lock_init(&info->lock);
-    
-    //3.获取PWM相关的资源
-    info->duty_cycle = 0;
-    info->chip.ops = &pwm_driver_ops;
-    info->chip.dev = &pdev->dev;
-    info->chip.npwm = 1;
-
-    info->mmio_base = devm_platform_ioremap_resource(pdev, 0);
-    if (IS_ERR(info->mmio_base)) {
-        dev_err(&pdev->dev, "getting reg resource failed\r\n!");  
-        return -ENXIO;       
-    }
-
     /* 模块时钟管理，模块开启则打开时钟，反之则关闭 */
     ret = pwm_clk_enable(info);
     if (ret) {
         dev_err(&pdev->dev, "clk perpare enabled failed!\r\n");
         return ret;
     }
-    pwmcr = readl(info->mmio_base + MX3_PWMCR);
+
+    //3.获取PWM相关的寄存器资源
+    info->mmio_base = devm_platform_ioremap_resource(pdev, 0);
+    if (IS_ERR(info->mmio_base)) {
+        dev_err(&pdev->dev, "getting reg resource failed\r\n!");  
+        return -ENXIO;       
+    }
+    pwmcr = readl(info->mmio_base + MX3_PWMCR);     //需要开启时钟后，才能读取寄存器
     if (!(pwmcr & MX3_PWMCR_EN)) {
         pwm_clk_disable(info);
     }
 
     //4.增加pwmchip设备到系统中(/sys/class/pwm/pwmchipX/export)
+    info->duty_cycle = 0;
+    info->chip.ops = &pwm_driver_ops;
+    info->chip.dev = &pdev->dev;
+    info->chip.npwm = 1;
+
     ret = devm_pwmchip_add(&pdev->dev, &info->chip);
     if (ret) {
         dev_err(&pdev->dev, "pwmchip add failed!\r\n");
         return ret;
     }
-    
+
+    spin_lock_init(&info->lock);
     dev_info(&pdev->dev, "pwm init success!\r\n");
     return 0;
 }

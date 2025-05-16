@@ -11,6 +11,7 @@
 - [spi支持不同位数的通讯，如8bit, 16bit, 32bit(T113_i, Linux5.4)](#question-007)
 - [linux串口接收二进制字符0x11，0x13, 0x0d等特殊字符串丢弃和转换，如何处理](#question-008)
 - [linux驱动中引脚如何支持应用中切换引脚复用功能(如支持gpio不同复用功能)](#question-009)
+- [CAN应用相关异常处理](#question-010)
 
 ## question-001
 
@@ -398,47 +399,6 @@ if (IS_ERR_OR_NULL(chip->pinctrl_state[1])) {
     return -EIO;
 }
 
-//创建设备管理文件/sys/devices/platform/20c406c.usr_led/info
-//cat info (status=1)
-//echo 0 > info #选择配置0
-//echo 1 > info #选择配置1
-chip->led_attr.attr.name = "info";
-chip->led_attr.attr.mode = 0666;
-chip->led_attr.show = led_show;
-chip->led_attr.store = led_store;
-ret = device_create_file(&pdev->dev, &chip->led_attr);
-if (ret != 0) {
-    dev_info(&pdev->dev, "device create file failed!\n");
-    goto exit_device_create;
-}
-
-//获取引脚的当前配置信息
-static ssize_t led_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-    int size, index;
-    static struct led_data *chip;
-    u32 regval[5] = {0};
-    void *__iomem io_reg;
-
-    for (index=0; index<5; index++) {
-        io_reg = of_iomap(dev->of_node, index);
-        if (io_reg != NULL) {
-            regval[index] = readl(io_reg);
-        }
-    }
-    chip = container_of(attr, struct led_data, led_attr);
-    size = snprintf(buf, PAGE_SIZE, 
-                    "LED_STATUS = %d\n"
-                    "CCM_CCGR1 = 0x%08x\n"
-                    "SW_MUX_GPIO1_IO03 = 0x%08x\n"
-                    "SW_PAD_GPIO1_IO03 = 0x%08x\n"
-                    "GPIO_DR = 0x%08x\n"
-                    "GPIO_GDIR = 0x%08x\n", 
-                    gpiod_get_value(chip->led_desc), regval[0], regval[1], regval[2], regval[3], regval[4]);
-
-    return size;
-}
-
 //修改引脚的pinctrl配置信息
 static ssize_t led_store(struct device *dev, struct device_attribute *attr,  const char *buf, size_t count)
 {
@@ -464,6 +424,30 @@ static ssize_t led_store(struct device *dev, struct device_attribute *attr,  con
     dev_info(&pdev->dev, "regval:0x%x!\n", regval);
     return count;
 }
+```
+
+## question-010
+
+ip命令设置can波特率: **bitrate error 100.0 too high**
+
+```shell
+# 波特率设置值和时序不匹配，导致计算错误率过高(可能过低或者过高，根据实际情况修改)
+# 具体错误原因参考driver/net/can/dev/bit_timing.c中的
+ip link set can0 bitrate 1000000
+```
+
+ifconfig使能can: **bit‑timing not yet defined**
+
+```shell
+# 未设置bitrate，设置后修改
+ip link set can0 bitrate 1000000
+```
+
+ip配置报错: ip: either "dev" is duplicate, or "type" is garbage
+
+```shell
+# 使用了busybox命令中的ip，不支持can功能
+# 参考iproute2移植解决
 ```
 
 ## next_chapter
