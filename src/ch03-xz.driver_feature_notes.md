@@ -4,7 +4,7 @@
 
 - [TTY Serial支持带控制引脚的RS485通讯方式(I.MX6ULL, Linux6.1)](#question-001)
 - [芯片支持双网卡模式(I.MX6ULL, Linux6.1)](#question-002)
-- [解决网口报错问题: "Master/Slave resolution failed, maybe conflicting manual settings"(I.MX6ull, Linux6.1)](#question-003)
+- [解决网口报错问题: "Master/Slave resolution failed, maybe conflicting manual settings"(I.MX6ULL, Linux6.1)](#question-003)
 - [硬件在U-Boot中指定I/O上电默认输出的电平(I.MX6ULL, Linux6.1)](#question-004)
 - [在设备树中查询到某节点，状态为okay，且内核自带驱动，如何确定开启配置方法(all)](#question-005)
 - [pinctrl报错复用被占用如何处理(I.MX6ULL, Linux6.1)](#question-006)
@@ -64,7 +64,7 @@ int rs485_enable(const int fd, const RS485_ENABLE_t enable)
 
 ## question-002
 
-问题: I.MX6ull支持双网口模式.
+问题: I.MX6ULL支持双网口模式.
 
 修改双网口主要是设备树里面支持双网口的实现。
 
@@ -123,7 +123,7 @@ ifconfig eth1 up
 
 ## question-003
 
-问题: **I.MX6ull解决网口报错问题**
+问题: **I.MX6ULL解决网口报错问题**
 
 ```shell
 [   28.685938] Micrel KSZ8081 or KSZ8091 20b4000.ethernet-1:00: attached PHY driver (mii_bus:phy_addr=20b4000.ethernet-1:00, irq=POLL)
