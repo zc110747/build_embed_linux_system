@@ -15,6 +15,6 @@ set(CMAKE_C_COMPILER arm-none-linux-gnueabihf-gcc)
 set(CMAKE_CXX_COMPILER arm-none-linux-gnueabihf-g++)
 
 # 生成可执行文件
-add_executable(target main.cpp fb_draw.cpp bmp_image.cpp)
+add_executable(target main.cpp fb_draw.cpp)
 
 target_link_libraries(target PRIVATE m)

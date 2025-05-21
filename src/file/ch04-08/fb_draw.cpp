@@ -1,6 +1,5 @@
 
 #include "fb_draw.hpp"
-#include "bmp_image.hpp"
 
 bool fb_manage::init(const char *dev, uint8_t page_num) 
 {
@@ -209,18 +208,4 @@ void fb_manage::lcd_draw_point(fb_manage::CACHE_PAGE page,
     }
 
     fbp_[temp + y * width_ + x] = color;
-}
-
-void fb_manage::lcd_draw_bmp(fb_manage::CACHE_PAGE page, 
-    uint32_t start_x, uint32_t start_y, uint32_t end_x, uint32_t end_y, const char *bmp)
-{
-    unsigned long temp = 0;
-    bmp_img::bmp_decoder decoder;
-
-    if (page == fb_manage::CACHE_PAGE_1) {
-        temp = width_*height_;  //起始显存地址偏移，第二块显存地址偏移
-    }
-    
-    decoder.decode_bmp(bmp);
-    decoder.show_info();
 }

@@ -97,15 +97,6 @@ public:
     /// @param color 点的颜色，单位RGB888
     void lcd_draw_point(CACHE_PAGE page, uint32_t x, uint32_t y, uint32_t color);
 
-    /// @brief lcd_draw_bmp
-    /// @param page 显示的缓存区编号，0表示第一页，1表示第二页
-    /// @param start_x 显示的起始x坐标
-    /// @param start_y 显示的起始y坐标
-    /// @param end_x 显示的结束x坐标
-    /// @param end_y 显示的结束y坐标
-    /// @param bmp 位图数据地址，单位RGB888
-    void lcd_draw_bmp(CACHE_PAGE page, uint32_t start_x, uint32_t start_y, uint32_t end_x, uint32_t end_y, const char *bmp);
-
 public:
     /// \brief get_width
     /// - 获取屏幕宽度
@@ -116,7 +107,6 @@ public:
     /// - 获取屏幕高度
     /// \return 屏幕高度，单位像素
     uint32_t get_height()   { return height_; }
-
 private:
     /// \brief fb_
     /// - 帧缓冲文件描述符
