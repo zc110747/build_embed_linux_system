@@ -1,7 +1,7 @@
 
 #include "fb_draw.hpp"
 
-bool fb_manage::init(const char *dev, uint8_t page_num) 
+bool fb_manage::init(const char *dev) 
 {
     fb_ = open(dev, O_RDWR); 
     if (fb_ < 0) {
@@ -19,42 +19,28 @@ bool fb_manage::init(const char *dev, uint8_t page_num)
         return false;
     }
 
-    printf("xres*yres:%d*%d-%d\n" 
-        "bits_per_pixel:%d\n"
-        "line_length:%d\n"
-        "ywrapstep:%d\n"
-        "ypanstep:%d\n",
-        fb_var_.xres,
-        fb_var_.yres, fb_var_.yres_virtual,
-        fb_var_.bits_per_pixel,
-        fb_fix_.line_length,
-        fb_fix_.ywrapstep,
-        fb_fix_.ypanstep);
+    printf("xres:%d, yres:%d\n", fb_var_.xres, fb_var_.yres);
+    printf("bits_per_pixel:%d, line_length:%d\n",fb_var_.bits_per_pixel, fb_fix_.line_length);
     
     width_ = fb_var_.xres;
     height_ = fb_var_.yres;
-    screen_size_ = fb_fix_.line_length * fb_var_.yres;
+    screen_size_ = width_*height_;
+    page_size_ = screen_size_*fb_var_.bits_per_pixel/8;
 
-    fbp_ = (uint32_t *)mmap(NULL, screen_size_*page_num + 4, PROT_READ | PROT_WRITE, MAP_SHARED, fb_, 0);
+    fbp_ = (uint32_t *)mmap(NULL, page_size_*FB_PAGE_NUM, PROT_READ | PROT_WRITE, MAP_SHARED, fb_, 0);
     if (fbp_ == nullptr) {
         perror("mmap failed");
         release();
         return false;
     }
 
-    // 修改虚拟显存大小，实现双屏显示
-    fb_var_.yres_virtual = fb_var_.yres * page_num;
-    if (ioctl(fb_, FBIOPUT_VSCREENINFO, &fb_var_) < 0) {
-        perror("ioctl FBIOGET_VSCREENINFO failed");
-        return false;
-    }
     return true; 
 }
 
 void fb_manage::release(void) 
 {
     if (fbp_ != nullptr) {
-        munmap(fbp_, screen_size_);
+        munmap(fbp_, page_size_*FB_PAGE_NUM);
         fbp_ = nullptr;
     }
 
@@ -64,59 +50,46 @@ void fb_manage::release(void)
     }
 }
 
-void fb_manage::lcd_set_page(fb_manage::CACHE_PAGE page) {
-
-    int ret;
-
-    if (page == CACHE_PAGE_1) {
-        fb_var_.yoffset = height_;
-        ret = ioctl(fb_, FBIOPAN_DISPLAY, &fb_var_);
-        if (ret < 0) {
-            printf("set page failed:%d\n", ret);
-            fprintf(stderr, "Error code: %d\n", errno);
-        }
-    } else {
-        fb_var_.yoffset = 0;
-        ioctl(fb_, FBIOPAN_DISPLAY, &fb_var_);           
+void fb_manage::lcd_switch_hw_page(void)
+{
+    // 硬件切换到当前页
+    fb_var_.yoffset = height_*page_;
+    ioctl(fb_, FBIOPAN_DISPLAY, &fb_var_);
+    
+    page_++;
+    if (page_ == FB_PAGE_NUM) {
+        page_ = FB_PAGE_0;
     }
-    printf("set page offset:%d, %d\n", fb_var_.xoffset, fb_var_.yoffset);
 }
 
-bool fb_manage::lcd_fill(fb_manage::CACHE_PAGE page, uint32_t start_x, uint32_t end_x,
+bool fb_manage::lcd_fill(uint32_t start_x, uint32_t end_x,
     uint32_t start_y, uint32_t end_y,
     uint32_t color)
 {
         unsigned long temp = 0;
         uint32_t x;
 
-        if (fbp_ == nullptr) {
-            perror("lcd_fill failed, fbp_ is nullptr");
-            return false;
-        }
-
-        if (page == fb_manage::CACHE_PAGE_1) {
-            temp = width_*height_;  //起始显存地址偏移，第二块显存地址偏移
-        }
-
+        // 起始显存地址偏移，第二块显存地址偏移
+        temp = screen_size_*page_;
         temp += start_y * width_;
-        for (; start_y <= end_y; start_y++) {
-            temp += width_;
-            for (x = start_x; x <= end_x; x++) {
+
+        for (; start_y < end_y; start_y++) {
+            for (x = start_x; x < end_x; x++) {
                 fbp_[temp + x] = color;
             }
+            temp += width_;
         }
         return true;
 }
 
-void fb_manage::lcd_draw_antialiased_circle(fb_manage::CACHE_PAGE page, uint32_t center_x, uint32_t center_y,
+void fb_manage::lcd_draw_antialiased_circle(uint32_t center_x, uint32_t center_y,
                                 int radius, uint32_t color) 
 {
     unsigned long temp = 0;
     int x, y;
 
-    if (page == CACHE_PAGE_1) {
-        temp = width_ * height_;  // 起始显存地址偏移，第二块显存地址偏移
-    }
+    // 起始显存地址偏移，第二块显存地址偏移
+    temp = screen_size_*page_;
 
     for (y = -radius; y <= radius; y++) {
         for (x = -radius; x <= radius; x++) {
@@ -145,22 +118,21 @@ void fb_manage::lcd_draw_antialiased_circle(fb_manage::CACHE_PAGE page, uint32_t
                     uint32_t final_g = (uint32_t)(dest_g * (1 - alpha) + src_g * alpha);
                     uint32_t final_b = (uint32_t)(dest_b * (1 - alpha) + src_b * alpha);
 
-                    fbp_[dest_index] = (final_r << 16) | (final_g << 8) | final_b;
+                    fbp_[dest_index] = 0xFF<<24 | (final_r << 16) | (final_g << 8) | final_b;
                 }
             }
         }
     }
 }
 
-void fb_manage::lcd_draw_line(fb_manage::CACHE_PAGE page, uint32_t x, uint32_t y, int dir,
-                                uint32_t length, uint32_t color)
+void fb_manage::lcd_draw_line(uint32_t x, uint32_t y, int dir,
+                            uint32_t length, uint32_t color)
 {
     uint32_t end;
     unsigned long temp = 0;
 
-    if (page == fb_manage::CACHE_PAGE_1) {
-        temp = width_*height_;       //起始显存地址偏移，第二块显存地址偏移
-    }
+    // 起始显存地址偏移，第二块显存地址偏移
+    temp = screen_size_*page_;
 
     temp += y * width_ + x; // 定位到起点
     if (dir) {  // 水平线
@@ -184,28 +156,25 @@ void fb_manage::lcd_draw_line(fb_manage::CACHE_PAGE page, uint32_t x, uint32_t y
     }
 }
 
-void fb_manage::lcd_draw_rectangle(fb_manage::CACHE_PAGE page, 
-    uint32_t start_x, uint32_t start_y,
+void fb_manage::lcd_draw_rectangle(uint32_t start_x, uint32_t start_y,
     uint32_t end_x, uint32_t end_y,
     uint32_t color)
 {
     int x_len = end_x - start_x + 1;
     int y_len = end_y - start_y - 1;
 
-    lcd_draw_line(page, start_x,  start_y,     1, x_len, color); // 上边
-    lcd_draw_line(page, start_x,  end_y,       1, x_len, color); // 下边
-    lcd_draw_line(page, start_x,  start_y + 1, 0, y_len, color); // 左边
-    lcd_draw_line(page, end_x,    start_y + 1, 0, y_len, color); // 右边
+    lcd_draw_line(start_x,  start_y,     1, x_len, color); // 上边
+    lcd_draw_line(start_x,  end_y,       1, x_len, color); // 下边
+    lcd_draw_line(start_x,  start_y + 1, 0, y_len, color); // 左边
+    lcd_draw_line(end_x,    start_y + 1, 0, y_len, color); // 右边
 }
 
-void fb_manage::lcd_draw_point(fb_manage::CACHE_PAGE page,
-    uint32_t x, uint32_t y, uint32_t color)
+void fb_manage::lcd_draw_point(uint32_t x, uint32_t y, uint32_t color)
 {
     unsigned long temp = 0;
 
-    if (page == fb_manage::CACHE_PAGE_1) {
-        temp = width_*height_;  //起始显存地址偏移，第二块显存地址偏移
-    }
+    // 起始显存地址偏移，第二块显存地址偏移
+    temp = screen_size_*page_;
 
     fbp_[temp + y * width_ + x] = color;
 }

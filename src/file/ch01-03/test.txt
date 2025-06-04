@@ -1,1 +1,13 @@
-这是测试文件!
+drwxrwxrwx 1 freedom freedom 4096 May 21 08:37 ./
+drwxrwxrwx 1 freedom freedom 4096 May 27 16:31 ../
+-rwxrwxrwx 1 freedom freedom    0 Jun  3 10:45 test.txt*
+-rwxrwxrwx 1 freedom freedom  106 May 21 08:37 err2.log*
+-rwxrwxrwx 1 freedom freedom   17 May 21 08:37 exit.sh*
+-rwxrwxrwx 1 freedom freedom 2760 Jun  3 10:44 test.sh*
+-rwxrwxrwx 1 freedom freedom   40 May 21 08:37 test.file*
+-rwxrwxrwx 1 freedom freedom   51 May 21 08:37 test.log*
+-rwxrwxrwx 1 freedom freedom   54 May 21 08:37 1*
+-rwxrwxrwx 1 freedom freedom   54 May 21 08:37 1.txt*
+-rwxrwxrwx 1 freedom freedom   55 May 21 08:37 err.log*
+-rwxrwxrwx 1 freedom freedom  673 Jun  3 09:18 system_info.sh*
+total 4

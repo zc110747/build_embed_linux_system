@@ -61,7 +61,8 @@
         "condition_variable": "c",
         "map": "cpp",
         "mutex": "cpp",
-        "port.h": "c"
+        "port.h": "c",
+        "fb_graphic.h": "c"
     },
     "MicroPython.executeButton": [
         {
@@ -86,5 +87,5 @@
     },
     "marscode.enableInlineCommand": true,
     "marscode.chatLanguage": "cn",
-    "cmake.sourceDirectory": "D:/user_project/coding_git/build_embed_linux_system/src/file/ch04-08"
+    "cmake.sourceDirectory": "D:/user_git/build_embed_linux_system/src/file/ch04-05/06-px_sem"
 }
