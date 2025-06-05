@@ -6,6 +6,8 @@
 *.order
 *.symvers
 *.d
+*.a
+*.so
 target
 
 src/file/ch*/*/build/*
