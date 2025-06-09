@@ -3,5 +3,5 @@
 
 void test(void)
 {
-    printf("test run");
+    printf("test run\n");
 }
