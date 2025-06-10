@@ -5,7 +5,7 @@
 # Original Author: 1107473010@qq.com
 #
 ################################################################################
-obj-m := relay.o
+obj-m := kernel_example.o
 
 CURRENT_PATH := $(shell pwd)
 
@@ -17,13 +17,12 @@ CROSS_COMPILE ?= arm-none-linux-gnueabihf-
 
 ARCH ?= arm
 
-KBUILD_EXTRA_SYMBOLS := $(CURRENT_PATH)/../export/Module.symvers
-
 build: kernel_modules
 
 kernel_modules:
-	echo "platform:${ARCH}, COMPILE:${CROSS_COMPILE} Extra Symbols:${KBUILD_EXTRA_SYMBOLS}"
-	$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) KBUILD_EXTRA_SYMBOLS=$(KBUILD_EXTRA_SYMBOLS) ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} modules
+	$(info "platform:${ARCH}, COMPILE:${CROSS_COMPILE}")
+	$(info "kernel_dir:${KERNELDIR}")
+	$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} modules
 
 clean:
 	$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) clean

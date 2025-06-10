@@ -40,6 +40,7 @@ pinctrl_gpio_beep: beep {
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/errno.h>
+#include <linux/uaccess.h>
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>
 #include <linux/semaphore.h>
