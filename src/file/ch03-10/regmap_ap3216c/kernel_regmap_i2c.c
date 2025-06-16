@@ -69,6 +69,8 @@
 #include <linux/of_irq.h>
 #include <linux/interrupt.h>
 #include <linux/timer.h>
+#include <linux/uaccess.h>
+#include <linux/version.h>
 
 #define AP3216C_SYSTEMCONG          0x00    /* 配置寄存器       */
 #define AP3216C_INTSTATUS           0X01    /* 中断状态寄存器   */
@@ -337,7 +339,11 @@ static int i2c_probe(struct i2c_client *client, const struct i2c_device_id *id)
     return 0;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 static void i2c_remove(struct i2c_client *client)
+#else
+static int i2c_remove(struct i2c_client *client)
+#endif
 {
     struct ap3216_data *chip = i2c_get_clientdata(client);
 
@@ -347,6 +353,10 @@ static void i2c_remove(struct i2c_client *client)
     unregister_chrdev_region(chip->dev_id, DEVICE_CNT);
 
     dev_info(&client->dev, "i2c driver release ok!\r\n");
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
+#else
+    return 0;
+#endif
 }
 
 static const struct of_device_id ap3216_of_match[] = {

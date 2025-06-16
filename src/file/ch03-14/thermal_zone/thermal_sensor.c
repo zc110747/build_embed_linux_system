@@ -27,6 +27,8 @@
 #include <linux/iio/consumer.h>
 #include <linux/iio/types.h>
 #include <linux/thermal.h>
+#include <linux/version.h>
+
 /*
 // thermal zone device
 thermal_sensor {
@@ -171,8 +173,9 @@ static int tm_sensor_bind(struct thermal_zone_device *tz, struct thermal_cooling
 {
     struct thermal_sensor_data *data = (struct thermal_sensor_data *)tz->devdata;
     struct thermal_cooling_trip *trip = data->param;
-    
-    for (int index=0; index<data->trip_nums; index++) {
+    int index = 0;
+
+    for (index=0; index<data->trip_nums; index++) {
         if (trip[index].cooling_device == cdev->np) {
             int ret;
             
@@ -197,8 +200,9 @@ static int tm_sensor_unbind(struct thermal_zone_device *tz, struct thermal_cooli
 {
     struct thermal_sensor_data *data = (struct thermal_sensor_data *)tz->devdata;
     struct thermal_cooling_trip *trip = data->param;
+    int index = 0;
 
-    for (int index=0; index<data->trip_nums; index++) {
+    for (index=0; index<data->trip_nums; index++) {
         if (trip[index].cooling_device == cdev->np) {
             int ret;
             
@@ -342,6 +346,7 @@ static int thermal_sensor_probe(struct platform_device *pdev)
         return -ENOMEM;
     }
 
+#if LINUX_VERSION_CODE > KERNEL_VERSION(6, 0, 0)
     // 使能thermal zone设备
     ret = thermal_zone_device_enable(data->tz);
     if (ret) {
@@ -349,14 +354,17 @@ static int thermal_sensor_probe(struct platform_device *pdev)
             "failed to enable thermal zone device %d\n", ret);
         goto thermal_zone_unregister;
     }
-    
+#endif
+
     dev_info(&pdev->dev, "thermal sensor probe success\n");
     return 0;
 
+#if LINUX_VERSION_CODE > KERNEL_VERSION(6, 0, 0)
 thermal_zone_unregister:
     thermal_zone_device_unregister(data->tz);
 
     return 0;
+#endif
 }
 
 static int thermal_sensor_remove(struct platform_device *pdev)
@@ -364,7 +372,9 @@ static int thermal_sensor_remove(struct platform_device *pdev)
     struct thermal_sensor_data *data = platform_get_drvdata(pdev);
 
     // 注销thermal zone设备
+#if LINUX_VERSION_CODE > KERNEL_VERSION(6, 0, 0)
     thermal_zone_device_disable(data->tz);
+#endif
     thermal_zone_device_unregister(data->tz);
     dev_info(&pdev->dev, "thermal sensor remove success\n");
     return 0;

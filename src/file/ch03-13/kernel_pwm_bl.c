@@ -29,6 +29,8 @@
 #include <linux/pwm_backlight.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
+#include <linux/uaccess.h>
+#include <linux/version.h>
 
 /*
 //设备树节点
@@ -112,8 +114,14 @@ static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
 static int pwm_bl_update_status(struct backlight_device *bl)
 {
 	struct pwm_bl_data *pb = bl_get_data(bl);
-	int brightness = backlight_get_brightness(bl);
+	int brightness = 0;
 	struct pwm_state state;
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
+	brightness = backlight_get_brightness(bl);
+#else
+	brightness = bl->props.brightness;
+#endif
 
 	if (brightness > 0) {
 		pwm_get_state(pb->pwm, &state);
@@ -131,7 +139,13 @@ static int pwm_bl_update_status(struct backlight_device *bl)
 
 static int pwm_get_current_brightness(struct backlight_device *bl)
 {
-	int brightness = backlight_get_brightness(bl);
+	int brightness = 0;
+	
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
+	brightness = backlight_get_brightness(bl);
+#else
+	brightness = bl->props.brightness;
+#endif
 	return brightness;
 }
 
@@ -271,8 +285,11 @@ static int pwm_bl_probe(struct platform_device *pdev)
 	props.brightness = pbl->data.dft_brightness;
 
     // 根据props属性注册backlight设备
-	bl = backlight_device_register(dev_name(&pdev->dev), &pdev->dev, pbl,
-				       &pwm_bl_ops, &props);
+	bl = backlight_device_register(dev_name(&pdev->dev), 
+									&pdev->dev, 
+									pbl,
+				      				&pwm_bl_ops, 
+									&props);
 	if (IS_ERR(bl)) {
 		dev_err(&pdev->dev, "failed to register backlight\n");
 		ret = PTR_ERR(bl);

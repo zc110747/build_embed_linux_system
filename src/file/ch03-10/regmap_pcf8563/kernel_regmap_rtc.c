@@ -65,6 +65,8 @@ pinctrl_rtc: rtcgrp {
 #include <linux/i2c.h>
 #include <linux/rtc.h>
 #include <linux/regmap.h>
+#include <linux/uaccess.h>
+#include <linux/version.h>
 
 #define PCF8563_REG_CONTROL1        0x00
 #define PCF8563_REG_CONTROL2        0x01
@@ -409,6 +411,7 @@ static int i2c_probe(struct i2c_client *client, const struct i2c_device_id *id)
     }
 
     //4.申请rtc管理模块，并初始化
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
     chip->rtc = devm_rtc_allocate_device(&client->dev);
     if (IS_ERR(chip->rtc)){
         dev_err(&client->dev, "rtc alloc device failed!\n");
@@ -424,20 +427,34 @@ static int i2c_probe(struct i2c_client *client, const struct i2c_device_id *id)
 
     //5. 注册RTC设备
     err = devm_rtc_register_device(chip->rtc);
-    if (err)
-    {
+    if (err) {
         dev_err(&client->dev, "rtc register failed!\n");
         return err;
     }
+#else
+    chip->rtc = devm_rtc_device_register(&client->dev, DEVICE_NAME, &pcf8563_ops, THIS_MODULE);
+    if (IS_ERR(chip->rtc)){
+        dev_err(&client->dev, "rtc register failed!\n");
+        return PTR_ERR(chip->rtc);
+    }
+#endif
 
     dev_info(&client->dev, "pcf8563 driver init success!\n");
     return 0;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 static void i2c_remove(struct i2c_client *client)
+#else
+static int i2c_remove(struct i2c_client *client)
+#endif
 {   
     //device manage by devm, no need release
     dev_info(&client->dev, "pcf8563 driver remove!\n");
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
+#else
+    return 0;
+#endif
 }
 
 static const struct of_device_id pcf8563_of_match[] = {
@@ -462,7 +479,7 @@ static int __init pcf8563_module_init(void)
 
 static void __exit pcf8563_module_exit(void)
 {
-    return i2c_del_driver(&pcf8563_driver);
+    i2c_del_driver(&pcf8563_driver);
 }
 
 module_init(pcf8563_module_init);

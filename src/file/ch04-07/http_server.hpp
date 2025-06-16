@@ -466,15 +466,12 @@ namespace HTTP_SREVER
             handle_tx_(resource_.HTTP_NOT_FOUND_BODY.c_str(), resource_.HTTP_NOT_FOUND_BODY.size());
         }
 
-        /// @brief endsWith
-        /// - This method is used to check the string end with suffix.
-        /// @param str - the string.
-        /// @param suffix - the suffix.
-        /// @return wheather end with or not.
-        bool endsWith(std::string_view str, std::string_view suffix) {
+        // 使用 C++11 实现 endsWith 函数
+        bool endsWith(const std::string& str, const std::string& suffix) {
             if (suffix.size() > str.size()) return false;
             return str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
         }
+        
     private:
         /// \brief tx_size_
         /// - the tx size

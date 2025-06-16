@@ -49,6 +49,7 @@
 #include <linux/pwm.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
+#include <linux/version.h>
 
 /*
 device-tree
@@ -168,7 +169,11 @@ static void pwm_clk_disable(struct pwm_driver_info *info)
     clk_disable_unprepare(info->clk_ipg);
 }
 
+#if LINUX_VERSION_CODE > KERNEL_VERSION(6, 0, 0)
 static int pwm_driver_get_state(struct pwm_chip *chip, struct pwm_device *pwm, struct pwm_state *state)
+#else
+static void pwm_driver_get_state(struct pwm_chip *chip, struct pwm_device *pwm, struct pwm_state *state)
+#endif
 {
     struct pwm_driver_info *info;
     int ret;
@@ -178,7 +183,11 @@ static int pwm_driver_get_state(struct pwm_chip *chip, struct pwm_device *pwm, s
     info = container_of(chip, struct pwm_driver_info, chip);
     ret = pwm_clk_enable(info);
     if(ret) {
+#if LINUX_VERSION_CODE > KERNEL_VERSION(6, 0, 0)
         return ret;
+#else
+        return;
+#endif
     }
 
     val = readl(info->mmio_base + MX3_PWMCR);
@@ -222,7 +231,10 @@ static int pwm_driver_get_state(struct pwm_chip *chip, struct pwm_device *pwm, s
     state->duty_cycle = DIV_ROUND_UP_ULL(tmp, pwm_clk);
     dev_info(chip->dev, "[pwm_driver_get_state]enable:%d, period:%lld, duty_cycle:%lld\n", 
                         state->enabled, state->period, state->duty_cycle);
+
+#if LINUX_VERSION_CODE > KERNEL_VERSION(6, 0, 0)
     return 0;
+#endif
 }
 
 static void pwm_sw_reset(struct pwm_driver_info *info)
@@ -427,13 +439,27 @@ static int pwm_driver_probe(struct platform_device *pdev)
     }
 
     //4.增加pwmchip设备到系统中(/sys/class/pwm/pwmchipX/export)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
     ret = devm_pwmchip_add(&pdev->dev, &info->chip);
+#else
+    ret = pwmchip_add(&info->chip);
+#endif
     if (ret) {
         dev_err(&pdev->dev, "pwmchip add failed!\r\n");
         return ret;
     }
     
     dev_info(&pdev->dev, "pwm init success!\r\n");
+    return 0;
+}
+
+static int pwm_driver_remove(struct platform_device *pdev)
+{
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
+#else
+    struct pwm_driver_info *info = platform_get_drvdata(pdev);
+    pwmchip_remove(&info->chip);
+#endif
     return 0;
 }
 
@@ -449,6 +475,7 @@ static struct platform_driver pwm_driver = {
         .of_match_table = pwm_driver_dt_ids,
     },
     .probe = pwm_driver_probe,
+    .remove = pwm_driver_remove,
 };
 
 static int __init pwm_module_init(void)

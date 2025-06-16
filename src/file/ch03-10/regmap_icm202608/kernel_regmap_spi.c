@@ -64,6 +64,8 @@
 #include <linux/platform_device.h>
 #include <linux/spi/spi.h>
 #include <linux/regmap.h>
+#include <linux/version.h>
+#include <linux/uaccess.h>
 
 #include "kernel_regmap_spi.h"
 
@@ -376,7 +378,11 @@ static int icm20608_probe(struct spi_device *spi)
     return 0;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 static void icm20608_remove(struct spi_device *spi)
+#else
+static int icm20608_remove(struct spi_device *spi)
+#endif
 {
     struct spi_icm_data *chip = spi_get_drvdata(spi);
 
@@ -386,6 +392,11 @@ static void icm20608_remove(struct spi_device *spi)
     unregister_chrdev_region(chip->dev_id, DEVICE_CNT);
 
     dev_info(&spi->dev, "spi remove success!\r\n");
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
+#else
+    return 0;
+#endif
 }
 
 static const struct of_device_id icm20608_of_match[] = {
