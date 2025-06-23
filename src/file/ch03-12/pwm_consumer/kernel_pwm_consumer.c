@@ -39,6 +39,7 @@ usr_pwm_consumer {
 #include <linux/types.h>
 #include <linux/delay.h>
 #include <linux/errno.h>
+#include <linux/uaccess.h>
 
 struct pwm_consumer_data
 {

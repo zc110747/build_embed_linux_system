@@ -75,6 +75,8 @@ static int wdt_ping(struct watchdog_device *wdog)
 
 static int wdt_start(struct watchdog_device *wdog)
 {
+  	struct kernel_wdt_data *wdata = watchdog_get_drvdata(wdog);  
+    
 	set_bit(WDOG_HW_RUNNING, &wdog->status);
 
     dev_info(&wdata->pdev->dev, "wdt start!");

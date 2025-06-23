@@ -20,7 +20,7 @@ typedef enum
 static size_t width_, height_, screen_size_;
 static struct fb_var_screeninfo fb_var_;
 static struct fb_fix_screeninfo fb_fix_;
-static FB_PAGE page_ = FB_PAGE_0;
+static FB_PAGE page_ = FB_PAGE_1;
 
 int lcd_fill_color(uint32_t *fbp_, uint32_t start_x, uint32_t end_x,
     uint32_t start_y, uint32_t end_y,
@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
     int fb_;
     uint32_t *fbp_;
 
+    // 1. 打开设备文件，获取UI显示信息
     fb_ = open(FB_DEVICE, O_RDWR); 
     if (fb_ < 0) {
         perror("open fb0 failed\n");
@@ -92,6 +93,7 @@ int main(int argc, char *argv[])
     printf("xres:%d, yres:%d\n", fb_var_.xres, fb_var_.yres);
     printf("bits_per_pixel:%d, line_length:%d\n", fb_var_.bits_per_pixel, fb_fix_.line_length);
     
+    // 2. 通过mmap将fb显存映射到用户空间, 这里映射两块缓存用于双缓冲显示
     width_ = fb_var_.xres;
     height_ = fb_var_.yres;
     screen_size_ = fb_fix_.line_length * height_;
@@ -105,6 +107,12 @@ int main(int argc, char *argv[])
 
     printf("start fill color...\n");
 
+    // 3. 双缓冲显示
+    // 执行流程：
+    // 填充缓冲1，显示切换到缓冲1，下一次填充切换到缓冲0
+    // 填充缓冲0，显示切换到缓冲0，下一次填充切换到缓冲1
+    // 重复流程
+    page_ = FB_PAGE_1;
     for (int i=0; i<20; i++)
     {
         lcd_fill_color(fbp_, 0, width_, 0, height_, 0xFFFF0000);
@@ -118,6 +126,7 @@ int main(int argc, char *argv[])
         sleep(1);
     }
 
+    // 4. 解除映射，关闭文件描述符
     munmap(fbp_, screen_size_*FB_PAGE_NUM);
     close(fb_);
 }

@@ -51,6 +51,8 @@ pinctrl_i2c1: i2c1grp {
 #include <linux/semaphore.h>
 #include <linux/platform_device.h>
 #include <linux/i2c.h>
+#include <linux/uaccess.h>
+#include <linux/version.h>
 
 #define AP3216C_SYSTEMCONG	    0x00	/* 配置寄存器       */
 #define AP3216C_INTSTATUS	    0X01	/* 中断状态寄存器   */
@@ -277,7 +279,11 @@ static int i2c_probe(struct i2c_client *client, const struct i2c_device_id *id)
     return 0;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 static void i2c_remove(struct i2c_client *client)
+#else
+static int i2c_remove(struct i2c_client *client)
+#endif
 {
     struct ap3216_data *chip = i2c_get_clientdata(client);
 
@@ -285,6 +291,10 @@ static void i2c_remove(struct i2c_client *client)
     class_destroy(chip->class);
     cdev_del(&chip->cdev);
     unregister_chrdev_region(chip->dev_id, DEVICE_CNT);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
+#else
+    return 0;
+#endif
 }
 
 static const struct of_device_id ap3216_of_match[] = {

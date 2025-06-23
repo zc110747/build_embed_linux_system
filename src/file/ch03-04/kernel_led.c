@@ -71,6 +71,7 @@ pinctrl_led_improve: led-improve {
 #include <linux/of_address.h>
 #include <linux/of_device.h>
 #include <linux/leds.h>
+#include <linux/uaccess.h>
 
 struct led_data
 {

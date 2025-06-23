@@ -7,17 +7,22 @@
 ################################################################################
 obj-m := kernel_platform_driver.o
 
-KERNELDIR := $(shell printenv SUPPORT_ENV_KERNEL_DIR)
 CURRENT_PATH := $(shell pwd)
 
-ARCH=arm
-CROSS_COMPILE=${NEW_KERNEL_CC}
+# 指定完成编译的内核源码路径
+KERNELDIR ?= $(shell printenv SUPPORT_ENV_KERNEL_DIR)
+
+# 指定交叉编译工具链
+CROSS_COMPILE ?= arm-none-linux-gnueabihf-
+
+ARCH ?= arm
 
 build: kernel_modules
 
 kernel_modules:
-	echo "platform:${ARCH}, COMPILE:${CROSS_COMPILE}"
-	$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) modules
+	$(info "platform:${ARCH}, COMPILE:${CROSS_COMPILE}")
+	$(info "kernel_dir:${KERNELDIR}")
+	$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} modules
 
 clean:
 	$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) clean
