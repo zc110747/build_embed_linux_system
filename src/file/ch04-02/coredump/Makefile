@@ -6,8 +6,8 @@ OBJECTS = crash_test.o
 INCLUDE_PATH = 
 
 #-g表示支持调试
-CFLAGS += -O1 -lm -g
-CPPFLAGS += -std=c++2a
+CFLAGS += -O0 -lm -g
+CPPFLAGS += -std=c++2a -O0 -g
 
 CC := gcc                                           
 CCPLUS := g++

@@ -19,6 +19,7 @@
   - [ch01-03.linux shell脚本语法](./src/ch01-03.linux_shell_grammar.md)
   - [ch01-04.linux交叉编译方法](./src/ch01-04.linux_cross_compiler.md)
   - [ch01-05.linux快速部署和SDK构建方法](./src/ch01-05.linux_quick_deploy.md)
+  - [ch01-x1.快速搭建Linux运行平台](./src/ch01-x1.linux_quick_platform.md)
   - [ch01-xz.linux平台常见问题总结](./src/ch01-xz.linux_feature_notes.md)
 
 - [ch02.linux系统启动实现](./src/ch02-00.system_bringup.md)

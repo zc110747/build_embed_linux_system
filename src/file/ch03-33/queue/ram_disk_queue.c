@@ -30,7 +30,6 @@
 #include <linux/vmalloc.h>
 #include <linux/blk-mq.h>
 
-<<<<<<< HEAD
 #define DISK_HEADS              1               // 磁盘头数
 #define DISK_CYLINDERS          2048            // 磁盘柱面数(柱面数和磁道数相同）
 #define DISK_SECTORS            10              // 磁盘每个磁道的扇区数
@@ -38,9 +37,6 @@
 
 #define DISK_SECTORS_TOTAL      (DISK_HEADS*DISK_CYLINDERS*DISK_SECTORS)
 #define RAM_CAPACITY            (DISK_SECTORS_TOTAL*DISK_SECTOR_BLOCK)
-=======
-#define RAM_CAPACITY (10*2048*512ULL)
->>>>>>> 65b6c4fcb1e24104ad727f0c355dd74810f1bc2a
 
 struct ram_disk_data
 {
@@ -58,17 +54,11 @@ struct ram_disk_data disk_data;
 
 static int ram_blk_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 {
-<<<<<<< HEAD
     // 磁盘参数
     geo->heads = DISK_HEADS;            // 磁盘头数
     geo->cylinders = DISK_CYLINDERS;    // 磁盘柱面数
     geo->sectors = DISK_SECTORS;        // 磁盘每个磁道的扇区数
     geo->start = 0;                     // 磁盘起始扇区
-=======
-    geo->heads = 1;
-    geo->sectors = get_capacity(disk_data.ram_gendisk);
-    geo->cylinders = 1;
->>>>>>> 65b6c4fcb1e24104ad727f0c355dd74810f1bc2a
     return 0;
 }
 
@@ -180,11 +170,7 @@ static int __init ram_blk_init(void)
     disk_data.ram_gendisk->first_minor = 0;                     //设置第一个分区的次设备号
     disk_data.ram_gendisk->minors = 1;                          //设置分区个数： 1
     disk_data.ram_gendisk->fops = &ram_blk_ops;                 //指定块设备ops集合
-<<<<<<< HEAD
     set_capacity(disk_data.ram_gendisk, DISK_SECTORS_TOTAL);    //设置扇区数量：10MiB/512B=20480
-=======
-    set_capacity(disk_data.ram_gendisk, 20480);                 //设置扇区数量：10MiB/512B=20480
->>>>>>> 65b6c4fcb1e24104ad727f0c355dd74810f1bc2a
     disk_data.ram_size = RAM_CAPACITY;
 
     err = add_disk(disk_data.ram_gendisk);                      //添加硬盘

@@ -4,9 +4,21 @@
 
 int main(int argc, char *argv[])
 {
+    int *p = nullptr;
+    std::vector<int *> vec;
+
     std::cout<<"start run crash!";
 
-    std::vector<int> v(100 + static_cast<size_t>(-1) / sizeof(int));
+    p = new int(5);
+    *p = 5;
+
+    delete p;
+    p = nullptr;
+
+    vec.push_back(p);
+
+    std::cout<<*vec[0]<<std::endl;
+
     
     return 0;
 }

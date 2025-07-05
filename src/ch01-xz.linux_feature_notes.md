@@ -275,7 +275,7 @@ sudo dpkg-scanpackages . | gzip -c9 > Packages.gz
 
 - 通过浏览器访问即可，如下所示。
 
-![image](./image/ch01-x1-01.png)
+![image](./image/ch01-xz-01.png)
 
 ### feature-01-14
 
@@ -404,7 +404,7 @@ vers2=y
 
 ### feature-03-03
 
-feature问题: ping the outer ipadress success, but outer host failed. 
+feature问题: ping the outer ipadress success, but outer host failed。
 
 原因: 系统网络连接正常，而dns服务器异常；导致使用ping命令不能直接访问host网址
 
@@ -423,7 +423,7 @@ sudo /etc/init.d/networking restart
 sudo /etc/init.d/network-manager restart
 ```
 
-如果外网github等，可能有dns污染，通过/etc/hosts指定网址的IP地址(或者使用其它可用ip地址)
+如果外网github等，可能有dns污染，通过/etc/hosts指定网址的IP地址(或者使用其它可用ip地址)。
 
 ```shell
 #/etc/hosts
