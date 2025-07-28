@@ -19,9 +19,9 @@ echo "run..."
 
 # 一步生成可执行文件
 echo "one step..."
-gcc hello.c -o hello_1
+gcc hello.c -o hello_next
 
 echo "run..."
-./hello_1
+./hello_next
 
-rm hello hello.i hello.s hello.o hello_1
+rm hello hello.i hello.s hello.o hello_next

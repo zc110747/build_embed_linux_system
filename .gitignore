@@ -1,7 +1,7 @@
 *.o
 *.7z
-*.cmd
-*.mod*
+//*.cmd
+//*.mod*
 *.ko*
 *.order
 *.symvers
