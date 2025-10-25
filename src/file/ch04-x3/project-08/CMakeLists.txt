@@ -20,3 +20,8 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/file.h")
     target_include_directories(file1 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
+# 添加编译完成后执行命令
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND cp -rv lib${PROJECT_NAME}.a ${CMAKE_CURRENT_SOURCE_DIR}/../project-10
+    COMMAND cp -rv lib${PROJECT_NAME}.a ${CMAKE_CURRENT_SOURCE_DIR}/../project-11/library/lib
+)

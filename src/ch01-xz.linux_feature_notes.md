@@ -60,7 +60,7 @@ feature报错: apt安装结束报错No sandbox user "_apt" on the system
 解决办法
 
 ```shell
-#增加_apt的组和用户名
+# 增加_apt的组和用户名
 groupadd -r _apt && useradd -r -g _apt _apt
 ```
 
@@ -321,13 +321,13 @@ feature问题: umount dir: target is busy
 解决办法:
 
 ```shell
-#查询占用进程
+# 查询占用进程
 lsof [dir]
 
-#清除占用进程
+# 清除占用进程
 pkill -9 [process]
 
-#移除文件系统
+# 移除文件系统
 sudo umount [dir]
 
 # 移除指定目录上挂载的块设备，被占用会等待占用解除后移除
@@ -343,7 +343,7 @@ feature问题: mount: /dev/mmcblk1p1: can't read superblock
 ```shell
 sudo umount /mnt/sdc
 
-#修复指定问题
+# 修复指定问题
 fsck.ext4 -v /dev/mmcblk0p1
 fsck.ext4 -v /dev/mmcblk0p2
 ```
@@ -551,7 +551,7 @@ wget https://gcc.gnu.org/pub/gcc/infrastructure/isl-0.24.tar.bz2
 
 apt-get install gzip libtool
 
-#配置编译环境
+# 配置编译环境
 ./contrib/download_prerequisites
 
 # 执行gcc编译

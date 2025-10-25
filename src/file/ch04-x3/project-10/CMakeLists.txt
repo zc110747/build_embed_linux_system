@@ -29,3 +29,14 @@ target_compile_definitions(target PRIVATE DEBUG_MODE MAX_SIZE=100)
 # 添加编译选项
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os")
+
+# 添加自定义命令
+add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo "Checking for required libraries..."
+    COMMAND ${CMAKE_COMMAND} -E echo "Checking libfile1.a"
+    COMMAND test -f "${CMAKE_CURRENT_SOURCE_DIR}/libfile1.a" || (echo "libfile1.so not found, please build project-08" && exit 1)
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E echo "Checking libfile2.so"
+    COMMAND test -f "${CMAKE_CURRENT_SOURCE_DIR}/libfile2.so" || (echo "libfile2.so not found, please build project-09" && exit 1)
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)

@@ -266,11 +266,9 @@ private:
 
         ptr = buffer;
 
-        // 按照CAN MAX DLC 发送数据
-        if (nums > 0)
-        {
-            for (int index=0; index<nums; index++)
-            {
+        // 按照CAN MAX_DLC 发送数据
+        if (nums > 0) {
+            for (int index=0; index<nums; index++) {
                 frame_.can_id = id_;
                 frame_.can_dlc = CAN_MAX_DLEN;
                 memcpy(frame_.data, ptr, CAN_MAX_DLEN);
@@ -279,9 +277,7 @@ private:
             }
         }
 
-        // 发送剩余数据
-        if (offset > 0)
-        {
+        if (offset > 0) {
             frame_.can_id = id_;
             frame_.can_dlc = offset;
             memcpy(frame_.data, ptr, offset);

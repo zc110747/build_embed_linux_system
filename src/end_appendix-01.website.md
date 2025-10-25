@@ -56,6 +56,8 @@
 13. 核桃派资源网站: <https://www.walnutpi.com/docs/directory/>
 14. 测试C++在线编程地址: <https://godbolt.org/>
 15. Linux系统知识博客分享：<https://www.cnblogs.com/arnoldlu>
+16. 全志在线开发者论坛: <https://bbs.aw-ol.com/>
+17. 哇酷开发者社区: <https://whycan.com/>
 
 ## 常用软件下载地址
 

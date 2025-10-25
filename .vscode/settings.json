@@ -87,5 +87,7 @@
     },
     "marscode.enableInlineCommand": true,
     "marscode.chatLanguage": "cn",
-    "cmake.sourceDirectory": "D:/user_git/build_embed_linux_system/src/file/ch04-05/06-px_sem"
+    "cmake.sourceDirectory": "D:/user_git/build_embed_linux_system/src/file/ch04-05/06-px_sem",
+    "trae.tab.enableRename": false,
+    "trae.tab.enableAutoImport": false
 }

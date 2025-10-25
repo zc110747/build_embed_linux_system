@@ -10,6 +10,7 @@
 *.so
 target
 
+src/file/ch*/*/*/build/*
 src/file/ch*/*/build/*
 src/file/ch*/build/*
 src/file/ch04-12/mqtt_node_1/mqtt_node1

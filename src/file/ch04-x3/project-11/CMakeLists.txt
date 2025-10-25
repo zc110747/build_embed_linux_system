@@ -28,3 +28,14 @@ if(USER_FILES_FOUND)
 else()
     message(FATAL_ERROR "USER_FILES not found.")
 endif()
+
+# 添加自定义命令
+add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo "Checking for required libraries..."
+    COMMAND ${CMAKE_COMMAND} -E echo "Checking libfile1.a"
+    COMMAND test -f "${CMAKE_CURRENT_SOURCE_DIR}/library/lib/libfile1.a" || (echo "libfile1.so not found, please build project-08" && exit 1)
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E echo "Checking libfile2.so"
+    COMMAND test -f "${CMAKE_CURRENT_SOURCE_DIR}/library/lib/libfile2.so" || (echo "libfile2.so not found, please build project-09" && exit 1)
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)

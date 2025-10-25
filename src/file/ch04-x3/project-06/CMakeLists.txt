@@ -13,6 +13,7 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 # 添加可执行文件
 add_executable(target)
 
+# 添加源文件
 target_sources(target PRIVATE main.cpp test.c)
 
 # 添加编译选项

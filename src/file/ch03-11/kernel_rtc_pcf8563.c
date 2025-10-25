@@ -200,15 +200,17 @@ static int pcf8563_get_time(struct device *dev, struct rtc_time *tm)
 		return -EINVAL;
 	}
 
-    tm->tm_sec = bcdToDec(buf[PCF8563_REG_SECONDS] & 0x7F);
-	tm->tm_min = bcdToDec(buf[PCF8563_REG_MINUTES] & 0x7F);
-	tm->tm_hour = bcdToDec(buf[PCF8563_REG_HOURS] & 0x3F); /* rtc hr 0-23 */
-	tm->tm_mday = bcdToDec(buf[PCF8563_REG_DAYS] & 0x3F);
-	tm->tm_wday = buf[PCF8563_REG_WEEKDAYS] & 0x07;
-	tm->tm_mon = bcdToDec(buf[PCF8563_REG_MONTHS] & 0x1F) - 1; /* rtc mn 1-12 */
-	tm->tm_year = bcdToDec(buf[PCF8563_REG_YEARS]) + 100;
-    chip->c_polarity = (buf[PCF8563_REG_MONTHS] & (1<<7)) ?
-		(tm->tm_year >= 100) : (tm->tm_year < 100);
+	tm->tm_sec = bcdToDec(buf[PCF8563_REG_SECONDS] & 0x7F);
+    tm->tm_min = bcdToDec(buf[PCF8563_REG_MINUTES] & 0x7F);
+    tm->tm_hour = bcdToDec(buf[PCF8563_REG_HOURS] & 0x3F); /* rtc hr 0-23 */
+    tm->tm_mday = bcdToDec(buf[PCF8563_REG_DAYS] & 0x3F);
+    tm->tm_wday = buf[PCF8563_REG_WEEKDAYS] & 0x07;
+    tm->tm_mon = bcdToDec(buf[PCF8563_REG_MONTHS] & 0x1F) - 1; /* rtc mn 1-12 */
+    tm->tm_year = bcdToDec(buf[PCF8563_REG_YEARS]);
+    chip->c_polarity = (buf[PCF8563_REG_MONTHS] & (1<<7)) ? 1 : 0;
+    if (chip->c_polarity) {
+        tm->tm_year += 100;
+    }
 
 	dev_info(&client->dev, "%s: tm is secs=%d, mins=%d, hours=%d, "
 		"mday=%d, mon=%d, year=%d, wday=%d\n",
@@ -243,10 +245,13 @@ static int pcf8563_set_time(struct device *dev, struct rtc_time *tm)
 	buf[PCF8563_REG_MONTHS] = decToBcd(tm->tm_mon + 1);
 
 	/* year and century */
-	buf[PCF8563_REG_YEARS] = decToBcd(tm->tm_year - 100);
-	if (chip->c_polarity ? (tm->tm_year >= 100) : (tm->tm_year < 100))
-    {
+    if(tm->tm_year >= 100) {
+        buf[PCF8563_REG_YEARS] = decToBcd(tm->tm_year - 100);
         buf[PCF8563_REG_MONTHS] |= (1<<7);
+        chip->c_polarity = 1;
+    } else {
+        buf[PCF8563_REG_YEARS] = decToBcd(tm->tm_year);
+        chip->c_polarity = 0;
     }
 
 	err =  pcf8563_write_block(client, PCF8563_REG_SECONDS,

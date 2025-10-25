@@ -1,0 +1,13 @@
+Wed Oct 22 02:54:04 PM CST 2025
+Wed Oct 22 02:54:04 PM CST 2025
+total 20
+drwxrwxrwx 1 freedom freedom 4096 Oct 22 11:52 ./
+drwxrwxrwx 1 freedom freedom 4096 Jul 30 10:15 ../
+-rwxrwxrwx 1 freedom freedom 2786 Oct 22 11:51 01.shell_var.sh*
+-rwxrwxrwx 1 freedom freedom  748 Oct 22 11:52 02.function.sh*
+-rwxrwxrwx 1 freedom freedom  890 Oct 22 11:52 03.math_logic.sh*
+-rwxrwxrwx 1 freedom freedom 1358 Oct 22 14:54 04.file_remap.sh*
+-rwxrwxrwx 1 freedom freedom 1251 Oct 22 12:22 05.loop_branch.sh*
+-rwxrwxrwx 1 freedom freedom  110 Oct 22 14:53 err2.log*
+-rwxrwxrwx 1 freedom freedom  673 Jun 24 08:33 system_info.sh*
+drwxrwxrwx 1 freedom freedom 4096 Oct 22 14:50 test/

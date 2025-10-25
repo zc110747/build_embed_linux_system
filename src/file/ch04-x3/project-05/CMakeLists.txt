@@ -12,12 +12,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # 添加子目录的 CMakeLists.txt
 add_subdirectory(lib)
 
-file(GLOB MAIN_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB MAIN_SOURCES 
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
 add_executable(target)
 
+# 添加本地和子目录的源文件
 target_sources(target PRIVATE ${MAIN_SOURCES} ${LIB_SOURCES})
 
+# 添加子目录
 target_include_directories(target PRIVATE ${INCLUDE_HEADERS})
 
 # 添加编译选项

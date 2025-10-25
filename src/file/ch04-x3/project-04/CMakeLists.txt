@@ -9,13 +9,17 @@ file(GLOB_RECURSE SRC_FILES
             main.cpp
             lib/*.cpp
 )
-add_executable(target ${SRC_FILES})
+add_executable(target)
 
+# 添加源文件
+target_sources(target PRIVATE ${SRC_FILES})
+
+# 添加头文件
 target_include_directories(target PUBLIC lib)
 
 # 添加编译选项
 # 指定 C++ 标准
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")

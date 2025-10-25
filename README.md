@@ -1,13 +1,13 @@
 # 嵌入式Linux系统总结
 
-本系列整理一系列嵌入式Linux学习和开发中应用的技术，按照功能划分为SDK平台构建、嵌入式Linux运行平台构建，驱动开发技术和应用开发技术，涉及嵌入式Linux开发中的主要技术。
+本系列整理一系列嵌入式Linux学习和开发中应用的技术，按照功能划分为SDK平台构建、嵌入式Linux运行平台构建、驱动开发技术和应用开发技术；涉及嵌入式Linux开发中的主要技术。
 
-1. SDK平台构建，包含Linux平台安装(Ubuntu、Arch、centos)，软件和支持库安装，交叉编译，shell语法，快速部署SDK脚本工具集实现
-2. 嵌入式Linux运行平台构建，包含u-boot移植和框架，kernel移植和框架，rootfs文件系统构建方法，qemu实用虚拟机启动Linux平台
-3. 驱动开发技术，包含Linux内核驱动接口，设备树语法和设备树接口，字符设备，块设备和网络设备，子系统功能实现(i2c, spi, input, iio)
-4. 应用开发技术，Linu应用层接口，cpp语法小结，Linux平台调试方法，Linux框架设计和web应用开发，Linux平台GUI开发技术
+1. SDK平台构建，包含Linux平台安装(Ubuntu、Arch Linux、centos等)、软件和支持库安装、交叉编译、shell语法等，以及如何在这些基础上快速部署SDK方案。
+2. 嵌入式Linux运行平台构建，包含u-boot移植和框架、kernel移植和框架、rootfs文件系统构建方法qemu实用虚拟机启动Linux平台等。
+3. 驱动开发技术，包含Linux内核驱动接口、设备树语法和设备树接口、字符设备、块设备和网络设备等的实现。
+4. 应用开发技术，Linu应用层接口、C++应用开发、Linux平台调试方法、Linux平台GUI开发技术以及Web应用开发等。
 
-因为本系列涉及知识点较多，来自于个人实践和理解，难免有纰漏和不足之处，欢迎各位批评指正；如果有疑问，请提issue或加新建qq群(877393195)进行讨论。
+因为本系列涉及知识点较多，来自于个人实践和理解，难免有纰漏和不足之处，欢迎各位批评指正。如果有疑问，请提issue或加**qq群(877393195)**进行讨论。
 
 目录如下所示。
 
@@ -114,7 +114,7 @@
   - [ch04-16.综合应用开发项目](./src/ch04-16.integrated_design.md)
   - [ch04-x1.Linux平台基础api接口](./src/ch04-x1.linux_base_api.md)
   - [ch04-x2.Linux平台复杂api接口](./src/ch04-x2.linux_complex_api.md)
-  - [ch04-x3.cmake编译语法](./src/ch04-x3.cmake.md)
+  - [ch04-x3.基于cmake构建软件项目](./src/ch04-x3.cmake.md)
 
 - [ch05.结语](./src/ch05.CONCLUSION.md)
 
@@ -128,20 +128,20 @@
 本系列主要按照如何构建一个完整嵌入Linux产品应用的开发流程来说明，而不是以难易度进行先后顺序的整理。如果在学习和理解中遇到难题，可以跳过直接进行后续的学习，从简单的入手，熟悉基础知识后可能更高效。另外嵌入式Linux系统是用于设计产品的技术，只依靠文档学习是远远不够的，需要在实际硬件平台调试验证，理解源码，自己设计开发应用，才能够深入理解掌握。可以看到本系列文章涉及内容广泛，限于篇幅部分技术只能浅尝辄止，在讲解相应章节时也会列出我在整理以及开发时涉及的书籍，可以同步去学习。
 
 ```shell
-#github地址
+# github地址
 git clone https://github.com/zc110747/build_embed_linux_system.git
 ```
 
 另外本项目也配合产品应用项目用于验证相关技术知识，具体如下。
 
 ```shell
-#用于远程管理的嵌入式Linux应用项目
+# 用于验证此文档配套的嵌入式Linux应用项目
 git clone http://github.com/zc110747/remote_manage.git
 ```
 
 ## 学习路线
 
-### step1: 安装和熟悉Linux平台
+### step-1: 安装和熟悉Linux平台
 
 主要目标:
 
@@ -156,7 +156,7 @@ git clone http://github.com/zc110747/remote_manage.git
 3. 常用软件查询，安装和应用(ssh, tftp, nfs, samba...)
 4. 能够使用gcc和Makefile构建应用
 
-### step2: 基于已移植源码构建嵌入式Linux平台
+### step-2: 基于已移植源码构建嵌入式Linux平台
 
 主要目标:
 

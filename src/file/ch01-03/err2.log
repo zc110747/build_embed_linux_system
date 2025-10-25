@@ -1,2 +1,2 @@
-ls: cannot access '/nofile': No such file or directory
--rw-r--r-- 1 root root 486 Jun  4 14:51 /etc/hosts
+ls: cannot access 'test/nofile': No such file or directory
+-rw-r--r-- 1 root root 460 Oct 22 14:49 /etc/hosts
