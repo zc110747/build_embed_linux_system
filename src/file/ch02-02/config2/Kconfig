@@ -1,0 +1,76 @@
+
+mainmenu "test program"
+
+comment "this is a $(FMWARE_VESRION) program test"
+
+# 多级菜单
+# layer-1
+#   this is layer-1 test
+#   layer-2
+#     this is layer-2 test 
+menu "layer-1"
+	comment "this is layer-1 test"
+	menu "layer-2"
+		comment "this is layer-2 test"
+	endmenu
+endmenu
+
+menuconfig SHOW_OPTIONS
+    bool "show options"
+    default "y"
+    help
+        this is for menu option test.
+
+if SHOW_OPTIONS
+  	menu "layer-3"
+		comment "this is layer-3 test"
+	endmenu  
+endif
+
+# config定义tristate类型控制项
+config USER_OPTIONS_1
+	tristate "tristate type"
+	default "m"
+	help
+		this is for config option test.
+
+# config定义string类型控制项
+config USER_OPTIONS_2
+	string "string type"
+	default "USER_OPTIONS_2 string"
+	help
+		this is for config option test.
+
+choice
+	prompt "debug test choose"
+	default USER_OPTIONS_2     
+
+config DEBUG_TEST1
+	bool "debug test1"
+	help
+	  This enables support for debug test 1.
+
+config DEBUG_TEST2
+	bool "debug test2"
+	help
+	  This enables support for debug test 2.
+
+endchoice
+
+config USER_OPTIONS_3
+	bool "USER_OPTIONS_3 type"
+	default "y"
+
+config USER_OPTIONS_4
+	bool "USER_OPTIONS_4 type"
+	select USER_OPTIONS_3
+	default "y"
+
+config USER_OPTIONS_5
+	string "USER_OPTIONS_5 string type"
+	prompt "prompt string type"
+	depends on USER_OPTIONS_3 && USER_OPTIONS_4
+	default "USER_OPTIONS_5 string"
+	help
+		"USER_OPTIONS_5 string type"
+

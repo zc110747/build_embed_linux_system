@@ -7,7 +7,7 @@
 3. 驱动开发技术，包含Linux内核驱动接口、设备树语法和设备树接口、字符设备、块设备和网络设备等的实现。
 4. 应用开发技术，Linu应用层接口、C++应用开发、Linux平台调试方法、Linux平台GUI开发技术以及Web应用开发等。
 
-因为本系列涉及知识点较多，来自于个人实践和理解，难免有纰漏和不足之处，欢迎各位批评指正。如果有疑问，请提issue或加`qq群(877393195)`进行讨论。
+因为本系列涉及知识点较多，来自于个人实践和理解，难免有纰漏和不足之处，欢迎各位批评指正。如果有疑问，请提issue或加**qq群(877393195)**进行讨论。
 
 目录如下所示。
 
@@ -112,8 +112,8 @@
   - [ch04-14.Python应用开发](./src/ch04-14.python_design.md)
   - [ch04-15.基于v4l2的摄像头开发](./src/ch04-15.v4l2_opencv.md)
   - [ch04-16.综合应用开发项目](./src/ch04-16.integrated_design.md)
-  - [ch04-x1.Linux平台基础api接口](./src/ch04-x1.linux_base_api.md)
-  - [ch04-x2.Linux平台复杂api接口](./src/ch04-x2.linux_complex_api.md)
+  - [ch04-x1.Linux应用基础接口整理](./src/ch04-x1.linux_base_api.md)
+  - [ch04-x2.Linux应用进程交互接口整理](./src/ch04-x2.linux_complex_api.md)
   - [ch04-x3.基于cmake构建软件项目](./src/ch04-x3.cmake.md)
 
 - [ch05.结语](./src/ch05.CONCLUSION.md)
