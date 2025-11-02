@@ -1,0 +1,14 @@
+#
+# files manage
+#
+menu "files manage"
+
+config FILE1_COMPILER
+    bool "file1 compiler"
+    default "y"
+
+config FILE2_COMPILER
+    bool "file2 compiler"
+    default "y"   
+
+endmenu

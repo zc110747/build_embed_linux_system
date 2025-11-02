@@ -1,0 +1,8 @@
+#
+# main menuconfig
+#
+mainmenu "gcc project"
+
+comment "gcc compiler"
+
+source "files/Kconfig"
