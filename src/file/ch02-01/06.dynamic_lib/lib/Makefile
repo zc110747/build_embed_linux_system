@@ -7,7 +7,7 @@ all: $(lib-obj)
 
 # 自动化变量，编译.c文件
 %.o:%.c
-	$(CC) -c $< -o $@
+	$(CC) -fPIC -c $< -o $@
 
 # 动态库编译
 $(lib-obj):$(lib-obj-src)
