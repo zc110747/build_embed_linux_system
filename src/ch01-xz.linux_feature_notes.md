@@ -566,10 +566,10 @@ make && make install
 ./configure --host=arm-none-linux-gnueabihf --prefix=/home/freedom/sdk/download/tmp/install/
 
 # mpfr交叉编译方法
-./configure --host=arm-none-linux-gnueabihf --prefix=/home/freedom/sdk/download/tmp/install/ --with-gmp=/home/freedom/sdk/download/tmp/install/
+./configure --host=arm-none-linux-gnueabihf --prefix=/home/freedom/sdk/download/tmp/install/ --with-gmp=/home/freedom/sdk/download/tmp/install/
 
 # mpc交叉编译方法
-./configure --host=arm-none-linux-gnueabihf --prefix=/home/freedom/sdk/download/tmp/install/ --with-gmp=/home/freedom/sdk/download/tmp/install/ 
+./configure --host=arm-none-linux-gnueabihf --prefix=/home/freedom/sdk/download/tmp/install/ --with-gmp=/home/freedom/sdk/download/tmp/install/ 
 ```
 
 ## next_chapter
