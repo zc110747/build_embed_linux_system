@@ -35,7 +35,7 @@
   - [ch02-08.文件系统构建综述](./src/ch02-08.rootfs_overview.md)
   - [ch02-09.基于busybox构建文件系统](./src/ch02-09.rootfs_busybox.md)
   - [ch02-10.基于buildroot构建文件系统](./src/ch02-10.rootfs_buildroot.md)
-  - [ch02-11.基于Debian构建文件系统](./src/ch02-11.rootfs_debian.md)
+  - [ch02-11.基于Debian构建文件系统](./src/ch02-11.rootfs_Debian.md)
   - [ch02-12.基于ubuntu构建文件系统](./src/ch02-12.rootfs_ubuntu.md)
   - [ch02-13.支持qt的linux文件系统构建](./src/ch02-13.rootfs_qtsupport.md)
   - [ch02-14.基于openwrt构建系统平台](./src/ch02-14.rootfs_openwrt.md)
@@ -239,7 +239,7 @@ git clone http://github.com/zc110747/remote_manage.git
 3. U-Boot移植，理解U-Boot执行流程
 4. Kernel移植过程，理解Kernel执行流程
 5. 完成至少一款芯片的bringup完整流程
-6. 支持文件系统构建，busybox, debian, ubuntu和android.
+6. 支持文件系统构建，busybox, Debian, ubuntu和android.
 7. 基于qemu的仿真环境构建系统
 
 主要内容:

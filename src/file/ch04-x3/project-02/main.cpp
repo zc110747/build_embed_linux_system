@@ -2,10 +2,13 @@
 
 using namespace std;
 
+extern int test(void);
+
 int main(void) 
 {
     cout<< __STDC_HOSTED__ << endl;
     cout<< __cplusplus << endl;
-    cout << "Hello World!" << endl;
+
+    test();
     return 0;
 }

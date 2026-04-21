@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.16)
 project(target)
 
 # 添加可执行文件
-add_executable(target main.cpp)
+add_executable(target main.cpp test.cpp)
 
 # 添加C++版本要求
 set(CMAKE_CXX_STANDARD 11)
