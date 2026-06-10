@@ -38,6 +38,7 @@
 #define GT_TP4_REG              0x8167  /* 第四个触摸点数据地址  */
 #define GT_TP5_REG              0x816F  /* 第五个触摸点数据地址   */
 #define MAX_SUPPORT_POINTS      5       /* 最多5点电容触摸 */
+
 const u8 irq_table[] =
 {
     IRQ_TYPE_EDGE_RISING, IRQ_TYPE_EDGE_FALLING, IRQ_TYPE_LEVEL_LOW, IRQ_TYPE_LEVEL_HIGH
@@ -127,42 +128,63 @@ static irqreturn_t goodix_irq_handler(int irq, void *pdata)
     struct goodix_chip_data *chip = (struct goodix_chip_data *)pdata;
     struct i2c_client *client = chip->client;
     int touch_num = 0;
-    int input_x, input_y;
+    int input_x, input_y, input_w;
     int slot_id = 0;
     int ret = 0;
     u8 data;
     u8 touch_data[8];
 
     ret = goodix_i2c_read(client, GT_GSTID_REG, &data, 1);
-    if (data == 0x00) {
-        return IRQ_NONE;
-    } else { 
-        touch_num = data & 0x0f;
-    }
+    if (ret) {
+        goto exit_;
+    } 
+
+    // 无状态更新 
+    if (!(data & 0x80))
+        goto exit_;
+
+    touch_num = data & 0x0f;
+    if (touch_num > MAX_SUPPORT_POINTS)
+        goto exit_;
 
     if (touch_num) {
-        goodix_i2c_read(client, GT_TP1_REG, touch_data, 8);
-        slot_id = touch_data[0] & 0x0F;
-        if (slot_id == 0) {
+        u8 read_index;
+
+        for (read_index = 0; read_index < touch_num; read_index++) {
+            ret = goodix_i2c_read(client, GT_TP1_REG + 8*read_index, touch_data, 8);
+            if (ret) {
+                break;
+            }
+
+            // 校验slot_id
+            slot_id = touch_data[0] & 0x0F;
+            if (slot_id >= MAX_SUPPORT_POINTS) {
+                continue;
+            }
+
             input_x  = touch_data[1] | (touch_data[2] << 8);
             input_y  = touch_data[3] | (touch_data[4] << 8);
+            input_w  = touch_data[5] | (touch_data[6] << 8);
 
+            // 上传触摸点信息
             input_mt_slot(chip->input_dev, slot_id);
             input_mt_report_slot_state(chip->input_dev, MT_TOOL_FINGER, true);
-            touchscreen_report_pos(chip->input_dev, &chip->prop,
-					       input_x, input_y, true);
+            touchscreen_report_pos(chip->input_dev, &chip->prop, input_x, input_y, false);
+            input_report_abs(chip->input_dev, ABS_MT_TOUCH_MAJOR, input_w);
+	        input_report_abs(chip->input_dev, ABS_MT_WIDTH_MAJOR, input_w);
         }
-    } else {
-        // 没有触摸点或者触摸到松开时的上报
-        input_mt_slot(chip->input_dev, slot_id);
-        input_mt_report_slot_state(chip->input_dev, MT_TOOL_FINGER, false); 
     }
 
-    input_mt_report_pointer_emulation(chip->input_dev, true);
-    input_mt_sync_frame(ts->input_dev)
+    // 同步触摸状态
+    input_mt_sync_frame(chip->input_dev);
+    input_mt_report_pointer_emulation(chip->input_dev, false);
     input_sync(chip->input_dev);
 
-    goodix_i2c_write_u8(client, GT_GSTID_REG, 0x00);
+exit_:
+    ret = goodix_i2c_write_u8(client, GT_GSTID_REG, 0x00);
+    if (ret) {
+        dev_err(&client->dev, "Error writing 0x00 to 0x%04x: %d\n", GT_GSTID_REG, ret);
+    }
 
     return IRQ_HANDLED;
 }
@@ -260,7 +282,7 @@ static int goodix_gpio_init(struct goodix_chip_data *chip)
     chip->reset_pin = of_get_named_gpio(client->dev.of_node, "reset-gpios", 0);
     chip->irq_pin = of_get_named_gpio(client->dev.of_node, "interrupt-gpios", 0);
 
-    dev_info(&client->dev, "of_node:0x%x", (u32)client->dev.of_node);
+    dev_info(&client->dev, "of_node:0x%p", client->dev.of_node);
 
     /* reset pin init */
     if (gpio_is_valid(chip->reset_pin)) {
@@ -292,13 +314,16 @@ static int goodix_gpio_init(struct goodix_chip_data *chip)
         return -1;
     }
 
-    /* reset sequerance */
+    // reset sequerance
     gpio_set_value(chip->reset_pin, 0);
     msleep(10);
     gpio_set_value(chip->reset_pin, 1);
     msleep(10);
     gpio_set_value(chip->irq_pin, 0);
     msleep(50);
+
+    // 重新设置为输入状态
+    gpio_direction_input(chip->irq_pin);
 
     dev_info(&client->dev, "goodix_gpio_init success, irq:%d!\n", client->irq);
     return ret;
@@ -318,16 +343,18 @@ static int goodix_inputdev_create(struct goodix_chip_data *chip)
     chip->input_dev->id.vendor = 0x0416;
     chip->input_dev->dev.parent = &chip->client->dev;
 
-    //单点触摸，将屏幕看作按键
+    // 单点触摸，将屏幕看作按键
     // input_set_capability(chip->input_dev, EV_KEY, BTN_TOUCH);
     // input_set_abs_params(chip->input_dev, ABS_X, 0, chip->max_x, 0, 0);
     // input_set_abs_params(chip->input_dev, ABS_Y, 0, chip->max_y, 0, 0); 
 
-    //多点触摸
+    // 多点触摸
     input_set_abs_params(chip->input_dev, ABS_MT_POSITION_X, 0, chip->max_x, 0, 0);
     input_set_abs_params(chip->input_dev, ABS_MT_POSITION_Y, 0, chip->max_y, 0, 0); 
-    
-    //更新touchscreen属性
+    input_set_abs_params(chip->input_dev, ABS_MT_WIDTH_MAJOR, 0, 1024, 0, 0);
+	input_set_abs_params(chip->input_dev, ABS_MT_TOUCH_MAJOR, 0, 1024, 0, 0);
+
+    // 更新touchscreen属性
     touchscreen_parse_properties(chip->input_dev, true, &chip->prop);
 
     ret = input_mt_init_slots(chip->input_dev, MAX_SUPPORT_POINTS, INPUT_MT_DIRECT | INPUT_MT_DROP_UNUSED);
@@ -353,7 +380,7 @@ static int goodix_probe(struct i2c_client *client, const struct i2c_device_id *i
     // 1. 申请goodix管理内存单元
     chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
     if (!chip) {
-        dev_err(&client->dev, "allocate memory failed, error:%d.\n", ret);
+        dev_err(&client->dev, "allocate memory failed!\n");
         return -ENOMEM;
     }
     chip->client = client;
@@ -366,18 +393,24 @@ static int goodix_probe(struct i2c_client *client, const struct i2c_device_id *i
         return ret;
     }
 
-    //3.初始化传感器配置
+    // 3.初始化传感器配置
     ret = goodix_firmware_init(chip);
     if (ret){
         dev_err(&client->dev, "firmware init failed, error:%d.\n", ret);
         return ret;
     }
 
-    //4.设置中断并使能
-    gpio_direction_input(chip->irq_pin);
+    // 4.向内核注册input设备
+    ret = goodix_inputdev_create(chip);
+    if (ret){
+        dev_err(&client->dev, "input dev create failed, error:%d.\n", ret);
+        return ret;
+    }
+
+    // 5.设置中断并使能
     ret = devm_request_threaded_irq(&client->dev, client->irq,
                                 NULL, goodix_irq_handler,
-                                chip->irqflags | IRQF_ONESHOT | IRQF_SHARED,
+                                chip->irqflags | IRQF_ONESHOT,
                                 "goodix-int",
                                 chip);
     if (ret) {
@@ -385,12 +418,7 @@ static int goodix_probe(struct i2c_client *client, const struct i2c_device_id *i
         return ret;
     }
 
-    //5.向内核注册input设备
-    ret = goodix_inputdev_create(chip);
-    if (ret){
-        dev_err(&client->dev, "input dev create failed, error:%d.\n", ret);
-        return ret;
-    }
+
 
     dev_info(&client->dev, "goodix driver init success.\n");
     return 0;
@@ -398,10 +426,7 @@ static int goodix_probe(struct i2c_client *client, const struct i2c_device_id *i
 
 static void goodix_remove(struct i2c_client *client)
 {
-    struct goodix_chip_data *chip = i2c_get_clientdata(client);
-
     dev_info(&client->dev, "goodix driver release .\n");
-    input_unregister_device(chip->input_dev);
 }
 
 static const struct of_device_id of_match_goodix[] = {

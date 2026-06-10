@@ -100,7 +100,7 @@ static void beep_hardware_set(struct beep_data *chip, u8 status)
 
 int beep_open(struct inode *inode, struct file *filp)
 {
-    static struct beep_data *chip;
+    struct beep_data *chip;
     
     chip = container_of(inode->i_cdev, struct beep_data, cdev);
     filp->private_data = chip;
@@ -140,13 +140,13 @@ ssize_t beep_write(struct file *filp, const char __user *buf, size_t size,  loff
     pdev = chip->pdev;
 
     ret = copy_from_user(&data, buf, 1);
-    if (ret < 0) {
-        dev_err(&pdev->dev, "write failed!\n");
-        return -EFAULT;
+    if (ret) {
+        dev_err(&pdev->dev, "write failed:%d!\n", ret);
+        return 0;
     }
 
     beep_hardware_set(chip, data);
-    return 0;
+    return size;
 }
 
 long beep_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
@@ -267,7 +267,7 @@ static int beep_hardware_init(struct beep_data *chip)
 static int beep_probe(struct platform_device *pdev)
 {
     int ret;
-    static struct beep_data *chip;
+    struct beep_data *chip;
 
     //1.申请beep控制块
     chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
