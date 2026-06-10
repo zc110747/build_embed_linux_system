@@ -70,8 +70,8 @@ struct beep_data
     int status;
 };
 
-#define LED_OFF                            0
-#define LED_ON                             1
+#define BEEP_OFF                            0
+#define BEEP_ON                             1
 
 //自定义设备号
 #define DEFAULT_MAJOR                       0       /*默认主设备号*/
@@ -85,12 +85,12 @@ static void beep_hardware_set(struct beep_data *chip, u8 status)
     pdev = chip->pdev;
 
     switch (status) {
-        case LED_OFF:
+        case BEEP_OFF:
             dev_info(&pdev->dev, "off\n");
             gpiod_set_value(chip->beep_desc, 0);
             chip->status = 0;
             break;
-        case LED_ON:
+        case BEEP_ON:
             dev_info(&pdev->dev, "on\n");
             gpiod_set_value(chip->beep_desc, 1);
             chip->status = 1;
@@ -245,7 +245,7 @@ static int beep_hardware_init(struct beep_data *chip)
 
     // 获取"beep-gpios"指定的gpio属性
     chip->beep_desc = devm_gpiod_get(&pdev->dev, "beep", GPIOD_OUT_LOW);
-    if (chip->beep_desc == NULL) {
+    if (IS_ERR(chip->beep_desc)) {
         dev_info(&pdev->dev, "devm_gpiod_get error!\n");
         return -EIO;
     }
@@ -258,8 +258,8 @@ static int beep_hardware_init(struct beep_data *chip)
     }
     chip->status = *(chip->init_data);
     
-    // step3: 设置引脚类型和初始状态
-    gpiod_direction_output(chip->beep_desc, chip->status);
+    // step3: 设置引脚状态
+    gpiod_set_value(chip->beep_desc, chip->status);
     dev_info(&pdev->dev, "[beep_hardware_init]init success, status:%d\n", chip->status);
     return 0;
 }
@@ -269,7 +269,7 @@ static int beep_probe(struct platform_device *pdev)
     int ret;
     struct beep_data *chip;
 
-    //1.申请beep控制块
+    // 1.申请beep控制块
     chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
     if (!chip) {
         dev_err(&pdev->dev, "[devm_kzalloc]malloc failed!\n");
@@ -278,14 +278,14 @@ static int beep_probe(struct platform_device *pdev)
     platform_set_drvdata(pdev, chip);
     chip->pdev = pdev;
 
-    //2.初始化LED硬件设备
+    // 2.初始化LED硬件设备
     ret = beep_hardware_init(chip);
     if (ret) {
         dev_err(&pdev->dev, "[beep_hardware_init]run error:%d!\n", ret);
         return ret;
     }
 
-    //3.将设备注册到内核和系统中
+    // 3.将设备注册到内核和系统中
     ret = beep_device_create(chip);
     if (ret){
         dev_err(&pdev->dev, "[beep_device_create]create error:%d!\n", ret);
@@ -311,7 +311,7 @@ static int beep_remove(struct platform_device *pdev)
 }
 
 //匹配的是根节点的compatible属性
-static int beep_init_data = LED_ON;
+static int beep_init_data = BEEP_ON;
 static const struct of_device_id beep_of_match[] = {
     { .compatible = "rmk,usr-beep", .data= &beep_init_data, },
     { /* Sentinel */ }
