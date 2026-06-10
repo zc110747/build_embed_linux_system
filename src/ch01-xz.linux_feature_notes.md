@@ -572,8 +572,6 @@ make && make install
 ./configure --host=arm-none-linux-gnueabihf --prefix=/home/freedom/sdk/download/tmp/install/ --with-gmp=/home/freedom/sdk/download/tmp/install/ 
 ```
 
-## next_chapter
+## return_back
 
 [返回目录](../README.md)
-
-直接开始下一章节：[嵌入式Linux启动流程说明](./ch02-00.system_bringup.md)

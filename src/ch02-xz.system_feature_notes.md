@@ -410,8 +410,6 @@ setenv bootargs "console=ttymxc0,115200 panic=5 rootwait root=/dev/mmcblk1p3 ear
 1. [硬盘格式化的脚本mksdcard.sh](./file/ch02-xz/mksdcard.sh)
 2. [UTP协议执行脚本ucl2.xml](./file/ch02-xz/ucl2.xml)
 
-## next_chapter
+## return_back
 
 [返回目录](../README.md)
-
-直接开始下一章节说明: [嵌入式Linux驱动开发](./ch03-00.driver_design.md)

@@ -131,7 +131,7 @@ static irqreturn_t goodix_irq_handler(int irq, void *pdata)
     int slot_id = 0;
     int ret = 0;
     u8 data;
-    u8 touch_data[5];
+    u8 touch_data[8];
 
     ret = goodix_i2c_read(client, GT_GSTID_REG, &data, 1);
     if (data == 0x00) {
@@ -141,7 +141,7 @@ static irqreturn_t goodix_irq_handler(int irq, void *pdata)
     }
 
     if (touch_num) {
-        goodix_i2c_read(client, GT_TP1_REG, touch_data, 5);
+        goodix_i2c_read(client, GT_TP1_REG, touch_data, 8);
         slot_id = touch_data[0] & 0x0F;
         if (slot_id == 0) {
             input_x  = touch_data[1] | (touch_data[2] << 8);
@@ -159,6 +159,7 @@ static irqreturn_t goodix_irq_handler(int irq, void *pdata)
     }
 
     input_mt_report_pointer_emulation(chip->input_dev, true);
+    input_mt_sync_frame(ts->input_dev)
     input_sync(chip->input_dev);
 
     goodix_i2c_write_u8(client, GT_GSTID_REG, 0x00);

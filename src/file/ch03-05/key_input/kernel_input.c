@@ -167,7 +167,7 @@ static int key_device_create(struct key_data *chip)
     chip->key_code = KEY_0; 
     chip->input_dev->name = pdev->name;
 
-    //支持按键后在抬起前连续发生数据，内核实现类似粘滞键功能
+    // 支持按键后在抬起前连续发生数据，内核实现类似粘滞键功能
     //__set_bit(EV_REP, chip->input_dev->evbit);
 
     //将EV_KEY定义成按键的动作
