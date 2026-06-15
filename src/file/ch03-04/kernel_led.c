@@ -134,35 +134,28 @@ int led_release(struct inode *inode, struct file *filp)
     return 0;
 }
 
-ssize_t led_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+ssize_t led_read(struct file *filp, char __user *buf, size_t cnt, loff_t *f_pos)
 {
     int ret;
     struct led_data *chip;
     struct platform_device *pdev;
     u8 status;
 
-    if (count < 1) 
-        return -EINVAL;
-
-    if (*f_pos)
-        return 0;
-
+    cnt = min_t(size_t, cnt, 1);
     chip = (struct led_data *)filp->private_data;
     pdev = chip->pdev;
 
     status = gpiod_get_value_cansleep(chip->led_desc);
-    ret = copy_to_user(buf, &status, 1);
+    ret = copy_to_user(buf, &status, cnt);
     if (ret) {
         dev_err(&pdev->dev, "read failed!\n");
         return -EFAULT;
     }
 
-    *f_pos += 1;
-
-    return 1;
+    return cnt;
 }
 
-ssize_t led_write(struct file *filp, const char __user *buf, size_t size, loff_t *f_pos)
+ssize_t led_write(struct file *filp, const char __user *buf, size_t cnt, loff_t *f_pos)
 {
     int ret;
     u8 data;
@@ -172,7 +165,7 @@ ssize_t led_write(struct file *filp, const char __user *buf, size_t size, loff_t
     chip = (struct led_data *)filp->private_data;
     pdev = chip->pdev;
 
-    if (size < 1) {
+    if (cnt < 1) {
         return -EINVAL;
     }
 
@@ -188,7 +181,7 @@ ssize_t led_write(struct file *filp, const char __user *buf, size_t size, loff_t
     }
     
     led_hardware_set(chip, data);
-    return size;
+    return cnt;
 }
 
 #define LED_IOC_MAGIC      'L'
