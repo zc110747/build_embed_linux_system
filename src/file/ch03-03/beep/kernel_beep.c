@@ -95,6 +95,9 @@ static void beep_hardware_set(struct beep_data *chip, u8 status)
             gpiod_set_value(chip->beep_desc, 1);
             chip->status = 1;
             break;
+        default:
+            dev_err(&pdev->dev, "invalid status:%d\n", status);
+            break;
     }
 }
 
@@ -112,24 +115,28 @@ int beep_release(struct inode *inode, struct file *filp)
     return 0;
 }
 
-ssize_t beep_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+ssize_t beep_read(struct file *filp, char __user *buf, size_t cnt, loff_t *f_pos)
 {
     int ret;
     struct beep_data *chip;
     struct platform_device *pdev;
+    u8 status;
 
+    cnt = min_t(size_t, cnt, 1);
     chip = (struct beep_data *)filp->private_data;
     pdev = chip->pdev;
 
-    ret = copy_to_user(buf, &chip->status, 1);
-    if (ret < 0) {
-        dev_err(&pdev->dev, "read failed!\n");
+    status = gpiod_get_value_cansleep(chip->beep_desc);
+    ret = copy_to_user(buf, &status, cnt);
+    if (ret) {
+        dev_err(&pdev->dev, "read faibeep!\n");
         return -EFAULT;
     }
-    return 1;
+
+    return cnt;
 }
 
-ssize_t beep_write(struct file *filp, const char __user *buf, size_t size,  loff_t *f_pos)
+ssize_t beep_write(struct file *filp, const char __user *buf, size_t cnt,  loff_t *f_pos)
 {
     int ret;
     u8 data;
@@ -139,34 +146,66 @@ ssize_t beep_write(struct file *filp, const char __user *buf, size_t size,  loff
     chip = (struct beep_data *)filp->private_data;
     pdev = chip->pdev;
 
+    if (cnt < 1) {
+        return -EINVAL;
+    }
+
     ret = copy_from_user(&data, buf, 1);
     if (ret) {
-        dev_err(&pdev->dev, "write failed:%d!\n", ret);
-        return 0;
+        dev_err(&pdev->dev, "write faibeep!\n");
+        return -EFAULT;
+    }
+
+    // 字符'0'转换为0
+    if (data >= '0') {
+        data = data - '0';
     }
 
     beep_hardware_set(chip, data);
-    return size;
+    return cnt;
 }
+
+#define  BEEP_IOC_MAGIC      'L'
+
+#define  BEEP_IOC_SET        _IOW( BEEP_IOC_MAGIC, 0, int)
+#define  BEEP_IOC_GET        _IOR( BEEP_IOC_MAGIC, 1, int)
 
 long beep_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
-    struct platform_device *pdev;
-    struct beep_data *chip;
-    
-    chip = (struct beep_data *)filp->private_data;
-    pdev = chip->pdev;
+    struct beep_data *chip = filp->private_data;
+    u8 value;
+    int ret;
+
+    if (_IOC_TYPE(cmd) !=  BEEP_IOC_MAGIC)
+        return -ENOTTY;
 
     switch (cmd) {
-        case 0:
-            beep_hardware_set(chip, 0);
-            break;
-        case 1:
-            beep_hardware_set(chip, 1);
-            break;
-        default:
-            dev_err(&pdev->dev, "invalid command:%d!\n", cmd);
-            return -ENOTTY;
+    case  BEEP_IOC_SET:
+        ret = copy_from_user(&value,
+                             (void __user *)arg,
+                             sizeof(value));
+        if (ret)
+            return -EFAULT;
+
+        if (value !=  BEEP_OFF &&
+            value !=  BEEP_ON)
+            return -EINVAL;
+
+        beep_hardware_set(chip, value);
+        break;
+
+    case  BEEP_IOC_GET:
+        value = gpiod_get_value_cansleep(chip->beep_desc);
+        ret = copy_to_user((void __user *)arg,
+                           &value,
+                           sizeof(value));
+        if (ret)
+            return -EFAULT;
+
+        break;
+
+    default:
+        return -ENOTTY;
     }
 
     return 0;
@@ -199,7 +238,7 @@ static int beep_device_create(struct beep_data *chip)
         ret = alloc_chrdev_region(&chip->dev_id, 0, 1, DEVICE_NAME);
     }
     if (ret < 0) {
-        dev_err(&pdev->dev, "id alloc failed!\n");
+        dev_err(&pdev->dev, "id alloc faibeep!\n");
         goto exit;
     }
     
@@ -208,20 +247,20 @@ static int beep_device_create(struct beep_data *chip)
     chip->cdev.owner = THIS_MODULE;
     ret = cdev_add(&chip->cdev, chip->dev_id, 1);
     if (ret) {
-        dev_err(&pdev->dev, "cdev add failed:%d!\n", ret);
+        dev_err(&pdev->dev, "cdev add faibeep:%d!\n", ret);
         goto exit_cdev_add;
     }
 
     //3.创建设备类和设备文件，关联设备号，用于应用层访问
     chip->class = class_create(THIS_MODULE, DEVICE_NAME);
     if (IS_ERR(chip->class)) {
-        dev_err(&pdev->dev, "class create failed!\n");
+        dev_err(&pdev->dev, "class create faibeep!\n");
         ret = PTR_ERR(chip->class);
         goto exit_class_create;
     }
     chip->device = device_create(chip->class, NULL, chip->dev_id, NULL, DEVICE_NAME);
     if (IS_ERR(chip->device)) {
-        dev_err(&pdev->dev, "device create failed!\n");
+        dev_err(&pdev->dev, "device create faibeep!\n");
         ret = PTR_ERR(chip->device);
         goto exit_device_create;
     }
@@ -272,13 +311,13 @@ static int beep_probe(struct platform_device *pdev)
     // 1.申请beep控制块
     chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
     if (!chip) {
-        dev_err(&pdev->dev, "[devm_kzalloc]malloc failed!\n");
+        dev_err(&pdev->dev, "[devm_kzalloc]malloc faibeep!\n");
         return -ENOMEM;
     }
     platform_set_drvdata(pdev, chip);
     chip->pdev = pdev;
 
-    // 2.初始化LED硬件设备
+    // 2.初始化 BEEP硬件设备
     ret = beep_hardware_init(chip);
     if (ret) {
         dev_err(&pdev->dev, "[beep_hardware_init]run error:%d!\n", ret);

@@ -447,13 +447,13 @@ static int led_hardware_init(struct led_data *chip)
     if (IS_ERR(chip->pinctrl_state[1])) {
         dev_info(&pdev->dev, "[pinctrl_lookup_state]read pinctrl_state 1 failed!\n");
         ret = PTR_ERR(chip->pinctrl_state[1]);
-goto err_iomap;
+        goto err_iomap;
     }
 
     // 获取platform match表中的私有数据
     chip->init_data = of_device_get_match_data(&pdev->dev);
     if (!chip->init_data) {
-ret = -ENOMEM;
+        ret = -ENOMEM;
         dev_info(&pdev->dev, "[of_device_get_match_data]read full, null!\n");
         goto err_iomap;
     }
@@ -486,7 +486,7 @@ static int led_probe(struct platform_device *pdev)
     int ret;
     struct led_data *chip;
 
-    //1.申请led控制块
+    // 1.申请led控制块
     chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
     if (!chip) {
         dev_err(&pdev->dev, "[devm_kzalloc]malloc failed!\n");
@@ -495,14 +495,14 @@ static int led_probe(struct platform_device *pdev)
     platform_set_drvdata(pdev, chip);
     chip->pdev = pdev;
 
-    //2.初始化LED硬件设备
+    // 2.初始化LED硬件设备
     ret = led_hardware_init(chip);
     if (ret) {
         dev_err(&pdev->dev, "[led_hardware_init]run error:%d!\n", ret);
         return ret;
     }
 
-    //3.将设备注册到内核和系统中
+    // 3.将设备注册到内核和系统中
     ret = led_device_create(chip);
     if (ret){
         led_hardware_release(chip);
