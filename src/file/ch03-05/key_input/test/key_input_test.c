@@ -3,7 +3,7 @@
 //  All Rights Reserved
 //
 //  Name:
-//      key_input_test.c
+//      key_test.cpp
 //          GPIO1_18
 //
 //  Purpose:
@@ -26,13 +26,17 @@
 #include <string.h>
 #include <sys/select.h>
 
-#define KEY_DEV_NAME "/dev/input/event1"
+#define KEY_DEV_NAME "/dev/input/event0"
 
 static int check_button_pressed(int fd) {
-    assert(fd >= 0);
 
     /* wait button being pressed or released. */
     fd_set input;
+
+    if (fd < 0) {
+        return -1;
+    }
+
     FD_ZERO(&input);
     FD_SET(fd, &input);
     int ret = select(fd + 1, &input, NULL, NULL, NULL);
@@ -64,6 +68,12 @@ static int check_button_pressed(int fd) {
             break;
         case EV_SW:
             break;
+        case EV_SYN:
+            printf("sync\n");
+            buf.code = 0;
+            break;
+        default:
+            break;
     }
     return buf.code;
 }
@@ -74,15 +84,18 @@ int main(int argc, const char *argv[])
     int fd;
     struct input_event inputevent;
 
-    fd = open(KEY_DEV_NAME, O_RDWR);
+    fd = open(KEY_DEV_NAME, O_RDONLY);
     if (fd < 0) {
         printf("%s open failed!\n", KEY_DEV_NAME);
         return -1;
     } else {
         while (1) {
             int key_code = check_button_pressed(fd);
-            if (key_code < 0)
+            if (key_code <= 0)
                 continue;
+            else {
+                printf("key code:%d\n", key_code);
+            }
         }
     }
 
