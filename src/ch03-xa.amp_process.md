@@ -1,6 +1,6 @@
 # 多核异构芯片驱动开发
 
-## return_back
+## next_chapter
 
 [返回目录](../README.md)
 
