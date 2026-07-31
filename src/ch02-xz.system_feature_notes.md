@@ -1,16 +1,19 @@
 # 附录六: 系统平台常见问题总结
 
-- [修改内核logo显示](#feature-001)
-- [systemd增加自定义服务方法](#feature-002)
-- [指定console输出接口(串口或者屏幕)](#feature-003)
-- [开机启动延时一段时间执行脚本](#feature-004)
-- [nfs启动显示为Read-Only FileSystem](#feature-005)
-- [什么是核隔离，如何让系统支持核隔离](#feature-006)
-- [内核支持usb wifi芯片，并且开机自启动方法](#question-007)
-- [修改系统输出由uart1切换到uart3](#question-008)
-- [如何管理Linux硬盘分区，例如支持data，recovery分区](#question-009)
+本节列出问题如下所示。
 
-## feature-001
+- 001.修改内核logo显示
+- 002.systemd增加自定义服务方法
+- 003.指定console输出接口(串口或者屏幕)
+- 004.开机启动延时一段时间执行脚本
+- 005.nfs启动显示为Read-Only FileSystem
+- 006.什么是核隔离，如何让系统支持核隔离
+- 007.内核支持usb wifi芯片，并且开机自启动方法
+- 008.修改系统输出由uart1切换到uart3
+- 009.NXP如何管理Linux硬盘分区，例如支持data，recovery分区
+- 010.如何使用udev管理设备，并在系统中创建链接
+
+## 001.修改内核logo显示
 
 - 系统启动后加载的界面文件所在的目录为kernel/drivers/video/logo, 其中*.ppm格式文件就是转换需要使用得ppm文件
 - 在微软商店下载GIMP，添加一张图片=>图像=>模式=>索引颜色转换=>最大颜色数量设置为(224), 设置分辨率大小，并导出
@@ -79,7 +82,7 @@ Bootup logo  --->
  Standard 224-color  hanbo logo (NEW)  （修改）
 ```
 
-## feature-002
+## 002.systemd增加自定义服务方法
 
 systemd增加自启动服务方法。
 
@@ -129,7 +132,7 @@ systemctl status example.service
 
 注意：shell脚本首行要指定使用的shell平台，例如bash脚本则为"#!/bin/bash"，否则脚本会执行失败。
 
-## feature-003
+## 003.指定console输出接口(串口或者屏幕)
 
 指定console输出接口(串口或者屏幕)。
 
@@ -158,7 +161,7 @@ cd /etc/systemd/system/getty.target.wants
 cp -d getty@tty1.service getty@ttymxc0.service
 ```
 
-## feature-004
+## 004.开机启动延时一段时间执行脚本
 
 开机启动延时一段时间执行。
 
@@ -196,7 +199,7 @@ chmod 777 /home/sys/shell/bringup_shell.sh
 
 对于debian系统，添加到系统service中。
 
-## feature-005
+## 005.nfs启动显示为Read-Only FileSystem
 
 nfs系统创建文件报错: can't create directory 'dir': Read-only file system.
 
@@ -210,9 +213,7 @@ setenv bootargs 'console=ttymxc0,115200 root=/dev/nfs rw nfsroot=192.168.1.25:[n
 mount rw -o remount /
 ```
 
-### feature-006
-
-什么是核隔离，如何让系统支持核隔离。
+## 006.什么是核隔离，如何让系统支持核隔离
 
 在Linux系统中，核隔离(也称为CPU隔离或CPU pinning)是一种将特定的任务或进程绑定到特定的CPU核心上的技术。这可以提高系统性能，尤其是在需要实时响应的应用中。如果需要核隔离，首先确保芯片为多核才有意义，实现核隔离的方法如下所示。
 
@@ -228,7 +229,7 @@ setenv bootargs "console=ttymxc0,115200 panic=5 rootwait root=/dev/mmcblk1p2 ear
 1. 启动新进程并绑定到特定CPU核心：taskset -c 0,1 command。这将把command进程绑定到CPU 0和1上运行。
 2. 将已有进程绑定到特定CPU核心：首先使用ps -ef | grep process_name获取进程的PID，然后使用taskset -p -c 0,1 PID将进程绑定到CPU 0和1上。
 
-### question-007
+## 007.内核支持usb wifi芯片，并且开机自启动方法
 
 内核支持usb wifi芯片，并且开机自启动方法(本篇以Linux6.1内核，rtl8188eus为例)
 
@@ -252,7 +253,7 @@ obj-$(CONFIG_RTL8188EU) += rtl8188eus/
 
 wlan启动并开启自启动的方法详细见文档：[wpa_supplicant交叉编译和使用方法](./ch01-04.linux_cross_compiler.md#wpa_supplicant)
 
-### question-008
+## 008.修改系统输出由uart1切换到uart3
 
 修改系统输出由uart1切换到uart3。
 
@@ -335,7 +336,7 @@ cp -d getty@tty1.service getty@ttymxc2.service
 
 主要修改如上。
 
-### question-009
+## 009.NXP如何管理Linux硬盘分区，例如支持data，recovery分区
 
 如何管理Linux硬盘分区，例如支持data，recovery分区(imx6ull mmc或者sd卡为例)。
 
@@ -409,6 +410,53 @@ setenv bootargs "console=ttymxc0,115200 panic=5 rootwait root=/dev/mmcblk1p3 ear
 
 1. [硬盘格式化的脚本mksdcard.sh](./file/ch02-xz/mksdcard.sh)
 2. [UTP协议执行脚本ucl2.xml](./file/ch02-xz/ucl2.xml)
+
+## 010.如何使用udev管理设备，并在系统中创建链接
+
+在Linux系统中，udev主要`根据设备属性匹配设备，并在设备创建/移除`时自动执行规则动作。使用udev可以解决设备动态加载时，顺序不固定的问题。例如USB键盘和鼠标插入时创建多个`/dev/input/eventX`，此时每个event的对应关系是不确定的，即可通过udev进行管理生成确定的软链接访问。
+
+这里以Buildroot为例，需要在编译时支持udev，通过在文件系统如下编译支持。
+
+```shell
+# eudev
+BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_EUDEV=y
+```
+
+编译完成后，buildroot系统中会在`/etc/init.d/udevd`文件启动挂载，执行如下。
+
+```shell
+# 触发设备注册事件
+# ....
+udevadm trigger --subsystem-match=net --action=add
+
+# 执行设备管理任务
+udevadm settle --timeout=$SETTLE_TIMEOUT || echo "udevadm settle failed"
+```
+
+当然，用户也可以在`etc/udev/rules.d`目录下添加自定义的规则，这里以按键注册为例。
+
+```shell
+# 修改或创建自定义规则
+vi /etc/udev/rusles.d/99-input.rules 
+
+# 内容
+# 匹配名称为usr_key的输入/dev/input/eventX设备
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="usr_key", SYMLINK+="input/gpio_key", MODE="0644"
+
+# 匹配USB设备，属于串口，其中idVendor和idProduct如下所示
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0120", ATTRS{idProduct}=="2201", SYMLINK+="tty/user_tty"
+
+# 匹配USB设备，属于输入设备，其中idVendor和idProduct如下所示
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="USB_KEYBOARD", ATTRS{idVendor}=="0120", ATTRS{idProduct}=="2205", SYMLINK+="input/usb_key0",MODE="0644"
+```
+
+对于上述配置，具体说明如下。
+
+- SUBSYSTEM: 设备所属的内核子系统，常见的有block、net、tty、usb、input、sound等。
+- KERNEL: 设备匹配的在内核中的名称，这里event*表示匹配/dev/input下的event设备
+- ATTRS: 父设备查找属性，常见的有name对应名称，idVendor/idProduct对应USB的厂商和产品ID
+- SYMLINK: 创建的软链接名称，执行匹配的设备节点`/dev/input/event*`
+- MODE: 创建软链接的读取权限，一般为0644即可。
 
 ## next_chapter
 
