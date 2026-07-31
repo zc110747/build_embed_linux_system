@@ -1,5 +1,5 @@
 /*
- * File      : beep_test.c
+ * File      : led_test.c
  * test for beep driver.
  * COPYRIGHT (C) 2023, zc
  *
@@ -12,17 +12,17 @@
 #include<stdlib.h>
 #include<unistd.h>
 
-#define DEVICE_BEEP     "/dev/miscbeep"
+#define DEVICE_LED     "/dev/led"
 
 int main(int argc, const char *argv[])
 {
     unsigned char val = 1;
     int fd;
 
-    fd = open(DEVICE_BEEP, O_RDWR | O_NDELAY);
+    fd = open(DEVICE_LED, O_RDWR | O_NDELAY);
     if (fd == -1)
     {
-        printf("open %s error\r\n", DEVICE_BEEP);
+        printf("open %s error\r\n", DEVICE_LED);
         return -1;
     }
 

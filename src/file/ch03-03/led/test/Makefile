@@ -5,8 +5,8 @@
 # Original Author: 1107473010@qq.com
 #
 ################################################################################
-target = beep_test
-object = beep_test.o
+target = led_test
+object = led_test.o
 
 # 指定交叉编译工具链
 CRSOSS_COMPILE?= arm-none-linux-gnueabihf-

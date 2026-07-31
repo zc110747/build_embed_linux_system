@@ -94,7 +94,10 @@ int beep_open(struct inode *inode, struct file *filp)
     struct miscdevice *mdev;
     struct beep_data *chip;
 
+    // 在内核中，如果是杂项设备，filp->private_data会设置为miscdevice
     mdev = filp->private_data;
+    if (!mdev)
+        return -EINVAL;
 
     chip = container_of(mdev,
                         struct beep_data,
@@ -256,7 +259,7 @@ static int beep_probe(struct platform_device *pdev)
     int result;
     struct beep_data *chip = NULL;
 
-    //1.申请beep控制块
+    // 1.申请beep控制块
     chip = devm_kzalloc(&pdev->dev, sizeof(struct beep_data), GFP_KERNEL);
     if (!chip) {
         dev_err(&pdev->dev, "malloc error\n");
@@ -265,14 +268,14 @@ static int beep_probe(struct platform_device *pdev)
     chip->pdev = pdev;
     platform_set_drvdata(pdev, chip);
 
-    //2.初始化beep硬件设备
+    // 2.初始化beep硬件设备
     result = beep_hardware_init(chip);
     if (result != 0) {
         dev_err(&pdev->dev, "hardware init failed!\n");
         return result;
     }
 
-    //3.创建内核访问接口
+    // 3.创建内核访问接口
     result = beep_device_create(chip);
     if (result != 0) {
         dev_err(&pdev->dev, "device create failed!\n");
