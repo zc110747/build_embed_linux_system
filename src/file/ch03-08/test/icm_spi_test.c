@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define ICM_DEV_NAME "/dev/icm20608"
+#define ICM_DEV_NAME "/dev/icm20608.0"
 /*
  * @description : main主程序
  * @param - argc : argv数组元素个数

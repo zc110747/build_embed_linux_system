@@ -41,16 +41,14 @@
 	};
 };
 
-&iomuxc {
-    pinctrl_ecspi3: ecspi3grp {
+	pinctrl_ecspi3: ecspi3grp {
         fsl,pins = <
-            MX6UL_PAD_UART2_TX_DATA__GPIO1_IO20		0x100b0     //cs1
-            MX6UL_PAD_UART2_RTS_B__ECSPI3_MISO      0x100b1  
-            MX6UL_PAD_UART2_CTS_B__ECSPI3_MOSI      0x100b1 
-            MX6UL_PAD_UART2_RX_DATA__ECSPI3_SCLK    0x100b1
+			MX6UL_PAD_UART2_TX_DATA__GPIO1_IO20		0x100b0     //cs1
+			MX6UL_PAD_UART2_RTS_B__ECSPI3_MISO      0x100b1  
+			MX6UL_PAD_UART2_CTS_B__ECSPI3_MOSI      0x100b1 
+			MX6UL_PAD_UART2_RX_DATA__ECSPI3_SCLK    0x100b1
         >;
-    };
-};
+	};
 */
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -65,12 +63,11 @@
 #include <linux/semaphore.h>
 #include <linux/platform_device.h>
 #include <linux/spi/spi.h>
-#include <linux/uaccess.h>
-#include <linux/version.h>
 
 #include "kernel_bus_spi.h"
 
-#define DEVICE_NAME             "icm20608"
+#define CLASS_NAME              "icm20608"
+#define DEVICE_NAME             "icm20608.%d"
 #define DEVICE_CNT              1
 #define DEFAULT_MAJOR           0         
 #define DEFAULT_MINOR           0  
@@ -104,102 +101,66 @@ struct spi_icm_data
     dev_t dev_id;              
     struct cdev cdev;           
     struct class *class;      
-    struct device *device;                
-    void *private_data;         
+    struct device *device;                     
 
     /* reg配置信息 */
+    struct spi_device *spi_dev;
     struct spi_reg_config reg_config;
-
-    /* read data info */
-    struct spi_read_data data;
 };
 
 static int icm20608_read_block(struct spi_device *spi, u8 reg, void *buf, int len)
 {
-    int ret = -1;
-    unsigned char *rxdata, *txdata;
+    int ret;
+    u8 rxdata[32] = {0};
+    u8 txdata[32] = {0};
     struct spi_message msg;
-    struct spi_transfer *transfer;
+    struct spi_transfer transfer = {0};
 
-    transfer = kzalloc(sizeof(struct spi_transfer), GFP_KERNEL);
-    if (!transfer) {
-        return -ENOMEM;
+    if (len > 31) {
+        return -EINVAL;
     }
 
-    txdata = kzalloc(sizeof(char) * (len + 1), GFP_KERNEL);
-    if (!rxdata) {
-        ret = -ENOMEM;
-        goto err_mem2;
-    }    
-
-    rxdata = kzalloc(sizeof(char) * (len + 1), GFP_KERNEL);
-    if (!rxdata) {
-        ret = -ENOMEM;
-        goto err_mem1;
-    }
-
-    //最高位置1, 表示读取
+    // 最高位置1, 表示读取
     txdata[0] = reg | 0x80;
-    transfer->tx_buf = txdata;
-    transfer->rx_buf = rxdata;
-    transfer->len = len+1;
+
+    transfer.tx_buf = txdata;
+    transfer.rx_buf = rxdata;
+    transfer.len = len+1;
 
     //控制spi读取
     spi_message_init(&msg);
-    spi_message_add_tail(transfer, &msg);
+    spi_message_add_tail(&transfer, &msg);
     ret = spi_sync(spi, &msg);
     if (ret) {
-        goto err_spi;
+        dev_err(&spi->dev, "spi_sync failed:%d\n", ret);
+        return ret;
     }
+
     memcpy(buf , rxdata+1, len);  
-
-err_spi:
-    kfree(rxdata);
-err_mem1:
-    kfree(txdata);
-err_mem2:    
-    kfree(transfer);
-
-    return ret;
+    return 0;
 }
 
 static int icm20608_write_block(struct spi_device *spi, u8 reg, u8 *buf, u8 len)
 {
-    int ret = -1;
-    unsigned char *txdata;
-    struct spi_message m;
-    struct spi_transfer *t;
+    u8 txdata[32] = {0};
+    struct spi_message msg;
+    struct spi_transfer transfer = {0};
 
-    t = kzalloc(sizeof(struct spi_transfer), GFP_KERNEL);
-    if (!t) {
-        return -ENOMEM;
+    if (len > 31) {
+        return -EINVAL;
     }
 
-    txdata = kzalloc(sizeof(char)*(len+1), GFP_KERNEL);
-    if (!txdata) {
-        ret = -ENOMEM;
-        goto err_mem;
-    }
-    
-    //最高位置0, 表示写入
+    // 最高位置0, 表示写入
     txdata[0] = reg & ~0x80;
     memcpy(txdata+1, buf, len);
 
-    //控制spi写入
-    t->tx_buf = txdata;
-    t->len = len+1;
-    spi_message_init(&m);
-    spi_message_add_tail(t, &m);
-    ret = spi_sync(spi, &m);
-    if (ret) {
-        goto err_spi;
-    }
+    // 控制spi写入
+    transfer.tx_buf = txdata;
+    transfer.len = len+1;
+    spi_message_init(&msg);
+    spi_message_add_tail(&transfer, &msg);
 
-err_spi:
-    kfree(txdata);
-err_mem:
-    kfree(t);
-    return ret;
+    return spi_sync(spi, &msg);
 }
 
 static int icm20608_open(struct inode *inode, struct file *filp)
@@ -213,35 +174,34 @@ static int icm20608_open(struct inode *inode, struct file *filp)
 
 static ssize_t icm20608_read(struct file *filp, char __user *buf, size_t cnt, loff_t *off)
 {
-    signed int data[7];
-    int err;
-    unsigned char readbuf[14];
-    struct spi_icm_data *chip = (struct spi_icm_data *)filp->private_data;
-    struct spi_device *spi = (struct spi_device *)chip->private_data;
+    int ret;
+    u8 readbuf[14] = {0};
+    struct spi_icm_data *chip = filp->private_data;
+    struct spi_device *spi = chip->spi_dev;
+    struct spi_read_data data = {0};
 
-    icm20608_read_block(spi, ICM20_ACCEL_XOUT_H, readbuf, 14);
+    cnt = min_t(size_t, cnt, sizeof(data));
 
-    //读取的六轴和温度数据更新
-    chip->data.accel_x_adc = (signed short)((readbuf[0] << 8) | readbuf[1]);
-    chip->data.accel_y_adc = (signed short)((readbuf[2] << 8) | readbuf[3]);
-    chip->data.accel_z_adc = (signed short)((readbuf[4] << 8) | readbuf[5]);
-    chip->data.temp_adc    = (signed short)((readbuf[6] << 8) | readbuf[7]);
-    chip->data.gyro_x_adc  = (signed short)((readbuf[8] << 8) | readbuf[9]);
-    chip->data.gyro_y_adc  = (signed short)((readbuf[10] << 8) | readbuf[11]);
-    chip->data.gyro_z_adc  = (signed short)((readbuf[12] << 8) | readbuf[13]);
-
-    data[0] = chip->data.gyro_x_adc;
-    data[1] = chip->data.gyro_y_adc;
-    data[2] = chip->data.gyro_z_adc;
-    data[3] = chip->data.accel_x_adc;
-    data[4] = chip->data.accel_y_adc;
-    data[5] = chip->data.accel_z_adc;
-    data[6] = chip->data.temp_adc;
-    err = copy_to_user(buf, data, sizeof(data));
-
-    if (err != 0) {
-        return err;
+    ret = icm20608_read_block(spi, ICM20_ACCEL_XOUT_H, readbuf, 14);
+    if (ret) {
+        dev_err(&spi->dev, "read_block failed, num:%d\n", ret);
+        return ret;
     }
+
+    // 读取的六轴和温度数据更新
+    data.accel_x_adc = (signed short)((readbuf[0] << 8) | readbuf[1]);
+    data.accel_y_adc = (signed short)((readbuf[2] << 8) | readbuf[3]);
+    data.accel_z_adc = (signed short)((readbuf[4] << 8) | readbuf[5]);
+    data.temp_adc    = (signed short)((readbuf[6] << 8) | readbuf[7]);
+    data.gyro_x_adc  = (signed short)((readbuf[8] << 8) | readbuf[9]);
+    data.gyro_y_adc  = (signed short)((readbuf[10] << 8) | readbuf[11]);
+    data.gyro_z_adc  = (signed short)((readbuf[12] << 8) | readbuf[13]);
+
+    if (copy_to_user(buf, &data, cnt)) {
+        dev_err(&spi->dev, "copy_to_user failed\n");
+        return -EFAULT;
+    }
+
     return cnt;
 }
 
@@ -261,94 +221,128 @@ static int icm20608_parse_dt(struct spi_icm_data *chip)
 {
     struct spi_device *spi;
     struct device_node *np;
-    int ret;
 
-    spi = (struct spi_device *)chip->private_data;
+    spi = chip->spi_dev;
     np = spi->dev.of_node;
 
-    ret = of_property_read_u8(np, "smplrt_div", &chip->reg_config.smplrt_div);
-    if (ret) {
+    if (of_property_read_u8(np, "smplrt_div", &chip->reg_config.smplrt_div)) {
         dev_warn(&spi->dev, "invalid smplrt_div attribute");
         chip->reg_config.smplrt_div = 0x00;
     }
 
-    ret = of_property_read_u8(np, "gyro_config", &chip->reg_config.gyro_config);
-    if (ret) {
+    if (of_property_read_u8(np, "gyro_config", &chip->reg_config.gyro_config)) {
         dev_warn(&spi->dev, "invalid gyro_config attribute");
         chip->reg_config.gyro_config = 0x18;
     }
 
-    ret = of_property_read_u8(np, "accel_config", &chip->reg_config.accel_config);
-    if (ret) {
+    if (of_property_read_u8(np, "accel_config", &chip->reg_config.accel_config)) {
         dev_warn(&spi->dev, "invalid accel_config attribute");
         chip->reg_config.accel_config = 0x18;
     }
 
-    ret = of_property_read_u8(np, "config", &chip->reg_config.config);
-    if (ret) {
+    if (of_property_read_u8(np, "config", &chip->reg_config.config)) {
         dev_warn(&spi->dev, "invalid config attribute");
         chip->reg_config.config = 0x04;
     }
 
-    ret = of_property_read_u8(np, "accel_config2", &chip->reg_config.accel_config2);
-    if (ret) {
+    if (of_property_read_u8(np, "accel_config2", &chip->reg_config.accel_config2)) {
         dev_warn(&spi->dev, "invalid accel_config2 attribute");
         chip->reg_config.accel_config2 = 0x04;
     }
 
-    ret = of_property_read_u8(np, "pwr_mgmt_2", &chip->reg_config.pwr_mgmt_2);
-    if (ret) {
+    if (of_property_read_u8(np, "pwr_mgmt_2", &chip->reg_config.pwr_mgmt_2)) {
         dev_warn(&spi->dev, "invalid pwr_mgmt_2 attribute");
         chip->reg_config.pwr_mgmt_2 = 0x00;
     }
 
-    ret = of_property_read_u8(np, "lp_mode_cfg", &chip->reg_config.lp_mode_cfg);
-    if (ret) {
+    if (of_property_read_u8(np, "lp_mode_cfg", &chip->reg_config.lp_mode_cfg)) {
         dev_warn(&spi->dev, "invalid lp_mode_cfg attribute");
         chip->reg_config.lp_mode_cfg = 0x00;
     }
 
-    ret = of_property_read_u8(np, "fifo_en", &chip->reg_config.fifo_en);
-    if (ret) {
+    if (of_property_read_u8(np, "fifo_en", &chip->reg_config.fifo_en)) {
         dev_warn(&spi->dev, "invalid fifo_en attribute");
         chip->reg_config.fifo_en = 0x00;
     }
 
-    return ret;
+    return 0;
 }
 
 static int spi_hardware_init(struct spi_icm_data *chip)
 {
+    int ret;
     unsigned char value = 0;
     struct spi_device *spi;
     u8 buf;
 
-    //1.初始化spi接口
-    spi = (struct spi_device *)chip->private_data;
+    // 1.初始化spi接口
+    spi = chip->spi_dev;
     spi->mode = SPI_MODE_0;
-    spi_setup(spi);
+    spi->bits_per_word = 8;
+    ret = spi_setup(spi);
+    if (ret) {
+        return ret;
+    }
     
-    //2.复位spi外设
+    // 2.复位spi外设
     buf = 0x80;
-    icm20608_write_block(spi, ICM20_PWR_MGMT_1, &buf, 1);
-    mdelay(50);
+    ret = icm20608_write_block(spi, ICM20_PWR_MGMT_1, &buf, 1);
+    if (ret) {
+        return ret;
+    }
+    msleep(50);
     buf = 0x01;
-    icm20608_write_block(spi, ICM20_PWR_MGMT_1, &buf, 1);
-    mdelay(50);
+    ret = icm20608_write_block(spi, ICM20_PWR_MGMT_1, &buf, 1);
+    if (ret) {
+        return ret;
+    }
+    msleep(50);
 
-    icm20608_read_block(spi, ICM20_WHO_AM_I, &value, 1);
-    dev_info(&spi->dev, "ICM20608 ID = %#X\r\n", value);
+    ret = icm20608_read_block(spi, ICM20_WHO_AM_I, &value, 1);
+    if (ret) {
+        return ret;
+    }
+    if (value == ICM20608G_ID || value == ICM20608D_ID) {
+        dev_info(&spi->dev, "ICM20608 ID = %#X\n", value);
+    } else {
+        dev_err(&spi->dev, "ICM20608 ID = %#X, not support!\n", value);
+        return -EINVAL;
+    }
 
-    //3.获取设备树中寄存器信息
+    // 3.获取设备树中寄存器信息, 并写入寄存器
     icm20608_parse_dt(chip);
-    icm20608_write_block(spi, ICM20_SMPLRT_DIV, &chip->reg_config.smplrt_div, 1);       /* 输出速率是内部采样率 */
-    icm20608_write_block(spi, ICM20_GYRO_CONFIG, &chip->reg_config.gyro_config, 1);     /* 陀螺仪±2000dps量程 */
-    icm20608_write_block(spi, ICM20_ACCEL_CONFIG, &chip->reg_config.accel_config, 1);   /* 加速度计±16G量程 */
-    icm20608_write_block(spi, ICM20_CONFIG, &chip->reg_config.config, 1);               /* 陀螺仪低通滤波BW=20Hz */
-    icm20608_write_block(spi, ICM20_ACCEL_CONFIG2, &chip->reg_config.accel_config2, 1); /* 加速度计低通滤波BW=21.2Hz */
-    icm20608_write_block(spi, ICM20_PWR_MGMT_2, &chip->reg_config.pwr_mgmt_2, 1);       /* 打开加速度计和陀螺仪所有轴 */
-    icm20608_write_block(spi, ICM20_LP_MODE_CFG, &chip->reg_config.lp_mode_cfg, 10);    /* 关闭低功耗 */
-    icm20608_write_block(spi, ICM20_FIFO_EN, &chip->reg_config.fifo_en, 1);             /* 关闭FIFO*/
+    ret = icm20608_write_block(spi, ICM20_SMPLRT_DIV, &chip->reg_config.smplrt_div, 1);       /* 输出速率是内部采样率 */
+    if (ret) {
+        return ret;
+    }
+    ret = icm20608_write_block(spi, ICM20_GYRO_CONFIG, &chip->reg_config.gyro_config, 1);     /* 陀螺仪±2000dps量程 */
+    if (ret) {
+        return ret;
+    }
+    ret = icm20608_write_block(spi, ICM20_ACCEL_CONFIG, &chip->reg_config.accel_config, 1);   /* 加速度计±16G量程 */
+    if (ret) {
+        return ret;
+    }
+    ret = icm20608_write_block(spi, ICM20_CONFIG, &chip->reg_config.config, 1);               /* 陀螺仪低通滤波BW=20Hz */
+    if (ret) {
+        return ret;
+    }
+    ret = icm20608_write_block(spi, ICM20_ACCEL_CONFIG2, &chip->reg_config.accel_config2, 1); /* 加速度计低通滤波BW=21.2Hz */
+    if (ret) {
+        return ret;
+    }
+    ret = icm20608_write_block(spi, ICM20_PWR_MGMT_2, &chip->reg_config.pwr_mgmt_2, 1);       /* 打开加速度计和陀螺仪所有轴 */
+    if (ret) {
+        return ret;
+    }
+    ret = icm20608_write_block(spi, ICM20_LP_MODE_CFG, &chip->reg_config.lp_mode_cfg, 1);    /* 关闭低功耗 */
+    if (ret) {
+        return ret;
+    }
+    ret = icm20608_write_block(spi, ICM20_FIFO_EN, &chip->reg_config.fifo_en, 1);             /* 关闭FIFO*/
+    if (ret) {
+        return ret;
+    }
 
     dev_info(&spi->dev, "icm20608 reg config list:%d, %d, %d, %d, %d, %d, %d, %d",
             chip->reg_config.smplrt_div,
@@ -368,7 +362,7 @@ static int spi_device_create(struct spi_icm_data *chip)
     int result;
     int major = DEFAULT_MAJOR;
     int minor = DEFAULT_MINOR;
-    struct spi_device *spi = (struct spi_device *)chip->private_data;
+    struct spi_device *spi = chip->spi_dev;
 
     //1.申请设备号
     if (major) {
@@ -394,13 +388,13 @@ static int spi_device_create(struct spi_icm_data *chip)
     }
 
     //3.创建设备类和设备文件，关联设备号，用于应用层访问
-    chip->class = class_create(THIS_MODULE, DEVICE_NAME);
+    chip->class = class_create(THIS_MODULE, CLASS_NAME);
     if (IS_ERR(chip->class)) {
         dev_err(&spi->dev, "class create failed!\n");
         result = PTR_ERR(chip->class);
         goto exit_class_create;
     }
-    chip->device = device_create(chip->class, NULL, chip->dev_id, NULL, DEVICE_NAME);
+    chip->device = device_create(chip->class, NULL, chip->dev_id, NULL, DEVICE_NAME, spi->chip_select);
     if (IS_ERR(chip->device)) {
         dev_err(&spi->dev, "device create failed, major:%d, minor:%d\n", major, minor);
         result = PTR_ERR(chip->device);
@@ -422,41 +416,37 @@ exit:
 
 static int icm20608_probe(struct spi_device *spi)
 {
-    int result;
+    int ret;
     struct spi_icm_data *chip = NULL;
 
-    //1.申请spi控制块
+    // 1.申请spi控制块
     chip = devm_kzalloc(&spi->dev, sizeof(struct spi_icm_data), GFP_KERNEL);
     if (!chip){
         dev_err(&spi->dev, "malloc error\n");
         return -ENOMEM;
     }
-    chip->private_data = (void *)spi;
+    chip->spi_dev = spi;
     spi_set_drvdata(spi, chip);
 
-    //2.初始化spi硬件模块
-    result = spi_hardware_init(chip);
-    if (result != 0) {
-        dev_err(&spi->dev, "icm hardware init failed!\r\n");
-        return -EINVAL;
+    // 2.初始化spi硬件模块
+    ret = spi_hardware_init(chip);
+    if (ret) {
+        dev_err(&spi->dev, "icm hardware init failed!\n");
+        return ret;
     }
 
-    //3.将设备注册到内核和系统中
-    result = spi_device_create(chip);
-    if (result) {
+    // 3.将设备注册到内核和系统中
+    ret = spi_device_create(chip);
+    if (ret) {
         dev_err(&spi->dev, "device create failed!\n");
-        return result;
+        return ret;
     }
 
-    dev_info(&spi->dev, "spi probe success!\r\n");
+    dev_info(&spi->dev, "spi probe success!\n");
     return 0;
 }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 static void icm20608_remove(struct spi_device *spi)
-#else
-static int icm20608_remove(struct spi_device *spi)
-#endif
 {
     struct spi_icm_data *chip = spi_get_drvdata(spi);
 
@@ -465,11 +455,7 @@ static int icm20608_remove(struct spi_device *spi)
     cdev_del(&chip->cdev);
     unregister_chrdev_region(chip->dev_id, DEVICE_CNT);
 
-    dev_info(&spi->dev, "spi remove success!\r\n");
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
-#else
-    return 0;
-#endif
+    dev_info(&spi->dev, "spi remove success!\n");
 }
 
 static const struct of_device_id icm20608_of_match[] = {
@@ -494,7 +480,7 @@ static int __init spi_icm_module_init(void)
 
 static void __exit spi_icm_module_exit(void)
 {
-    return spi_unregister_driver(&icm20608_driver);
+    spi_unregister_driver(&icm20608_driver);
 }
 
 module_init(spi_icm_module_init);
