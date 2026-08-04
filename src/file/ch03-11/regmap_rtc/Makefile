@@ -5,7 +5,7 @@
 # Original Author: 1107473010@qq.com
 #
 ################################################################################
-obj-m := kernel_rtc_pcf8563.o
+obj-m := kernel_regmap_rtc.o
 
 CURRENT_PATH := $(shell pwd)
 

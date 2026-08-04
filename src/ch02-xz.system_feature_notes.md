@@ -458,8 +458,6 @@ SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="USB_KEYBOARD", ATTRS{idVendo
 - SYMLINK: 创建的软链接名称，执行匹配的设备节点`/dev/input/event*`
 - MODE: 创建软链接的读取权限，一般为0644即可。
 
-## next_chapter
+## 返回目录
 
 [返回目录](../README.md)
-
-直接开始下一章节说明: [嵌入式Linux驱动开发](./ch03-00.driver_design.md)
