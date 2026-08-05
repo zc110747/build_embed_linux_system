@@ -2,23 +2,25 @@
 
 本节列出问题如下所示。
 
-- 001.修改内核logo显示
-- 002.systemd增加自定义服务方法
-- 003.指定console输出接口(串口或者屏幕)
-- 004.开机启动延时一段时间执行脚本
-- 005.nfs启动显示为Read-Only FileSystem
-- 006.什么是核隔离，如何让系统支持核隔离
-- 007.内核支持usb wifi芯片，并且开机自启动方法
-- 008.修改系统输出由uart1切换到uart3
-- 009.NXP如何管理Linux硬盘分区，例如支持data，recovery分区
-- 010.如何使用udev管理设备，并在系统中创建链接
+📑 **001.修改内核logo显示**
+📑 **002.systemd增加自定义服务方法**  
+📑 **003.指定console输出接口(串口或者屏幕)**  
+📑 **004.开机启动延时一段时间执行脚本**  
+📑 **005.nfs启动显示为Read-Only FileSystem**  
+📑 **006.什么是核隔离，如何让系统支持核隔离**  
+📑 **007.内核支持usb wifi芯片，并且开机自启动方法**  
+📑 **008.修改系统输出由uart1切换到uart3**  
+📑 **009.NXP如何管理Linux硬盘分区，例如支持data，recovery分区**  
+📑 **010.如何使用udev管理设备，并在系统中创建链接**  
 
 ## 001.修改内核logo显示
 
-- 系统启动后加载的界面文件所在的目录为kernel/drivers/video/logo, 其中*.ppm格式文件就是转换需要使用得ppm文件
-- 在微软商店下载GIMP，添加一张图片=>图像=>模式=>索引颜色转换=>最大颜色数量设置为(224), 设置分辨率大小，并导出
-- 选择导出格式为ppm，保存格式为ASCII将转换好的图片文件拷贝到 drivers\video\logo目录下，比如：logo_user_clut224.ppm  //必须加clut224导出
-- 修改Kconfig文件
+修改logo的详细流程如下所示。
+
+🚀 系统启动后加载的界面文件所在的目录为kernel/drivers/video/logo, 其中*.ppm格式文件就是转换需要使用得ppm文件
+🚀 在微软商店下载GIMP，添加一张图片=>图像=>模式=>索引颜色转换=>最大颜色数量设置为(224), 设置分辨率大小，并导出
+🚀 选择导出格式为ppm，保存格式为ASCII将转换好的图片文件拷贝到 drivers\video\logo目录下，比如：logo_user_clut224.ppm  //必须加clut224导出
+🚀 修改Kconfig文件
 
 ```shell
 vi drivers/video/logo/Kconfig
@@ -31,7 +33,7 @@ config LOGO_USER_CLUT224
 #===============================================
 ```
 
-- 修改Makefile文件
+🚀 修改Makefile文件
 
 ```shell
 vi drivers/video/logo/Makefile
@@ -42,7 +44,7 @@ obj-$(CONFIG_LOGO_USER_CLUT224)  += logo_user_clut224.o
 #===============================================
 ```
 
-- 修改开机logo图片数据管理文件logo.c
+🚀 修改开机logo图片数据管理文件logo.c
 
 ```c
 vi drivers/video/logo/logo.c
@@ -56,7 +58,7 @@ vi drivers/video/logo/logo.c
 //===============================================
 ``
 
-- 添加头文件申明
+🚀 添加头文件申明
 
 ```c
 vi include/linux/linux_logo.h
@@ -67,7 +69,7 @@ extern const struct linux_logo logo_user_clut224;
 //==============================================
 ```
 
-- 在终端编译，在执行menuconfig时，修改内核配置选项。
+🚀 在终端编译，在执行menuconfig时，修改内核配置选项。
 
 ```shell
 DeviceDrivers  --->
